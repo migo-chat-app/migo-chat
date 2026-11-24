@@ -93,10 +93,21 @@ async function startPeer(){
   if(r.ok){const j=await r.json();iceServers=j.iceServers;turnOk=true}}catch(e){}
  peer=new Peer(myCode,{debug:1,config:{iceServers,iceTransportPolicy:location.hash==='#relay'?'relay':'all'}});
  peer.on('error',e=>{const M={'peer-unavailable':'صاحبك مش فاتح الصفحة دلوقتي، المكالمة مش هتوصل. الرسايل لسه بتوصل.','network':'مفيش اتصال بسيرفر المكالمات','server-error':'سيرفر المكالمات مش شغال دلوقتي','unavailable-id':'الصفحة مفتوحة في مكان تاني','browser-incompatible':'المتصفح ده مش بيدعم المكالمات'};note(M[e.type]||'مشكلة في المكالمة');if(cur)endCall()});
+ peer.on('connection',dc=>{dc.on('data',d=>{if(d==='reject'&&cur&&!cur._live&&cur.peer===dc.peer)endCall('رفض المكالمة');if(d==='cancel'&&ringing&&ringing.peer===dc.peer){const r=ringing;ringing=null;try{r.close()}catch(e){}$('call').style.display='none';note('فاتتك مكالمة من '+dc.peer)}})});
  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
  peer.on('call',c=>{if(blockedCodes.has(c.peer)){try{c.close()}catch(e){}return}
   const video=!!(c.metadata&&c.metadata.video);if(video&&!VIDEO_ENABLED){try{c.close()}catch(e){}note('حد حاول يكلمك فيديو، الفيديو لسه مش متاح');return}
-  showCall(c,video,(video?'مكالمة فيديو واردة':'مكالمة صوت واردة'),[['رد',async()=>{try{local=await media(video)}catch(e){log('مقدرتش أفتح المايك/الكاميرا','sys');c.close();endCall();return}$('lv').srcObject=local;c.answer(local);wire(c,video);showCall(c,video,'بيتوصل…',[['إنهاء',endCall,'red']])}],['رفض',()=>{c.close();endCall()},'red']])});
+  const who=c.peer;
+  if(cur||ringing){try{c.close()}catch(e){}note('حد ('+who+') كلمك وإنت في مكالمة');return}
+  ringing=c;
+  c.on('close',()=>{c._migoClosed=true;if(ringing===c){ringing=null;$('call').style.display='none';note('فاتتك مكالمة من '+who)}});
+  try{navigator.vibrate&&navigator.vibrate([300,200,300])}catch(e){}
+  const answer=async()=>{ringing=null;let m;try{m=await media(video)}catch(e){note('مقدرتش أفتح المايك');try{c.close()}catch(x){}$('call').style.display='none';return}
+   if(!c.open&&c._migoClosed){m.getTracks().forEach(t=>t.stop());return}
+   local=m;$('lv').srcObject=local;c.answer(local);wire(c,video);showCall(c,video,'بيتوصل…',activeBtns())};
+  showCall(c,video,(video?'مكالمة فيديو واردة من ':'مكالمة صوت واردة من ')+who,[['رد',answer],['رفض',()=>{ringing=null;try{const dc=peer.connect(who,{reliable:true});dc.on('open',()=>{dc.send('reject');setTimeout(()=>{try{dc.close()}catch(e){}},800)})}catch(e){}try{c.close()}catch(e){}$('call').style.display='none'},'red']]);
+  setTimeout(()=>{if(ringing===c){try{c.close()}catch(e){}}},45000)});
+  addEventListener('pagehide',()=>{try{if(cur)cur.close();if(ringing)ringing.close();peer.destroy()}catch(e){}});
 }
 const VIDEO_ENABLED=false;const NOCALL=['migotest','instinct1'];let online=new Set();
 function startPresence(){
@@ -197,14 +208,25 @@ $('back').onclick=goHome;
 $('dnb').onclick=async()=>{const v=$('dn').value.trim().slice(0,30);const r=await sb.from('profiles').update({display_name:v||null}).eq('id',me);if(r.error){note('الاسم ماتحفظش');return}myName=v;setAv($('av'),v||myCode,myCode);note('تم حفظ الاسم')};
 $('go').onclick=()=>openChat($('peerid').value);
 $('send').onclick=send;$('txt').onkeydown=e=>{if(e.key==='Enter')send()};
-function endCall(){if(cur)try{cur.close()}catch(e){}if(local)local.getTracks().forEach(t=>t.stop());cur=null;local=null;$('call').style.display='none';$('rv').srcObject=null}
+let ringing=null,tmr=null,muted=false;
+const mmss=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+function endCall(why){if(tmr){clearInterval(tmr);tmr=null}const c=cur;cur=null;ringing=null;if(c&&c._out&&!c._live){try{const dc=peer.connect(c.peer,{reliable:true});dc.on('open',()=>{dc.send('cancel');setTimeout(()=>{try{dc.close()}catch(e){}},800)})}catch(e){}}if(c)try{c.close()}catch(e){}if(local)local.getTracks().forEach(t=>t.stop());local=null;muted=false;$('call').style.display='none';$('rv').srcObject=null;if(typeof why==='string')note(why)}
 function showCall(c,video,status,btns){$('call').style.display='flex';$('cs').textContent=status;$('lv').style.display=video?'block':'none';$('rv').style.display=video?'block':'none';$('cb').innerHTML='';
  for(const [l,fn,cl] of btns){const b=document.createElement('button');b.type='button';b.textContent=l;if(cl)b.className=cl;b.onclick=fn;$('cb').appendChild(b)}}
-function wire(c,video){cur=c;c.on('stream',s=>{$('rv').srcObject=s;$('cs').textContent='المكالمة شغالة'});c.on('close',endCall)}
+function toggleMute(e){muted=!muted;if(local)local.getAudioTracks().forEach(t=>t.enabled=!muted);e.target.textContent=muted?'إلغاء الكتم':'كتم'}
+const activeBtns=()=>[['كتم',toggleMute,'alt'],['إنهاء',()=>endCall(),'red']];
+function wire(c,video){cur=c;c._migoClosed=false;
+ c.on('stream',s=>{if(c._live)return;c._live=true;$('rv').srcObject=s;const t0=Date.now();$('cs').textContent='المكالمة شغالة · 00:00';showCall(c,video,$('cs').textContent,activeBtns());if(tmr)clearInterval(tmr);tmr=setInterval(()=>{if(cur===c&&$('cs').textContent.indexOf('شغالة')>=0)$('cs').textContent='المكالمة شغالة · '+mmss(Math.floor((Date.now()-t0)/1000))},1000)});
+ c.on('close',()=>{c._migoClosed=true;if(cur===c)endCall(c._live?'المكالمة خلصت':'المكالمة اتقفلت')});
+ c.on('error',()=>{if(cur===c)endCall('مشكلة في المكالمة')});
+ try{const pc=c.peerConnection;pc.addEventListener('iceconnectionstatechange',()=>{const st=pc.iceConnectionState;
+  if(st==='failed'){if(cur===c)endCall('الاتصال اتقطع')}
+  else if(st==='disconnected'){if(cur===c)$('cs').textContent='الاتصال ضعيف…';setTimeout(()=>{if(cur===c&&pc.iceConnectionState==='disconnected')endCall('الاتصال اتقطع')},8000)}})}catch(e){}}
 async function media(video){return navigator.mediaDevices.getUserMedia({audio:true,video:video})}
-async function dial(video){if(!friend||!peer||NOCALL.includes(friend.code))return;if(video&&!VIDEO_ENABLED){note('الفيديو لسه مش متاح');return}try{local=await media(video)}catch(e){log('مقدرتش أفتح المايك/الكاميرا','sys');return}
- $('lv').srcObject=local;const c=peer.call(friend.code,local,{metadata:{video}});wire(c,video);showCall(c,video,'بيرن…',[['إنهاء',endCall,'red']]);
- setTimeout(()=>{if(cur===c&&$('cs').textContent==='بيرن…'){$('cs').textContent='لسه مردّش… ممكن الصفحة عنده مقفولة'}},20000)}
+async function dial(video){if(cur||ringing||!friend||!peer||NOCALL.includes(friend.code)||isBlk())return;if(video&&!VIDEO_ENABLED){note('الفيديو لسه مش متاح');return}try{local=await media(video)}catch(e){log('مقدرتش أفتح المايك/الكاميرا','sys');return}
+ $('lv').srcObject=local;const c=peer.call(friend.code,local,{metadata:{video}});c._out=true;wire(c,video);showCall(c,video,'بيرن…',[['إنهاء',()=>endCall(),'red']]);
+ setTimeout(()=>{if(cur===c&&!c._live)$('cs').textContent='لسه مردّش… ممكن الصفحة عنده مقفولة'},20000);
+ setTimeout(()=>{if(cur===c&&!c._live)endCall('مفيش رد')},45000)}
 $('vc').onclick=()=>dial(false);$('vv').onclick=()=>dial(true);
 init();
 </script></body></html>
