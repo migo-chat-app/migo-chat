@@ -766,4 +766,19 @@ async function aLoad(show){const r=await sb.rpc('activity_list');if(r.error)retu
 g('pva').onclick=()=>{g('pas').classList.add('on');aLoad(true)};g('pax').onclick=()=>g('pas').classList.remove('on');g('pas').querySelector('.pcb').onclick=()=>g('pas').classList.remove('on');
 document.querySelector('#tabs button[data-t=p]').addEventListener('click',()=>setTimeout(()=>aLoad(false),300));setTimeout(()=>aLoad(false),4000);
 })();
-</script><script>(()=>{const orig=renderPeople;let busy=false;window.renderPeople=renderPeople=function(){orig();if(busy||!discOn)return;const cs=(discRows||[]).map(r=>r.code).filter(c=>c&&!(c in AVC)&&c!==myCode);if(!cs.length)return;busy=true;sb.from('profiles').select('code,avatar').in('code',cs).then(r=>{busy=false;let ch=false;for(const x of (r.data||[])){if(x.avatar){AVC[x.code]=x.avatar;ch=true}}for(const c of cs)if(!(c in AVC))AVC[c]=null;if(ch)orig()},()=>{busy=false})};})();</script></body></html>
+</script><script>(()=>{const orig=renderPeople;let busy=false;window.renderPeople=renderPeople=function(){orig();if(busy||!discOn)return;const cs=(discRows||[]).map(r=>r.code).filter(c=>c&&!(c in AVC)&&c!==myCode);if(!cs.length)return;busy=true;sb.from('profiles').select('code,avatar').in('code',cs).then(r=>{busy=false;let ch=false;for(const x of (r.data||[])){if(x.avatar){AVC[x.code]=x.avatar;ch=true}}for(const c of cs)if(!(c in AVC))AVC[c]=null;if(ch)orig()},()=>{busy=false})};})();</script><style>
+#po{background:transparent!important;padding:0!important;gap:0!important}
+#pohd{margin:4px 0 14px!important}
+#pohd b{font-size:21px}
+#pohd #ponew,#ponew{left:0!important;border-radius:20px 20px 20px 5px!important;padding:10px 16px 10px 14px!important;background:linear-gradient(135deg,#1f6f5c,#2fb88a)!important;box-shadow:0 4px 12px #1f6f5c55;gap:7px!important}
+#ponew svg{width:20px!important;height:20px!important}
+#pofol{background:#fff!important;border:1px solid #e4efe8!important;border-radius:20px!important;box-shadow:0 2px 8px #1f6f5c12!important}
+#poc{margin:12px 0 10px!important}
+#pol{display:flex;flex-direction:column;gap:16px}
+#pol .pp{background:#fff;border:1px solid #e1ede6;border-inline-start:5px solid #2fb88a;border-radius:8px 22px 22px 22px;padding:14px 14px 8px!important;box-shadow:0 4px 14px #1f6f5c1a}
+#pol .pp:nth-child(even){border-inline-start-color:#ff9a3c}
+#pol .ppa{border-top:1px solid #eef3f0;margin-top:8px;padding-top:6px}
+#pol .empty{background:#fff;border-radius:18px;padding:18px}
+#pop{border-radius:18px 18px 18px 5px!important;background:linear-gradient(135deg,#1f6f5c,#2fb88a)!important}
+</style>
+<script>(()=>{const b=document.getElementById('ponew');if(b)b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H11l-4 4v-4H7a3 3 0 0 1-3-3z"/><path d="M12 6v6M9 9h6"/></svg><span>انشر</span>'})();</script></body></html>
