@@ -52,10 +52,18 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
   <div style="font-size:12px;opacity:.75;line-height:1.7;text-align:center;margin-top:4px">بمتابعتك توافق على الاستخدام التجريبي. اطّلع على <a href="privacy.html" target="_blank" style="color:#fff;text-decoration:underline">سياسة الخصوصية والشروط</a></div>
  </div>
 </div>
+<div id="agegate" dir="rtl" style="display:none;position:fixed;inset:0;z-index:98;background:radial-gradient(120% 70% at 50% 18%,#2f9a74 0%,#1f6f54 38%,#0e2a21 100%);color:#fff;flex-direction:column;justify-content:center;padding:24px;overflow:auto;gap:14px">
+ <div style="font-size:26px;font-weight:700">كمّل بياناتك</div>
+ <div style="font-size:14px;opacity:.9;line-height:1.8">ميجو شات للي عمرهم 18 سنة أو أكتر. اختار النوع واكتب سنّك. السن اللي بتكتبه إقرار منك ومش بنتحقق منه، وبيظهر في ملفك بس دلوقتي.</div>
+ <div id="agg" style="display:flex;gap:10px"><button type="button" data-g="male" style="flex:1;background:#ffffff22;color:#fff;border:2px solid #ffffff66;border-radius:14px;padding:14px;font-size:17px">ذكر</button><button type="button" data-g="female" style="flex:1;background:#ffffff22;color:#fff;border:2px solid #ffffff66;border-radius:14px;padding:14px;font-size:17px">أنثى</button></div>
+ <input id="aga" type="number" inputmode="numeric" min="1" max="99" placeholder="السن" style="padding:14px;font-size:18px;border-radius:14px;border:0;text-align:center">
+ <div id="age_e" style="color:#ffd7d2;font-size:14px;min-height:20px"></div>
+ <button id="agok" type="button" style="background:#fff;color:#1f6f54;border-radius:30px;padding:15px;font-size:17px;font-weight:700">تأكيد</button>
+</div>
 <main id="main">
  <div class="card" id="guide" style="display:none;background:#fff8e1;line-height:1.7;font-size:14px"><b>إزاي التطبيق شغال</b><br>• الرسايل بتتخزن على سيرفر وبتوصل حتى لو صاحبك مش فاتح الصفحة.<br>• المكالمات الصوتية بتوصل لو صاحبك فاتح الصفحة. لو مقفولة، التطبيق بيحاول يوصله حوالي 40 ثانية، ولو مفعّل الإشعارات (اختياري) ممكن يوصله إشعار يفتح منه. مفيش رنين زي مكالمة الموبايل، ووصول الإشعار تجريبي ومش مضمون.<br>• الفيديو مقفول دلوقتي.<br>• لو المكالمة مقدرتش تتوصل مباشرة بتعدي على سيرفر مجاني للتجربة، وسعته 500 ميجا بس لكل المستخدمين مع بعض. لو خلصت المكالمات ممكن تفشل والرسايل تفضل شغالة.<br>• التطبيق تجريبي، ومتجربش على موبايلين حقيقيين لسه.<br><button id="gok" type="button" style="margin-top:6px">تمام، فهمت</button></div>
  <div class="card" id="home">
-  <div id="pfh" style="order:-2;background:linear-gradient(160deg,#2f9a74,#0e2a21);color:#fff;border-radius:16px;padding:18px 14px 12px;margin:-4px 0 12px;text-align:center"><span id="pav" class="av" style="width:84px;height:84px;font-size:36px;margin:0 auto;border:3px solid #ffffffaa"></span><div id="pnm" style="font-size:20px;font-weight:700;margin-top:8px"></div><div id="pcd" dir="ltr" style="font-size:13px;opacity:.85;margin-top:2px"></div><div id="pst" style="display:none;justify-content:space-around;margin-top:12px;font-size:13px"><div><b id="pfr" style="font-size:18px;display:block">0</b>أصدقاء</div><div><b id="pin" style="font-size:18px;display:block">0</b>متابعوك</div><div><b id="pou" style="font-size:18px;display:block">0</b>بتتابعهم</div></div></div>
+  <div id="pfh" style="order:-2;background:linear-gradient(160deg,#2f9a74,#0e2a21);color:#fff;border-radius:16px;padding:18px 14px 12px;margin:-4px 0 12px;text-align:center"><span id="pav" class="av" style="width:84px;height:84px;font-size:36px;margin:0 auto;border:3px solid #ffffffaa"></span><div id="pnm" style="font-size:20px;font-weight:700;margin-top:8px"></div><div id="pcd" dir="ltr" style="font-size:13px;opacity:.85;margin-top:2px"></div><div id="pag" style="font-size:14px;margin-top:4px"></div><div id="pst" style="display:none;justify-content:space-around;margin-top:12px;font-size:13px"><div><b id="pfr" style="font-size:18px;display:block">0</b>أصدقاء</div><div><b id="pin" style="font-size:18px;display:block">0</b>متابعوك</div><div><b id="pou" style="font-size:18px;display:block">0</b>بتتابعهم</div></div></div>
   <p>كودك: <code id="mycode">…</code></p>
   <p style="display:flex;gap:8px;align-items:center"><span id="av" class="av"></span><input id="dn" maxlength="30" placeholder="اسمك (اختياري)"><button id="dnb" type="button" class="alt">حفظ</button></p>
   <p style="font-size:13px;color:#555">ابعت الكود لصاحبك، وهو يكتبه عنده. أو اكتب كوده هنا.</p>
@@ -161,7 +169,7 @@ async function init(){
   if(p.data){myCode=p.data.code;myName=p.data.display_name||''}
   else{for(let i=0;i<5&&!myCode;i++){const c='mg'+rnd();const r=await sb.from('profiles').insert({code:c});if(!r.error)myCode=c}}
   if(!myCode)throw new Error('code');
-  gInit(oauthErr,OAUTH_MODE);sb.auth.getUser().then(q=>{const u=q.data&&q.data.user;if(u&&u.identities&&u.identities.some(i=>i.provider==='google'))$('idw').textContent='حسابك مربوط بحساب جوجل. الرجوع لمحادثاتك من متصفح أو جهاز تاني لسه تحت التجربة، فمتعتمدش عليه لحد ما نأكده.'}).catch(()=>{});$('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
+  gInit(oauthErr,OAUTH_MODE);ageCheck();sb.auth.getUser().then(q=>{const u=q.data&&q.data.user;if(u&&u.identities&&u.identities.some(i=>i.provider==='google'))$('idw').textContent='حسابك مربوط بحساب جوجل. الرجوع لمحادثاتك من متصفح أو جهاز تاني لسه تحت التجربة، فمتعتمدش عليه لحد ما نأكده.'}).catch(()=>{});$('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
  }catch(e){if(!retried){retried=true;try{await sb.auth.signOut()}catch(x){}myCode=null;return init()}E('مقدرتش أتصل بالسيرفر. شوف النت وحدّث الصفحة.');return}
  loadBlocks().then(loadRecent);loadFeat();startPeer();startPresence();discStart();
  setInterval(poll,4000);
@@ -188,6 +196,15 @@ async function loadFeat(){for(const n of ['friends','room_notices','chat_gifts']
  if(FEAT.friends){$('frc').style.display='block';try{const r=await sb.rpc('get_room_notice');$('rns').value=r.data||'off'}catch(e){}loadFollows();setInterval(loadFollows,30000)}
  $('rns').style.display=FEAT.room_notices?'':'none';
  if(FEAT.room_notices){pollNotices();setInterval(pollNotices,20000)}}
+let AGE_G=null,MYAGE=null;
+function agePaint(){const e=$('pag');if(e)e.textContent=MYAGE?((AGE_G==='female'?'أنثى':'ذكر')+' · '+MYAGE+' سنة'):''}
+async function ageCheck(){try{const r=await sb.rpc('get_my_profile');if(r.error)return;const d=(r.data||[])[0];if(d){AGE_G=d.gender;MYAGE=d.age;agePaint();return}
+ const g=$('agegate');g.style.display='flex';let pick=null;g.querySelectorAll('#agg button').forEach(b=>b.onclick=()=>{pick=b.dataset.g;g.querySelectorAll('#agg button').forEach(x=>x.style.background=x===b?'#ffffff':'#ffffff22');g.querySelectorAll('#agg button').forEach(x=>x.style.color=x===b?'#1f6f54':'#fff')});
+ $('agok').onclick=async()=>{const a=parseInt($('aga').value,10);const er=$('age_e');er.textContent='';if(!pick){er.textContent='اختار ذكر أو أنثى';return}
+  if(!a||a<1||a>99){er.textContent='اكتب سنّك بالأرقام';return}
+  if(a<18){er.textContent='ميجو شات للي عمره 18 سنة أو أكتر. مش هنقدر نكمّل التسجيل.';return}
+  const x=await sb.rpc('set_my_profile',{p_gender:pick,p_age:a});if(x.error){er.textContent='مقدرتش أحفظ، جرب تاني';return}
+  AGE_G=pick;MYAGE=a;agePaint();g.style.display='none'}}catch(e){}}
 function pfMove(){try{if($('pr').dataset.m)return;$('pr').dataset.m='1';const h=$('pfh');h.style.order='';h.style.margin='0';$('prh').appendChild(h);const pe=$('pre');pe.appendChild($('dn').parentNode);pe.appendChild($('mycode').parentNode);const g=$('prg2');g.appendChild($('frc'));for(const id of ['idw','pushbtn','del']){const e=$(id).parentNode;g.appendChild(e)}g.appendChild($('gbox'));g.appendChild($('delp'));$('prs_r').onclick=()=>setTab('r');$('prs_b').onclick=()=>{poMine=true;poChips();setTab('b')};$('prs_p').onclick=()=>setTab('p')}catch(e){}}
 pfMove();
 function pfHero(){try{const nm=($('dn')&&$('dn').value||'').trim();setAv($('pav'),nm||myCode,myCode);$('pnm').textContent=nm||'بدون اسم';$('pcd').textContent=myCode||'';const st=$('pst');if(FEAT.friends&&Array.isArray(FL)){st.style.display='flex';$('pfr').textContent=FL.filter(x=>x.rel==='friend').length;$('pin').textContent=FL.filter(x=>x.rel==='incoming'||x.rel==='friend').length;$('pou').textContent=FL.filter(x=>x.rel==='outgoing'||x.rel==='friend').length}else st.style.display='none'}catch(e){}}
