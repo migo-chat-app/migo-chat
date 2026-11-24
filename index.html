@@ -633,7 +633,7 @@ if(a==='settings'){q('prg').scrollIntoView({behavior:'smooth'});return}})})()</s
 <script>(function(){const q=id=>document.getElementById(id);let tt;const toast=m=>{const t=q('pmtoast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2500)};window.pmToast=toast;
 const ids=['pmhelp','pmiss','pmck','pmlv','pmac'];const show=id=>ids.forEach(x=>q(x).style.display=(x===id&&q(x).style.display!=='block')?'block':'none');
 const LV=t=>Math.floor(t/7)+1;
-async function load(){const r=await sb.rpc('my_checkins');if(r.error){q('pmckt').textContent='مقدرتش أحمّل الحضور';return null}const d=r.data;q('pmckt').textContent='أيام الحضور: '+d.total+' | متتالية: '+d.streak+(d.today?' | سجّلت النهارده':' | لسه ما سجلتش النهارده');q('pmckb').disabled=!!d.today;q('pmlvt').textContent='مستواك '+LV(d.total)+'. بيزيد كل 7 أيام حضور (إجمالي مش لازم متتالي). مفيش مكافآت ولا قيمة مالية.';return d}
+async function load(){const r=await sb.rpc('my_checkins');if(r.error){q('pmckt').textContent='مقدرتش أحمّل الحضور';return null}const d=r.data;q('pmckt').textContent='أيام الحضور: '+d.total+' | متتالية: '+d.streak+(d.today?' | سجّلت النهارده':' | لسه ما سجلتش النهارده');q('pmckb').disabled=!!d.today;q('pmlvt').textContent='مستواك '+LV(d.total)+'. بيزيد كل 7 أيام حضور (إجمالي مش لازم متتالي). الهدايا اللي بتاخدها من الحضور المتتالي مجانية جوه التطبيق ومالهاش قيمة مالية.';return d}
 document.querySelector('[data-pm=chk]').addEventListener('click',()=>{if(q('pmck').style.display==='block')load()},true);
 q('pmckb').onclick=async()=>{q('pmckb').disabled=true;const r=await sb.rpc('checkin');if(r.error){toast((r.error.message||'').includes('age_required')?'لازم تكمّل بيانات السن الأول':'مقدرتش أسجّل الحضور');q('pmckb').disabled=false;return}load();toast('اتسجّل حضورك')};
 const th={green:['#2f9a74','#0e2a21'],blue:['#3b82c4','#12243a'],purple:['#8b5cc4','#26143a'],rose:['#d6497d','#3a1224']};
@@ -793,4 +793,25 @@ const ol=window.poLoad;let lt=null;
 async function mark(){try{const cs=[...document.querySelectorAll('#pol .pp')].map(c=>c.dataset.ac).filter(Boolean);const u=[...new Set(cs)].slice(0,40);if(!u.length)return;const r=await sb.rpc('post_live',{p_codes:u});const on=new Set((r.data||[]).map(x=>x.code));
  document.querySelectorAll('#pol .pp').forEach(c=>{const a=c.querySelector('.pph .av');if(!a)return;const live=on.has(c.dataset.ac);const has=a.classList.contains('lvr');if(live&&!has){a.classList.add('lvr');const b=document.createElement('span');b.className='lvb';b.innerHTML='مباشر<i></i>';b.setAttribute('aria-label','في غرفة صوتية شغالة دلوقتي');a.append(b)}else if(!live&&has){a.classList.remove('lvr');a.querySelector('.lvb')?.remove()}})}catch(e){}}
 window.poLoad=async function(m){await ol(m);mark()};
-setInterval(()=>{if(window.__tab==='b')mark()},30000);window.__liveMark=mark})();</script></body></html>
+setInterval(()=>{if(window.__tab==='b')mark()},30000);window.__liveMark=mark})();</script><style>
+#pmckg{margin:8px 0 10px}.cgh{font-size:12px;color:#4a6a5c;line-height:1.7;margin-bottom:8px}
+.cgg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.cgc{position:relative;aspect-ratio:1;border-radius:12px 12px 12px 4px;background:#fff;border:1px solid #d5e6dc;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#7a8f84;overflow:hidden}
+.cgc.dn{background:linear-gradient(135deg,#1f6f5c,#2fb88a);color:#fff;border-color:#1f6f5c}
+.cgc.nx{border:2px solid #ff9a3c;color:#c9701a;animation:cgp 1.6s ease-in-out infinite}
+@keyframes cgp{0%,100%{box-shadow:0 0 0 0 #ff9a3c55}50%{box-shadow:0 0 0 4px #ff9a3c33}}
+.cgc svg{width:60%;height:60%}.cgc .n{position:absolute;top:2px;right:4px;font-size:9px;opacity:.85}
+.cgc.gf{background:#fff7e6}.cgc.gf.dn{background:linear-gradient(135deg,#1f6f5c,#2fb88a)}
+.cgc .ck{position:absolute;bottom:1px;left:3px;font-size:10px}
+</style>
+<script>(()=>{const q=id=>document.getElementById(id);const MS={3:'crown',5:'bracelet',7:'ring',10:'ae',14:'eg',21:'ma',30:'vip'};
+function ensure(){let g=q('pmckg');if(!g){g=document.createElement('div');g.id='pmckg';q('pmckt').after(g)}return g}
+async function draw(){const r=await sb.rpc('my_checkins');if(r.error||!r.data)return;const d=r.data,g=ensure();const st=Math.min(d.streak,30);const nx=d.today?0:Math.min(d.streak+1,30);
+ g.innerHTML='<div class="cgh">كل يوم تسجّل فيه حضورك بيزوّد سلسلتك. لو فوّت يوم بتبدأ من الأول. اليوم بيتجدد الساعة 12 بالليل بتوقيت مصر، وتسجّل مرة واحدة في اليوم. الهدايا على الأيام المميزة مجانية جوه التطبيق.</div><div class="cgg"></div>';const gg=g.querySelector('.cgg');
+ for(let i=1;i<=30;i++){const c=document.createElement('div');const m=MS[i];c.className='cgc'+(i<=st?' dn':'')+(i===nx?' nx':'')+(m?' gf':'');
+  const n=document.createElement('span');n.className='n';n.textContent=i;c.append(n);
+  if(m&&window.GART&&GART[m]){const w=document.createElement('div');w.style.cssText='display:flex;width:100%;height:100%;align-items:center;justify-content:center';w.innerHTML=GART[m];c.append(w)}else{const t=document.createElement('span');t.textContent=i<=st?'✓':i;c.append(t)}
+  if(m&&i<=st){const k=document.createElement('span');k.className='ck';k.textContent='✓';c.append(k)}
+  gg.append(c)}}
+document.querySelector('[data-pm=chk]').addEventListener('click',()=>setTimeout(draw,600),true);
+q('pmckb').addEventListener('click',()=>setTimeout(draw,1500));window.__ckDraw=draw})();</script></body></html>
