@@ -806,20 +806,20 @@ setInterval(()=>{if(window.__tab==='b')mark()},30000);window.__liveMark=mark})()
 </style>
 <script>(()=>{const q=id=>document.getElementById(id);const MS={3:'crown',5:'bracelet',7:'ring',10:'ae',14:'eg',21:'ma',30:'vip'};
 function ensure(){let g=q('pmckg');if(!g){g=document.createElement('div');g.id='pmckg';q('pmckt').after(g)}return g}
-async function draw(){const r=await sb.rpc('my_checkins');if(r.error||!r.data)return;const d=r.data,g=ensure();const S=d.streak;const cyc=S>0?((S-1)%30)+1:0;const cn=S>0?Math.floor((S-1)/30)+1:1;const nx=d.today?0:(S%30)+1;
+async function draw(){const r=await sb.rpc('my_checkins');if(r.error||!r.data)return;const d=r.data,g=ensure();const S=d.streak;const cyc=S>0?((S-1)%30)+1:0;const cn=S>0?Math.floor((S-1)/30)+1:1;const nx=d.today?0:(S%30)+1;const dc=(!d.today&&S>0&&S%30===0)?0:cyc;
  q('pmckt').innerHTML=(d.today?'<b style="color:#1f6f5c">✓ سجّلت حضور النهارده</b>':'<b style="color:#c9701a">لسه ما سجلتش النهارده</b>')+'<br>إجمالي أيام الحضور: '+d.total+' | أيام متتالية: '+S+'<br>'+(d.today?'مكانك في الدورة: يوم '+cyc+' من 30 (دورة '+cn+'). اليوم الجاي: '+((cyc%30)+1):'لو سجّلت دلوقتي هتبقى في يوم '+nx+' من 30 (دورة '+(S>0&&S%30===0?cn+1:cn)+')');
- g.innerHTML='<div class="cgh">كل يوم تسجّل فيه حضورك بيزوّد سلسلتك. لو فوّت يوم بتبدأ من الأول. اليوم بيتجدد الساعة 12 بالليل بتوقيت مصر، وتسجّل مرة واحدة في اليوم. بعد يوم 30 بتبدأ دورة جديدة بنفس الهدايا، والعدّاد الكلي بيكمّل. الهدايا مجانية جوه التطبيق.</div><div class="cgg"></div>';const gg=g.querySelector('.cgg');
- for(let i=1;i<=30;i++){const c=document.createElement('div');const m=MS[i];c.className='cgc'+(i<=cyc?' dn':'')+(i===nx?' nx':'')+(m?' gf':'');
+ q('pmckb').textContent=d.today?'اتسجّل النهارده ✓':'سجّل حضور اليوم';g.innerHTML='<div class="cgh">كل يوم تسجّل فيه حضورك بيزوّد سلسلتك. لو فوّت يوم بتبدأ من الأول. اليوم بيتجدد الساعة 12 بالليل بتوقيت مصر، وتسجّل مرة واحدة في اليوم. بعد يوم 30 بتبدأ دورة جديدة بنفس الهدايا، والعدّاد الكلي بيكمّل. الهدايا مجانية جوه التطبيق.</div><div class="cgg"></div>';const gg=g.querySelector('.cgg');
+ for(let i=1;i<=30;i++){const c=document.createElement('div');const m=MS[i];c.className='cgc'+(i<=dc?' dn':'')+(i===nx?' nx':'')+(m?' gf':'');
   const n=document.createElement('span');n.className='n';n.textContent=i;c.append(n);
-  if(m&&window.GART&&GART[m]){const w=document.createElement('div');w.style.cssText='display:flex;width:100%;height:100%;align-items:center;justify-content:center';w.innerHTML=GART[m];c.append(w)}else{const t=document.createElement('span');t.textContent=i<=cyc?'✓':'';c.append(t)}
-  if(m&&i<=cyc){const k=document.createElement('span');k.className='ck';k.textContent='✓';c.append(k)}
+  if(m&&window.GART&&GART[m]){const w=document.createElement('div');w.style.cssText='display:flex;width:100%;height:100%;align-items:center;justify-content:center';w.innerHTML=GART[m];c.append(w)}else{const t=document.createElement('span');t.textContent=i<=dc?'✓':'';c.append(t)}
+  if(m&&i<=dc){const k=document.createElement('span');k.className='ck';k.textContent='✓';c.append(k)}
   gg.append(c)}}
 document.querySelector('[data-pm=chk]').addEventListener('click',()=>setTimeout(draw,600),true);
-q('pmckb').addEventListener('click',()=>setTimeout(draw,1500));window.__ckDraw=draw})();</script><style>
+q('pmckb').addEventListener('click',()=>setTimeout(draw,1500));window.__ckDraw=draw;const _d=draw;})();</script><style>
 #rmsg{display:grid;gap:6px;margin:6px 0}.rms{aspect-ratio:1;border-radius:50%;border:2px dashed #b9cfc4;background:#eaf3ee;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#4a6a5c;padding:0;overflow:hidden;position:relative;line-height:1.1}
 .rms svg{width:45%;height:45%;stroke:#4a6a5c;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .rms.lk{background:#e7e2d6;border-color:#bdb59f}.rms.oc{border:2px solid #1f6f5c;background:#fff}.rms.me{border-color:#ff9a3c;box-shadow:0 0 0 2px #ff9a3c55}
-.rms .av{width:62%;height:62%}.rms .sn{max-width:95%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}.rms .sx{position:absolute;top:1px;left:3px;font-size:9px;opacity:.7}
+.rms .av{width:62%;height:62%}.rms .sn{max-width:95%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}.rms .sx{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:8px;opacity:.6;line-height:1}.rms .av{margin-top:6px}
 #rmsa{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}#rmch{max-height:150px;overflow:auto;background:#fff;border-radius:10px;padding:6px;font-size:13px;line-height:1.6;margin-top:6px}#rmch:empty::before{content:"مفيش رسائل لسه";color:#999}
 #rmov{display:none;position:fixed;inset:0;background:#0007;z-index:30;align-items:flex-end}#rmov>div{background:#fff;border-radius:18px 18px 0 0;padding:14px;width:100%;max-height:80vh;overflow:auto}
 #rmpill{display:none;position:fixed;bottom:74px;right:12px;left:12px;z-index:20;background:#1f6f5c;color:#fff;border-radius:22px;padding:10px 16px;font-size:14px;text-align:center}
