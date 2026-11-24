@@ -1,4 +1,7 @@
 self.addEventListener('install',e=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
-self.addEventListener('push',e=>{let k='msg';try{k=e.data.json().k}catch(x){}const call=k==='call';e.waitUntil(self.registration.showNotification('ميجو شات',call?{body:'في حد بيكلمك. افتح التطبيق دلوقتي',tag:'migo-call',renotify:true,requireInteraction:true}:{body:'عندك رسالة جديدة',tag:'migo-msg',renotify:true}))});
-self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(l=>{for(const c of l){if(c.url.indexOf('/migo-chat/')>=0&&'focus' in c)return c.focus()}return self.clients.openWindow('/migo-chat/')}))});
+self.addEventListener('push',e=>{let d={k:'msg'};try{d=e.data.json()}catch(x){}const k=d.k;const call=k==='call';
+if(k==='room'){const a=String(d.a||'').slice(0,30)||'حد';e.waitUntil(self.registration.showNotification('ميجو شات',{body:a+' فتح غرفة صوت دلوقتي',tag:'migo-room',renotify:true,icon:'icon.svg',data:{n:Number(d.n)||0},actions:[{action:'join',title:'انضم'}]}));return}
+e.waitUntil(self.registration.showNotification('ميجو شات',call?{body:'في حد بيكلمك. افتح التطبيق دلوقتي',tag:'migo-call',renotify:true,requireInteraction:true}:{body:'عندك رسالة جديدة',tag:'migo-msg',renotify:true}))});
+self.addEventListener('notificationclick',e=>{e.notification.close();const n=e.notification.data&&e.notification.data.n;
+e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(l=>{for(const c of l){if(c.url.indexOf('/migo-chat/')>=0&&'focus' in c){if(n)c.postMessage({joinNotice:n});return c.focus()}}return self.clients.openWindow('/migo-chat/'+(n?'?joinn='+n:''))}))});
