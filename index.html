@@ -33,7 +33,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
   <p style="font-size:13px;color:#555">ابعت الكود لصاحبك، وهو يكتبه عنده. أو اكتب كوده هنا.</p>
   <input id="peerid" placeholder="كود صاحبك" autocapitalize="none" style="direction:ltr;text-align:left">
   <p><button id="go" type="button">افتح المحادثة</button></p>
-  <p><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
+  <p><button class="alt" id="rmo" type="button">غرفة صوت (معاينة، مش شغالة)</button></p>
   <div id="recent"></div>
   <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
@@ -90,7 +90,7 @@ let retried=false;
 async function init(){
  try{
   let {data:{session}}=await sb.auth.getSession();
-  if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error;session=r.data.session}
+  if(!session){const r=await sb.auth.signInAnonymously();if(r.error){if(r.error.status===429){E('في ضغط على التسجيل من نفس الشبكة دلوقتي، جرب بعد شوية.');return}throw r.error}session=r.data.session}
   me=session.user.id;
   let p=await sb.from('profiles').select('code,display_name').eq('id',me).maybeSingle();
   if(p.error)throw p.error;
@@ -207,7 +207,7 @@ async function roomPing(){if(!room)return;const id=room.id;const r=await sb.rpc(
   if(room.host===myCode&&m.code!==myCode){for(const [l,fn] of [['كتم',()=>roomFn({action:'mute',room:id,code:m.code,muted:true})],['رفع الكتم',()=>roomFn({action:'mute',room:id,code:m.code,muted:false})],['طرد',async()=>{await roomFn({action:'kick',room:id,code:m.code});roomPing()}]]){const b=document.createElement('button');b.type='button';b.className='alt';b.style.padding='4px 8px';b.textContent=l;b.onclick=fn;row.appendChild(b)}}
   box.appendChild(row)}
  for(const g of d.gifts){if(g.id>room.lastGift){room.lastGift=g.id;const p=document.createElement('div');p.textContent=(g.sender_code===myCode?'أنت':g.sender_code)+' بعت '+(GIFT[g.gift]||'هدية')+' (هدية تجريبية)';$('rmg').appendChild(p)}}}
-const ROOMS_ENABLED=true;
+const ROOMS_ENABLED=false;
 $('rmo').onclick=()=>{$('rme').textContent='';roomUI();$('rm').style.display='block'};
 $('rmx').onclick=()=>{$('rm').style.display='none'};
 $('rmc').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('create_room',{p_name:$('rmn').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
