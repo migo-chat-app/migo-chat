@@ -33,7 +33,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
   <p style="font-size:13px;color:#555">ابعت الكود لصاحبك، وهو يكتبه عنده. أو اكتب كوده هنا.</p>
   <input id="peerid" placeholder="كود صاحبك" autocapitalize="none" style="direction:ltr;text-align:left">
   <p><button id="go" type="button">افتح المحادثة</button></p>
-  <p><button class="alt" id="rmo" type="button">غرفة صوت (معاينة، مش شغالة)</button></p>
+  <p><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
   <div id="recent"></div>
   <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
@@ -52,7 +52,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
 <div id="rm" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:5;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px">
 <b>غرفة صوت (تجربة صغيرة)</b>
 <div id="rml">
-<p style="font-size:13px;color:#555">الدخول بكود بس، مفيش غرف عامة. أقصى عدد 4 أشخاص، والصوت بيتوصل مباشرة بين الأجهزة (من غير سيرفر صوت)، فلو النت أو الراوتر مش مناسب ممكن حد ما يسمعش. الصفحة لازم تفضل مفتوحة.</p>
+<p style="font-size:13px;color:#555">الدخول بكود بس، مفيش غرف عامة. أقصى عدد 4 أشخاص. الصفحة لازم تفضل مفتوحة. الصوت بيعدي على سيرفر صوت مجاني حدّه الشهري محدود.</p>
 <input id="rmn" maxlength="40" placeholder="اسم الغرفة"><p><button id="rmc" type="button">إنشاء غرفة</button></p>
 <input id="rmj" placeholder="كود الغرفة" autocapitalize="none" style="direction:ltr;text-align:left"><p><button class="alt" id="rmjb" type="button">دخول</button></p>
 <p id="rme" style="color:#c0392b"></p><button class="alt" id="rmx" type="button">رجوع</button></div>
@@ -112,7 +112,7 @@ async function startPeer(){
  peer.on('connection',dc=>{dc.on('data',d=>{if(d==='reject'&&cur&&!cur._live&&cur.peer===dc.peer)endCall('رفض المكالمة');if(d==='cancel'&&ringing&&ringing.peer===dc.peer){const r=ringing;ringing=null;try{r.close()}catch(e){}$('call').style.display='none';note('فاتتك مكالمة من '+dc.peer)}})});
  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
  peer.on('call',c=>{if(blockedCodes.has(c.peer)){try{c.close()}catch(e){}return}
-  if(c.metadata&&c.metadata.room){if(room&&room.id===c.metadata.room&&room.members.has(c.peer)&&!rcalls[c.peer]&&rstream){c.answer(rstream);wireRoom(c)}else{try{c.close()}catch(e){}}return}
+  if(c.metadata&&c.metadata.room){try{c.close()}catch(e){}return}
   const video=!!(c.metadata&&c.metadata.video);if(video&&!VIDEO_ENABLED){try{c.close()}catch(e){}note('حد حاول يكلمك فيديو، الفيديو لسه مش متاح');return}
   const who=c.peer;
   if(cur||ringing||room){try{c.close()}catch(e){}note('حد ('+who+') كلمك وإنت في مكالمة');return}
@@ -172,44 +172,48 @@ $('rpb').onclick=()=>{if(!friend)return;$('rpn').textContent=friend.display_name
  for(const m of ms){const l=document.createElement('label');l.style.cssText='display:flex;gap:8px;align-items:flex-start;margin:4px 0;padding:6px;background:#f6f1e7;border-radius:8px';const c=document.createElement('input');c.type='checkbox';c.value=m.dataset.id;c.style.cssText='width:auto;margin-top:5px';const t=document.createElement('span');t.textContent=(m.classList.contains('me')?'أنا: ':'هو: ')+m.firstChild.textContent;l.append(c,t);box.appendChild(l)}
  $('rp').style.display='block'};
 
-let room=null,rcalls={},rstream=null,rtimer=null,rmuted=false,savedCfg=null;
+let room=null,lkr=null,rtimer=null,rmuted=false,lkLoad=null;
 const GIFT={star:'نجمة',flower:'وردة',heart:'قلب'};
 const REM={not_found:'الكود غلط أو الغرفة اتقفلت',kicked:'مش مسموحلك تدخل الغرفة دي',blocked:'مش هتقدر تدخل الغرفة دي',full:'الغرفة مليانة (الحد 4)',rate_limited:'محاولات كتير، استنى شوية',too_many_rooms:'عندك غرفتين مفتوحين، اقفل واحدة الأول',bad_name:'اكتب اسم للغرفة'};
 const rmsg=e=>{const m=(e&&e.message)||'';for(const k in REM)if(m.indexOf(k)>=0)return REM[k];return 'حصلت مشكلة، حاول تاني'};
-function roomDown(){if(rtimer){clearInterval(rtimer);rtimer=null}for(const k in rcalls){try{rcalls[k].close()}catch(e){}}rcalls={};if(rstream){rstream.getTracks().forEach(t=>t.stop());rstream=null}
- if(savedCfg&&peer){peer.options.config=savedCfg;savedCfg=null}room=null;rmuted=false;$('rmaud').innerHTML='';$('rmmu').textContent='كتم'}
+function loadLK(){if(window.LivekitClient)return Promise.resolve();if(lkLoad)return lkLoad;lkLoad=new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/livekit-client@2.25.0/dist/livekit-client.umd.js';s.onload=ok;s.onerror=()=>{lkLoad=null;no(new Error('lk'))};document.head.appendChild(s)});return lkLoad}
+async function roomFn(body){const {data:{session}}=await sb.auth.getSession();const r=await fetch(SB_URL+'/functions/v1/room-token',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(body)});let j={};try{j=await r.json()}catch(e){}return {ok:r.ok,j}}
+function roomDown(){if(rtimer){clearInterval(rtimer);rtimer=null}const x=lkr;lkr=null;if(x){try{x.disconnect()}catch(e){}}room=null;rmuted=false;$('rmaud').innerHTML='';$('rmmu').textContent='كتم'}
 function roomUI(){$('rml').style.display=room?'none':'block';$('rmi').style.display=room?'block':'none'}
 async function roomEnter(id,code){
- if(cur||ringing){$('rme').textContent='إنت في مكالمة';await sb.rpc('leave_room',{p_room:id});return}
- try{rstream=await media(false)}catch(e){$('rme').textContent='مقدرتش أفتح المايك';await sb.rpc('leave_room',{p_room:id});return}
- if(peer&&!savedCfg){savedCfg=peer.options.config;const st=(savedCfg.iceServers||[]).filter(x=>[].concat(x.urls).every(u=>/^stun:/.test(u)));peer.options.config=Object.assign({},savedCfg,{iceServers:st.length?st:[{urls:'stun:stun.l.google.com:19302'}]})}
- room={id,code,members:new Set(),lastGift:0,lastMute:null,host:null};$('rmcode').textContent=code;$('rmg').innerHTML='';$('rmn2').textContent='';roomUI();
+ const bail=async m=>{$('rme').textContent=m;await sb.rpc('leave_room',{p_room:id})};
+ if(cur||ringing){await bail('إنت في مكالمة');return}
+ try{await loadLK()}catch(e){await bail('مقدرتش أحمّل مكتبة الصوت، شوف النت');return}
+ const t=await roomFn({action:'token',room:id});if(!t.ok){await bail('مقدرتش أدخل الغرفة');return}
+ const LK=window.LivekitClient;const r=new LK.Room();
+ r.on(LK.RoomEvent.TrackSubscribed,(tr,pub,p)=>{if(tr.kind==='audio'){const a=tr.attach();a.id='a_'+p.identity;$('rmaud').appendChild(a)}});
+ r.on(LK.RoomEvent.TrackUnsubscribed,tr=>{tr.detach().forEach(e=>e.remove())});
+ r.on(LK.RoomEvent.Disconnected,()=>{if(lkr===r&&room)roomOut('اتقطع الاتصال بالغرفة')});
+ r.on(LK.RoomEvent.LocalTrackUnpublished,()=>{});
+ r.on(LK.RoomEvent.ParticipantPermissionsChanged,(prev,p)=>{if(p===r.localParticipant&&!p.permissions.canPublish){rmuted=true;$('rmmu').textContent='مكتوم من المضيف';$('rmn2').textContent='المضيف كتمك'}else if(p===r.localParticipant&&p.permissions.canPublish){$('rmn2').textContent='';$('rmmu').textContent=rmuted?'إلغاء الكتم':'كتم'}});
+ try{await r.connect(t.j.url,t.j.token)}catch(e){await bail('الاتصال بخدمة الصوت فشل');return}
+ try{await r.localParticipant.setMicrophoneEnabled(true)}catch(e){try{r.disconnect()}catch(x){}await bail('مقدرتش أفتح المايك');return}
+ try{await r.startAudio()}catch(e){}
+ lkr=r;room={id,code,members:new Set(),lastGift:0,host:null};$('rmcode').textContent=code;$('rmg').innerHTML='';$('rmn2').textContent='';roomUI();
  await roomPing();rtimer=setInterval(roomPing,3000)}
 function roomOut(m){const had=room;roomDown();roomUI();$('rml').style.display='block';$('rme').textContent=m||'';if(had)note(m||'خرجت من الغرفة')}
 async function roomPing(){if(!room)return;const id=room.id;const r=await sb.rpc('room_ping',{p_room:id});if(!room||room.id!==id)return;
  if(r.error){if(/(^|\W)out(\W|$)|closed/.test(r.error.message)){roomOut(/closed/.test(r.error.message)?'الغرفة اتقفلت':'اتشلت من الغرفة')}return}
  const d=r.data;room.host=d.host;room.members=new Set(d.members.map(x=>x.code));$('rmt').textContent=d.name;$('rmcnt').textContent='('+d.members.length+'/'+d.max+')';
  const box=$('rmm');box.innerHTML='';
- for(const m of d.members){const row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;margin:4px 0';
+ for(const m of d.members){const row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap';
   const av=document.createElement('span');av.className='av';setAv(av,m.name,m.code);const nm=document.createElement('span');nm.style.flex='1';
-  const live=m.code===myCode?'أنت':(rcalls[m.code]&&rcalls[m.code]._live?'متصل':'بيتوصل…');nm.textContent=(m.name||m.code)+(m.role==='host'?' (المضيف)':'')+' · '+live;row.append(av,nm);
-  if(room.host===myCode&&m.code!==myCode){for(const [l,fn] of [['طلب كتم',()=>sb.rpc('mute_request',{p_room:id,p_code:m.code})],['طرد',async()=>{await sb.rpc('kick_member',{p_room:id,p_code:m.code});roomPing()}]]){const b=document.createElement('button');b.type='button';b.className='alt';b.style.padding='4px 8px';b.textContent=l;b.onclick=fn;row.appendChild(b)}}
+  const live=m.code===myCode?'أنت':((lkr&&lkr.remoteParticipants&&lkr.remoteParticipants.has(m.code))?'متصل':'بيتوصل…');nm.textContent=(m.name||m.code)+(m.role==='host'?' (المضيف)':'')+' · '+live;row.append(av,nm);
+  if(room.host===myCode&&m.code!==myCode){for(const [l,fn] of [['كتم',()=>roomFn({action:'mute',room:id,code:m.code,muted:true})],['رفع الكتم',()=>roomFn({action:'mute',room:id,code:m.code,muted:false})],['طرد',async()=>{await roomFn({action:'kick',room:id,code:m.code});roomPing()}]]){const b=document.createElement('button');b.type='button';b.className='alt';b.style.padding='4px 8px';b.textContent=l;b.onclick=fn;row.appendChild(b)}}
   box.appendChild(row)}
- for(const k of Object.keys(rcalls)){if(!room.members.has(k)||blockedCodes.has(k)){try{rcalls[k].close()}catch(e){}delete rcalls[k];const a=$('a_'+k);if(a)a.remove()}}
- for(const k of Object.keys(rcalls)){const c=rcalls[k];if(!c._live&&Date.now()-c._t0>8000){try{c.close()}catch(e){}}}
- for(const m of d.members){if(m.code===myCode||rcalls[m.code]||blockedCodes.has(m.code))continue;if(myCode<m.code){const c=peer.call(m.code,rstream,{metadata:{room:id}});wireRoom(c)}}
- if(d.me_mute_req&&d.me_mute_req!==room.lastMute){const first=room.lastMute===null&&false;room.lastMute=d.me_mute_req;rmuted=true;rstream.getAudioTracks().forEach(t=>t.enabled=false);$('rmmu').textContent='إلغاء الكتم';$('rmn2').textContent='المضيف طلب منك تكتم (ممكن تلغي الكتم)'}
- for(const g of d.gifts){if(g.id>room.lastGift){room.lastGift=g.id;const p=document.createElement('div');p.textContent=(g.sender_code===myCode?'أنت':g.sender_code)+' بعت '+(GIFT[g.gift]||'🎁')+' (هدية تجريبية)';$('rmg').appendChild(p)}}}
-function wireRoom(c){rcalls[c.peer]=c;c._t0=Date.now();
- c.on('stream',s=>{c._live=true;let a=$('a_'+c.peer);if(!a){a=document.createElement('audio');a.id='a_'+c.peer;a.autoplay=true;a.setAttribute('playsinline','');$('rmaud').appendChild(a)}a.srcObject=s;try{a.play()}catch(e){}});
- const gone=()=>{if(rcalls[c.peer]===c)delete rcalls[c.peer];const a=$('a_'+c.peer);if(a)a.remove()};c.on('close',gone);c.on('error',gone)}
-const ROOMS_ENABLED=false;
+ for(const g of d.gifts){if(g.id>room.lastGift){room.lastGift=g.id;const p=document.createElement('div');p.textContent=(g.sender_code===myCode?'أنت':g.sender_code)+' بعت '+(GIFT[g.gift]||'هدية')+' (هدية تجريبية)';$('rmg').appendChild(p)}}}
+const ROOMS_ENABLED=true;
 $('rmo').onclick=()=>{$('rme').textContent='';roomUI();$('rm').style.display='block'};
 $('rmx').onclick=()=>{$('rm').style.display='none'};
 $('rmc').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('create_room',{p_name:$('rmn').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
 $('rmjb').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('join_room',{p_code:$('rmj').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
-$('rml2').onclick=async()=>{if(!room)return;const id=room.id;const host=room.host===myCode;roomDown();await sb.rpc('leave_room',{p_room:id});roomUI();$('rm').style.display='block'};
-$('rmmu').onclick=()=>{if(!rstream)return;rmuted=!rmuted;rstream.getAudioTracks().forEach(t=>t.enabled=!rmuted);$('rmmu').textContent=rmuted?'إلغاء الكتم':'كتم'};
+$('rml2').onclick=async()=>{if(!room)return;const id=room.id;const host=room.host===myCode;if(host)await roomFn({action:'close',room:id});roomDown();await sb.rpc('leave_room',{p_room:id});roomUI();$('rm').style.display='block'};
+$('rmmu').onclick=async()=>{if(!lkr)return;if(!lkr.localParticipant.permissions||!lkr.localParticipant.permissions.canPublish)return;rmuted=!rmuted;try{await lkr.localParticipant.setMicrophoneEnabled(!rmuted)}catch(e){}$('rmmu').textContent=rmuted?'إلغاء الكتم':'كتم'};
 document.querySelectorAll('#rmi [data-g]').forEach(b=>b.onclick=async()=>{if(!room)return;const r=await sb.rpc('send_gift',{p_room:room.id,p_gift:b.dataset.g});if(r.error)$('rmn2').textContent=rmsg(r.error);else roomPing()});
 if(!ROOMS_ENABLED){$('rmc').disabled=true;$('rmjb').disabled=true;const nt=document.createElement('p');nt.style.cssText='background:#fff8e1;padding:8px;border-radius:8px';nt.innerHTML='<b>الغرف الصوتية لسه مش متاحة.</b><br>جربنا النسخة الأولى وصوتها مش مضمون يوصل لكل الناس، فاتقفلت لحد ما نختار طريقة أثبت. الهدايا هتبقى تجريبية بس، من غير قيمة مالية.';$('rml').insertBefore(nt,$('rml').firstChild)}
 let asb=null;
