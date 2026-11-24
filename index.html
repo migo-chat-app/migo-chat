@@ -205,13 +205,13 @@ function wireRoom(c){rcalls[c.peer]=c;c._t0=Date.now();
  const gone=()=>{if(rcalls[c.peer]===c)delete rcalls[c.peer];const a=$('a_'+c.peer);if(a)a.remove()};c.on('close',gone);c.on('error',gone)}
 const ROOMS_ENABLED=false;
 $('rmo').onclick=()=>{$('rme').textContent='';roomUI();$('rm').style.display='block'};
-if(!ROOMS_ENABLED){$('rml').innerHTML='<p><b>الغرف الصوتية لسه مش متاحة.</b><br>جربنا النسخة الأولى وصوتها مش مضمون يوصل لكل الناس، فاتقفلت لحد ما نختار طريقة أثبت. الهدايا هتبقى تجريبية بس، من غير قيمة مالية.</p><button class="alt" id="rmx" type="button">رجوع</button>';$('rmx').onclick=()=>{$('rm').style.display='none'};}
 $('rmx').onclick=()=>{$('rm').style.display='none'};
 $('rmc').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('create_room',{p_name:$('rmn').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
 $('rmjb').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('join_room',{p_code:$('rmj').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
 $('rml2').onclick=async()=>{if(!room)return;const id=room.id;const host=room.host===myCode;roomDown();await sb.rpc('leave_room',{p_room:id});roomUI();$('rm').style.display='block'};
 $('rmmu').onclick=()=>{if(!rstream)return;rmuted=!rmuted;rstream.getAudioTracks().forEach(t=>t.enabled=!rmuted);$('rmmu').textContent=rmuted?'إلغاء الكتم':'كتم'};
 document.querySelectorAll('#rmi [data-g]').forEach(b=>b.onclick=async()=>{if(!room)return;const r=await sb.rpc('send_gift',{p_room:room.id,p_gift:b.dataset.g});if(r.error)$('rmn2').textContent=rmsg(r.error);else roomPing()});
+if(!ROOMS_ENABLED){$('rmc').disabled=true;$('rmjb').disabled=true;const nt=document.createElement('p');nt.style.cssText='background:#fff8e1;padding:8px;border-radius:8px';nt.innerHTML='<b>الغرف الصوتية لسه مش متاحة.</b><br>جربنا النسخة الأولى وصوتها مش مضمون يوصل لكل الناس، فاتقفلت لحد ما نختار طريقة أثبت. الهدايا هتبقى تجريبية بس، من غير قيمة مالية.';$('rml').insertBefore(nt,$('rml').firstChild)}
 let asb=null;
 function adminOpen(){$('adm').style.display='block';if(!asb)asb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'migo-admin-session',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});adminLoad()}
 async function adminLoad(){const r=await asb.rpc('admin_list_reports');
