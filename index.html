@@ -62,7 +62,7 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
   <p><button id="go" type="button">افتح المحادثة</button></p>
   <p style="display:none"><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
   <div id="recent"></div>
-  <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
+  <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px"><span id="idw">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك.</span> مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
   <div id="gbox" style="display:none;background:#f1f6ff;border-radius:10px;padding:10px;font-size:13px;line-height:1.7;margin:10px 0"><b>حساب جوجل (تجريبي)</b><br><span id="gst"></span><br><button class="alt" id="glink" type="button" style="display:none">ربط حساب جوجل بحسابي</button> <button class="alt" id="glogin" type="button">دخول بحساب جوجل (جهاز جديد)</button><div style="font-size:12px;color:#555;margin-top:6px">الربط بيخلي حسابك ومحادثاتك ترجع لو غيّرت الجهاز أو مسحت بيانات المتصفح. جوجل بتبعت لنا إيميلك واسمك، ومحفوظين عند Supabase. <a href="privacy.html" target="_blank">سياسة الخصوصية</a></div></div>
   <p><button class="alt" id="pushbtn" type="button">تفعيل إشعارات الرسايل والمكالمات (تجريبي)</button> <span id="pushst" style="font-size:12px"></span></p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
@@ -159,7 +159,7 @@ async function init(){
   if(p.data){myCode=p.data.code;myName=p.data.display_name||''}
   else{for(let i=0;i<5&&!myCode;i++){const c='mg'+rnd();const r=await sb.from('profiles').insert({code:c});if(!r.error)myCode=c}}
   if(!myCode)throw new Error('code');
-  gInit(oauthErr,OAUTH_MODE);$('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
+  gInit(oauthErr,OAUTH_MODE);sb.auth.getUser().then(q=>{const u=q.data&&q.data.user;if(u&&u.identities&&u.identities.some(i=>i.provider==='google'))$('idw').textContent='حسابك مربوط بحساب جوجل. الرجوع لمحادثاتك من متصفح أو جهاز تاني لسه تحت التجربة، فمتعتمدش عليه لحد ما نأكده.'}).catch(()=>{});$('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
  }catch(e){if(!retried){retried=true;try{await sb.auth.signOut()}catch(x){}myCode=null;return init()}E('مقدرتش أتصل بالسيرفر. شوف النت وحدّث الصفحة.');return}
  loadBlocks().then(loadRecent);loadFeat();startPeer();startPresence();discStart();
  setInterval(poll,4000);
@@ -353,7 +353,7 @@ $('rpok').onclick=async()=>{const reason=$('rpr').value.trim();if(reason.length<
  const r=await sb.rpc('submit_report',{p_reported:friend.id,p_reason:reason,p_msgs:ids});
  if(r.error){$('rpe').textContent='البلاغ ماتبعتش، حاول تاني.';return}
  $('rp').style.display='none';note('البلاغ اتبعت لميجو (صاحب التطبيق). مفيش وعد برد.')};
-function goHome(){stopRec(false);$('vc').style.display='none';$('mm').style.display='none';$('mmenu').style.display='none';$('prf').style.display='none';$('tl').style.display='none';if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
+function goHome(){if(FEAT.friends)$('frc').style.display='block';stopRec(false);$('vc').style.display='none';$('mm').style.display='none';$('mmenu').style.display='none';$('prf').style.display='none';$('tl').style.display='none';if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
 async function markRead(){if(!friend)return;await sb.from('messages').update({read_at:new Date().toISOString()}).eq('recipient',me).eq('sender',friend.id).is('read_at',null)}
 async function openChat(c){
  c=(c||'').trim().toLowerCase();if(!c)return;
@@ -362,7 +362,7 @@ async function openChat(c){
  const r={error:rr.error,data:rr.data&&rr.data[0]};
  if(r.error){E('مشكلة في السيرفر');return}
  if(!r.data){log('الكود ده مش موجود','sys');return}
- friend=r.data;online=new Set();pollOnline();$('home').style.display='none';$('bar').style.display='flex';$('log').innerHTML='';seen=new Set();lastId=0;
+ friend=r.data;online=new Set();pollOnline();$('home').style.display='none';$('frc').style.display='none';$('bar').style.display='flex';$('log').innerHTML='';seen=new Set();lastId=0;
  updBlk();
  const h=await sb.from('messages').select('*').or('and(sender.eq.'+me+',recipient.eq.'+friend.id+'),and(sender.eq.'+friend.id+',recipient.eq.'+me+')').order('id').limit(200);
  for(const m of (h.data||[]))show(m);markRead();
