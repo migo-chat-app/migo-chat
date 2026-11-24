@@ -52,7 +52,10 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
   <div id="delp" style="display:none;background:#fdecea;border-radius:10px;padding:10px;font-size:13px;line-height:1.6">هيتمسح نهائيًا: حسابك وكودك واسمك، وكل الرسايل اللي بعتّها أو استلمتها (هتختفي عند الطرف التاني كمان)، وقائمة الحظر بتاعتك. مش هيتأثر أي حاجة تانية عند الناس الباقيين. مفيش تراجع، وهتاخد كود جديد لو فتحت الموقع تاني.<br><button class="red" id="delok" type="button" style="margin:6px 4px 0 0">أيوه، امسح كل حاجة</button><button class="alt" id="delno" type="button" style="margin-top:6px">إلغاء</button></div>
  </div>
- <div class="card empty" id="pp" style="display:none"><b>الناس الفاتحين دلوقتي</b><p>الميزة دي لسه مش مفعّلة. هتظهر هنا قائمة بالاسم والصورة وزر ترحيب بعد ما نحدد مين يشوف مين، عشان محدش يظهر للناس من غير موافقته.</p><p style="font-size:12px">مفيش حد متعرض هنا دلوقتي.</p></div>
+ <div class="card" id="pp" style="display:none"><b>الناس الفاتحين دلوقتي</b>
+  <p id="ppx" style="font-size:13px;line-height:1.8;color:#555"></p>
+  <button type="button" id="ppb"></button>
+  <div id="ppl" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div></div>
  <div class="card empty" id="po" style="display:none"><b>البوستات</b><p>البوستات لسه مش موجودة في التطبيق. الصفحة دي مكانها المستقبلي.</p></div>
  <div id="log" style="display:flex;flex-direction:column;gap:8px"></div>
 </main>
@@ -115,7 +118,7 @@ async function init(){
   if(!myCode)throw new Error('code');
   $('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
  }catch(e){if(!retried){retried=true;try{await sb.auth.signOut()}catch(x){}myCode=null;return init()}E('مقدرتش أتصل بالسيرفر. شوف النت وحدّث الصفحة.');return}
- loadBlocks().then(loadRecent);startPeer();startPresence();
+ loadBlocks().then(loadRecent);startPeer();startPresence();discStart();
  setInterval(poll,4000);
  sb.channel('inbox').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'recipient=eq.'+me},p=>onMsg(p.new)).subscribe();
 }
@@ -288,7 +291,7 @@ async function send(){const t=$('txt').value.trim();if(!t||!friend)return;$('txt
  const r=await sb.from('messages').insert({recipient:friend.id,body:t}).select().single();
  if(r.error){log('الرسالة ماتبعتتش: '+t,'sys');return}show(r.data)}
 $('back').onclick=goHome;
-$('dnb').onclick=async()=>{const v=$('dn').value.trim().slice(0,30);const r=await sb.from('profiles').update({display_name:v||null}).eq('id',me);if(r.error){note('الاسم ماتحفظش');return}myName=v;setAv($('av'),v||myCode,myCode);note('تم حفظ الاسم')};
+$('dnb').onclick=async()=>{const v=$('dn').value.trim().slice(0,30);const r=await sb.from('profiles').update({display_name:v||null}).eq('id',me);if(r.error){note('الاسم ماتحفظش');return}myName=v;discRetrack();setAv($('av'),v||myCode,myCode);note('تم حفظ الاسم')};
 $('go').onclick=()=>openChat($('peerid').value);
 
 const MIC_SVG='<svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>';let rec=null,recTimer=null,recStart=0,recChunks=[],curAud=null;
@@ -325,7 +328,29 @@ function setTab(t){if(room&&t!=='r'){note('اخرج من الغرفة الأول
  if(t==='r'){$('rmo').click()}else if(!room){$('rm').style.display='none'}
  $('pp').style.display=t==='p'?'':'none';$('po').style.display=t==='b'?'':'none';
  if(!friend)$('home').style.display=t==='m'?'':'none';
+ if(t==='p')renderPeople();
  tabUI(t)}
+
+let disc=null,discOn=localStorage.getItem('migo_disc')==='1';
+function discStart(){if(disc||!discOn||!myCode)return;disc=sb.channel('discover',{config:{presence:{key:myCode}}});
+ disc.on('presence',{event:'sync'},renderPeople);disc.subscribe(s=>{if(s==='SUBSCRIBED')disc.track({n:(myName||'').slice(0,30),t:Date.now()})})}
+function discStop(){if(!disc)return;const d=disc;disc=null;try{d.untrack()}catch(e){}try{sb.removeChannel(d)}catch(e){}}
+function discRetrack(){if(disc)try{disc.track({n:(myName||'').slice(0,30),t:Date.now()})}catch(e){}}
+function renderPeople(){const b=$('ppb'),x=$('ppx'),l=$('ppl');if(!b)return;l.innerHTML='';
+ if(!discOn){x.textContent='لو فعّلت الميزة دي، اسمك (أو كودك لو مفيش اسم) هيظهر لأي حد فاتح الميزة دي وهو فاتح التطبيق، وإنت كمان هتشوفهم. مفيش صور لسه. تقدر توقفها في أي وقت وتختفي فورًا. مفيش حاجة بتتبعت لحد من غير ما تضغط.';b.textContent='فعّل ظهوري';b.className='';return}
+ x.textContent='إنت ظاهر دلوقتي للي فاعلين الميزة. بتختفي أول ما تقفلها أو تقفل التطبيق.';b.textContent='وقّف ظهوري';b.className='alt';
+ const st=disc?disc.presenceState():{};let n=0;
+ for(const code of Object.keys(st)){if(n>=50)break;if(code===myCode||blockedCodes.has(code)||NOCALL.includes(code))continue;
+  const m=(st[code]&&st[code][0])||{};const nm=String(m.n||'').trim().slice(0,30);n++;
+  const r=document.createElement('div');r.className='ci';r.style.cssText='display:flex;gap:10px;align-items:center';
+  const a=document.createElement('span');a.className='av';setAv(a,nm,code);
+  const t=document.createElement('div');t.style.flex='1';const e1=document.createElement('div');e1.className='nm';e1.textContent=nm||code;
+  const e2=document.createElement('div');e2.style.cssText='font-size:12px;color:#1f6f5c';e2.textContent='فاتح دلوقتي · '+code;t.append(e1,e2);
+  const o=document.createElement('button');o.type='button';o.className='alt';o.textContent='افتح شات';o.onclick=()=>{setTab('m');openChat(code)};
+  r.append(a,t,o);l.append(r)}
+ if(!n){const p=document.createElement('p');p.className='empty';p.style.fontSize='13px';p.textContent='مفيش حد تاني فاتح دلوقتي.';l.append(p)}}
+$('ppb').onclick=()=>{discOn=!discOn;localStorage.setItem('migo_disc',discOn?'1':'0');if(discOn)discStart();else discStop();renderPeople()};
+renderPeople();
 document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
 $('rmx').addEventListener('click',()=>setTab('m'));
 $('send').onclick=send;$('txt').onkeydown=e=>{if(e.key==='Enter')send()};
