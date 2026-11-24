@@ -48,6 +48,7 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
   <p style="display:none"><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
   <div id="recent"></div>
   <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
+  <div id="gbox" style="display:none;background:#f1f6ff;border-radius:10px;padding:10px;font-size:13px;line-height:1.7;margin:10px 0"><b>حساب جوجل (تجريبي)</b><br><span id="gst"></span><br><button class="alt" id="glink" type="button" style="display:none">ربط حساب جوجل بحسابي</button> <button class="alt" id="glogin" type="button">دخول بحساب جوجل (جهاز جديد)</button><div style="font-size:12px;color:#555;margin-top:6px">الربط بيخلي حسابك ومحادثاتك ترجع لو غيّرت الجهاز أو مسحت بيانات المتصفح. جوجل بتبعت لنا إيميلك واسمك، ومحفوظين عند Supabase. <a href="privacy.html" target="_blank">سياسة الخصوصية</a></div></div>
   <p><button class="alt" id="pushbtn" type="button">تفعيل إشعارات الرسايل والمكالمات (تجريبي)</button> <span id="pushst" style="font-size:12px"></span></p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
   <div id="delp" style="display:none;background:#fdecea;border-radius:10px;padding:10px;font-size:13px;line-height:1.6">هيتمسح نهائيًا: حسابك وكودك واسمك، وكل الرسايل اللي بعتّها أو استلمتها (هتختفي عند الطرف التاني كمان)، وقائمة الحظر بتاعتك. مش هيتأثر أي حاجة تانية عند الناس الباقيين. مفيش تراجع، وهتاخد كود جديد لو فتحت الموقع تاني.<br><button class="red" id="delok" type="button" style="margin:6px 4px 0 0">أيوه، امسح كل حاجة</button><button class="alt" id="delno" type="button" style="margin-top:6px">إلغاء</button></div>
@@ -111,8 +112,10 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
 <script>
 const $=id=>document.getElementById(id);
 const SB_URL='https://gpjjjdgtvuqyvqdtfgve.supabase.co',SB_KEY='sb_publishable_cJU3HaLomnHr5oLtNtkWew_1xiGvAOd';
-const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{detectSessionInUrl:false}});
-const ADMIN_LINK=/access_token=|error_code=|[?&]code=/.test(location.hash+location.search);
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{detectSessionInUrl:false,flowType:'pkce'}});
+const OAUTH_MODE=(()=>{try{return localStorage.getItem('migo_oauth')||''}catch(e){return ''}})();
+const OAUTH_RET=!!OAUTH_MODE&&/[?&](code|error)=/.test(location.search);
+const ADMIN_LINK=!OAUTH_RET&&/access_token=|error_code=|[?&]code=/.test(location.hash+location.search);
 const rnd=()=>Math.random().toString(36).slice(2,8).replace(/[01lo]/g,'x');
 const log=(t,c)=>{const d=document.createElement('div');d.className='msg '+c;d.textContent=t;$('log').appendChild(d);$('main').scrollTop=1e9;return d};
 let blockedIds=new Set(),blockedCodes=new Set(),myName='',me=null,myCode=null,friend=null,peer=null,cur=null,local=null,lastId=0,seen=new Set(),iceServers=[{urls:'stun:stun.l.google.com:19302'}],turnOk=false;
@@ -121,6 +124,8 @@ const E=m=>{$('st').textContent='في مشكلة';log(m,'sys')};
 let retried=false;
 async function init(){
  try{
+  let oauthErr='';
+  if(OAUTH_RET){const q=new URLSearchParams(location.search);try{localStorage.removeItem('migo_oauth')}catch(e){}history.replaceState(null,'',location.pathname);if(q.get('code')){const x=await sb.auth.exchangeCodeForSession(q.get('code'));if(x.error)oauthErr=x.error.message||'error'}else oauthErr=q.get('error_description')||q.get('error')||'error'}
   let {data:{session}}=await sb.auth.getSession();
   if(!session){const r=await sb.auth.signInAnonymously();if(r.error){if(r.error.status===429){E('في ضغط على التسجيل من نفس الشبكة دلوقتي، جرب بعد شوية.');return}throw r.error}session=r.data.session}
   me=session.user.id;
@@ -129,11 +134,26 @@ async function init(){
   if(p.data){myCode=p.data.code;myName=p.data.display_name||''}
   else{for(let i=0;i<5&&!myCode;i++){const c='mg'+rnd();const r=await sb.from('profiles').insert({code:c});if(!r.error)myCode=c}}
   if(!myCode)throw new Error('code');
-  $('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
+  gInit(oauthErr,OAUTH_MODE);$('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
  }catch(e){if(!retried){retried=true;try{await sb.auth.signOut()}catch(x){}myCode=null;return init()}E('مقدرتش أتصل بالسيرفر. شوف النت وحدّث الصفحة.');return}
  loadBlocks().then(loadRecent);startPeer();startPresence();discStart();
  setInterval(poll,4000);
  sb.channel('inbox').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'recipient=eq.'+me},p=>onMsg(p.new)).subscribe();
+}
+
+function gShown(){try{return location.hash==='#g'||localStorage.getItem('migo_g')==='1'}catch(e){return false}}
+async function gInit(err,mode){
+ if(!gShown()&&!mode)return;
+ const box=$('gbox');box.style.display='block';
+ const u=(await sb.auth.getUser()).data.user;const ids=(u&&u.identities)||[];const gi=ids.find(i=>i.provider==='google');
+ const st=$('gst');
+ if(err)st.textContent='مقدرتش أكمّل ربط جوجل: '+(/already|exist|linked/i.test(err)?'حساب جوجل ده مربوط بحساب تاني.':'حصلت مشكلة، جرب تاني.');
+ else if(gi)st.textContent='حسابك مربوط بجوجل: '+((gi.identity_data&&gi.identity_data.email)||'');
+ else st.textContent='حسابك دلوقتي محفوظ في المتصفح ده بس.';
+ $('glink').style.display=(!gi)?'inline-block':'none';
+ $('glogin').style.display=gi?'none':'inline-block';
+ $('glink').onclick=async()=>{try{localStorage.setItem('migo_oauth','link')}catch(e){}const r=await sb.auth.linkIdentity({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(r.error){try{localStorage.removeItem('migo_oauth')}catch(e){}st.textContent='مقدرتش أبدأ الربط.'}};
+ $('glogin').onclick=async()=>{if(!confirm('الدخول بجوجل هيفتح الحساب المربوط بيه ويقفل الحساب الحالي في المتصفح ده. لو مفيش حساب مربوط هيعمل حساب جديد. متأكد؟'))return;try{localStorage.setItem('migo_oauth','login')}catch(e){}const r=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(r.error){try{localStorage.removeItem('migo_oauth')}catch(e){}st.textContent='مقدرتش أبدأ الدخول.'}};
 }
 async function startPeer(){
  try{const {data:{session}}=await sb.auth.getSession();
