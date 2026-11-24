@@ -44,7 +44,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
 </main>
 <div id="bar" style="display:none;flex-direction:column;background:#fff;flex:none">
  <div class="row tools"><button class="alt" id="vc" type="button">مكالمة صوت</button><button class="alt" id="vv" type="button">فيديو</button><button class="alt" id="blk" type="button">حظر</button><button class="alt" id="rpb" type="button">إبلاغ</button></div>
- <div class="row"><input id="txt" placeholder="اكتب رسالة" style="flex:1;min-width:0"><button id="send" type="button">إرسال</button></div>
+ <div class="row"><input id="txt" placeholder="اكتب رسالة" style="flex:1;min-width:0"><button id="send" type="button">إرسال</button><button id="mic" type="button" class="alt">فويس</button><button id="micx" type="button" class="alt" style="display:none">إلغاء</button></div>
 </div>
 <div id="rp" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:6;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px"><b>إبلاغ عن <span id="rpn"></span></b><p style="margin:6px 0">البلاغ بيوصل لميجو، صاحب التطبيق، وهو اللي بيراجعه بنفسه. هيشوف السبب واسم الكود بتاعك وبتاع الشخص، والرسايل اللي تختارها تحت بس (المحادثة كلها مش بتتبعت). مفيش وعد برد أو إشعار، ومفيش فريق مراجعة.</p><textarea id="rpr" maxlength="500" placeholder="سبب البلاغ (مطلوب)" style="width:100%;height:80px;font:inherit;padding:8px;border:1px solid #ccc;border-radius:10px"></textarea><p style="margin:8px 0 2px">اختار رسايل ترفقها (اختياري، لحد 10):</p><div id="rpm"></div><p id="rpe" style="color:#c0392b;margin:4px 0"></p><button class="red" id="rpok" type="button">ابعت البلاغ</button> <button class="alt" id="rpno" type="button">إلغاء</button></div></div>
 <div id="adm" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:7;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px"><b>مراجعة البلاغات (للمالك فقط)</b>
@@ -134,7 +134,7 @@ function startPresence(){
  ch.subscribe(s=>{if(s==='SUBSCRIBED')ch.track({t:Date.now()})});
 }
 function updCall(){if(!friend)return;const nc=NOCALL.includes(friend.code);const on=online.has(friend.code);
- $('vc').style.display=$('vv').style.display=nc?'none':'';
+ $('vc').style.display=$('vv').style.display=nc?'none':'';$('mic').style.display=nc?'none':'';$('mic').disabled=isBlk();
  $('vc').disabled=isBlk();$('vc').style.opacity=isBlk()?.5:1;$('vv').disabled=!VIDEO_ENABLED||!on;$('vv').style.opacity=.4;$('vv').textContent=VIDEO_ENABLED?'فيديو':'فيديو (قريبًا)';
  $('st').textContent=nc?'محادثة مع '+(friend.display_name||friend.code)+' (مفيش مكالمات)':'محادثة مع '+(friend.display_name||friend.code)+(on?' · الصفحة مفتوحة عنده':' · مش ظاهر إنه فاتح الصفحة (ممكن تتصل، هنحاول نوصله 40 ثانية)')}
 const hue=c=>{let h=0;for(const x of c)h=(h*31+x.charCodeAt(0))%360;return h};
@@ -243,7 +243,7 @@ $('rpok').onclick=async()=>{const reason=$('rpr').value.trim();if(reason.length<
  const r=await sb.rpc('submit_report',{p_reported:friend.id,p_reason:reason,p_msgs:ids});
  if(r.error){$('rpe').textContent='البلاغ ماتبعتش، حاول تاني.';return}
  $('rp').style.display='none';note('البلاغ اتبعت لميجو (صاحب التطبيق). مفيش وعد برد.')};
-function goHome(){if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
+function goHome(){stopRec(false);if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
 async function markRead(){if(!friend)return;await sb.from('messages').update({read_at:new Date().toISOString()}).eq('recipient',me).eq('sender',friend.id).is('read_at',null)}
 async function openChat(c){
  c=(c||'').trim().toLowerCase();if(!c)return;
@@ -258,7 +258,7 @@ async function openChat(c){
  for(const m of (h.data||[]))show(m);markRead();
 }
 function bubble(m){const d=document.createElement('div');d.className='msg '+(m.sender===me?'me':'them');d.dataset.id=m.id;
- const t=document.createElement('div');t.textContent=m.body;d.appendChild(t);
+ const t=document.createElement('div');if(/^VN:[0-9a-f-]{36}$/.test(m.body)){const pb=document.createElement('button');pb.type='button';pb.className='alt';pb.textContent='▶ فويس';pb.onclick=()=>playVN(m.body.slice(3),pb);t.appendChild(pb)}else t.textContent=m.body;d.appendChild(t);
  const tm=document.createElement('div');tm.className='tm';tm.textContent=new Date(m.created_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});d.appendChild(tm);
  const nx=[...$('log').querySelectorAll('.msg[data-id]')].find(x=>+x.dataset.id>m.id);$('log').insertBefore(d,nx||null);$('main').scrollTop=1e9}
 function show(m){if(seen.has(m.id))return;seen.add(m.id);if(m.id>lastId)lastId=m.id;
@@ -275,6 +275,34 @@ async function send(){const t=$('txt').value.trim();if(!t||!friend)return;$('txt
 $('back').onclick=goHome;
 $('dnb').onclick=async()=>{const v=$('dn').value.trim().slice(0,30);const r=await sb.from('profiles').update({display_name:v||null}).eq('id',me);if(r.error){note('الاسم ماتحفظش');return}myName=v;setAv($('av'),v||myCode,myCode);note('تم حفظ الاسم')};
 $('go').onclick=()=>openChat($('peerid').value);
+
+let rec=null,recTimer=null,recStart=0,recChunks=[],curAud=null;
+async function playVN(id,pb){if(curAud){curAud.pause();curAud=null}
+ pb.textContent='...';const r=await sb.from('voice_notes').select('data,mime').eq('id',id).maybeSingle();
+ if(r.error||!r.data){pb.textContent='الفويس انتهت صلاحيته';pb.disabled=true;return}
+ const bin=atob(r.data.data),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+ const a=new Audio(URL.createObjectURL(new Blob([u],{type:r.data.mime})));curAud=a;a.onended=()=>{pb.textContent='▶ فويس'};
+ try{await a.play();pb.textContent='⏸ بيشتغل'}catch(e){pb.textContent='▶ فويس';note('مقدرتش أشغل الصوت')}}
+function stopRec(sendIt){if(!rec)return;const r=rec;rec=null;clearInterval(recTimer);$('mic').textContent='فويس';$('micx').style.display='none';
+ r.onstop=async()=>{r.stream.getTracks().forEach(t=>t.stop());if(!sendIt)return;const dur=Math.min(30,(Date.now()-recStart)/1000);
+  if(dur<0.7){note('التسجيل قصير أوي');return}
+  const blob=new Blob(recChunks,{type:r.mimeType||'audio/webm'});if(blob.size>480000){note('التسجيل كبير');return}
+  const b64=await new Promise(res=>{const f=new FileReader();f.onload=()=>res(f.result.split(',')[1]);f.readAsDataURL(blob)});
+  const x=await sb.rpc('send_voice',{p_recipient:friend.id,p_data:b64,p_mime:blob.type||'audio/webm',p_dur:Math.round(dur*10)/10});
+  if(x.error){note(/blocked/.test(x.error.message)?'محظور':'الفويس ماتبعتش');return}
+  const m=await sb.from('messages').select('*').eq('sender',me).eq('recipient',friend.id).eq('body','VN:'+x.data).maybeSingle();if(m.data)show(m.data)};
+ try{r.stop()}catch(e){}}
+$('micx').onclick=()=>stopRec(false);
+$('mic').onclick=async()=>{if(rec){stopRec(true);return}
+ if(!friend||isBlk()||NOCALL.includes(friend.code)||cur||ringing||room)return;
+ if(!window.MediaRecorder){note('المتصفح ده مش بيدعم تسجيل الفويس');return}
+ let st;try{st=await media(false)}catch(e){note('مقدرتش أفتح المايك');return}
+ const mt=['audio/webm;codecs=opus','audio/mp4','audio/ogg;codecs=opus'].find(t=>MediaRecorder.isTypeSupported(t));
+ const o={audioBitsPerSecond:24000};if(mt)o.mimeType=mt;
+ try{rec=new MediaRecorder(st,o)}catch(e){st.getTracks().forEach(t=>t.stop());note('التسجيل مش مدعوم هنا');return}
+ recChunks=[];recStart=Date.now();rec.ondataavailable=e=>{if(e.data.size)recChunks.push(e.data)};rec.start(500);
+ $('micx').style.display='';$('mic').textContent='إرسال 0ث';
+ recTimer=setInterval(()=>{const sec=Math.floor((Date.now()-recStart)/1000);$('mic').textContent='إرسال '+sec+'ث';if(sec>=30)stopRec(true)},500)};
 $('send').onclick=send;$('txt').onkeydown=e=>{if(e.key==='Enter')send()};
 let ringing=null,tmr=null,muted=false;
 const mmss=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
