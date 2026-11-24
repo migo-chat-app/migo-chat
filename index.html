@@ -648,4 +648,17 @@ q('pmckb').addEventListener('click',()=>setTimeout(ref,1500))})()</script>
 c.textContent='بحمّل غرفتك...';const r=await sb.rpc('my_room');if(r.error){c.textContent='مقدرتش أحمّل غرفتك دلوقتي';return}const m=(r.data||[])[0];c.innerHTML='';const t=document.createElement('b');t.textContent='غرفتي';c.appendChild(t);const d=document.createElement('div');c.appendChild(d);
 if(!m){d.textContent='مفيش عندك غرفة مفتوحة. اكتب اسم وانشئ واحدة تحت. الغرف لسه تجريبية ومتاحة لحسابات محددة بس.';return}
 d.innerHTML='';const n1=document.createElement('div');n1.dir='auto';n1.textContent=m.name;const n2=document.createElement('div');n2.dir='rtl';n2.appendChild(document.createTextNode('الكود: '));const cb=document.createElement('bdi');cb.dir='ltr';cb.style.fontFamily='monospace';cb.textContent=m.code;n2.appendChild(cb);const n3=document.createElement('div');n3.dir='rtl';n3.textContent='الأعضاء: ';const nb=document.createElement('bdi');nb.textContent=m.members+' / 4';n3.appendChild(nb);d.append(n1,n2,n3);const bt=document.createElement('button');bt.type='button';bt.textContent='ادخل غرفتي';bt.onclick=async()=>{bt.disabled=true;const j=await sb.rpc('join_room',{p_code:m.code});if(j.error){d.textContent=rmsg(j.error);return}await roomEnter(j.data.id,j.data.code)};c.appendChild(bt)};</script>
+<style>#prg2>button,#prg2>div>button#pushbtn,#prg2 #pushbtn,#prg2 #del{display:block;width:100%;box-sizing:border-box;margin:10px 0 0;padding:12px;font-size:15px;text-align:center}#prg2 #del{background:#fff;color:#c62828;border:1.5px solid #c62828}#prg2 #gbox button{display:block;width:100%;box-sizing:border-box;margin:8px 0 0;padding:12px;font-size:14px;text-align:center}#prg2 select{width:100%;box-sizing:border-box;padding:10px;font-size:15px;margin-top:6px}#prg2 .pmgap{height:6px}</style>
+<script>(function(){const q=id=>document.getElementById(id);const pm=q('pmenu'),pre=q('pre'),prg=q('prg'),prc=q('prc');if(!pm||!pre||!prg||!prc)return;
+const eh=[...prc.children].find(e=>e.tagName==='B'&&e.textContent.trim()==='تعديل الملف');
+const setE=v=>{pre.style.display=v?'':'none';if(eh)eh.style.display=v?'':'none'};const setS=v=>{prg.style.display=v?'':'none'};
+setE(false);setS(false);
+const row=n=>pm.querySelector('[data-pm="'+n+'"]');
+const cl=()=>['pmhelp','pmiss','pmck','pmlv','pmac'].forEach(x=>{const e=q(x);if(e)e.style.display='none'});
+const go=(el)=>{try{el.scrollIntoView({behavior:'smooth',block:'center'})}catch(_){}};
+row('edit').onclick=()=>{const o=pre.style.display==='none';cl();setS(false);setE(o);if(o){go(pre);const d=q('dn');if(d)d.focus()}};
+row('settings').onclick=()=>{const o=prg.style.display==='none';cl();setE(false);setS(o);if(o){const g=q('gbox');if(g)g.style.display=g.style.display;go(prg)}};
+row('link').onclick=()=>{const g=q('gbox');if(g.style.display==='none'){pmToast('ربط جوجل لسه تجريبي ومقفول لحد ما نتأكد منه. حسابك محفوظ في المتصفح ده بس');return}cl();setE(false);setS(true);go(g)};
+['acc','chk','lvl','help','issue'].forEach(n=>{const r=row(n);if(!r)return;const f=r.onclick;r.addEventListener('click',()=>{setE(false);setS(false)},true)});
+})()</script>
 </body></html>
