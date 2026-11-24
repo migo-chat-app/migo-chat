@@ -75,7 +75,7 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
   <button type="button" id="ppb"></button>
   <div id="ppl" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div></div>
 <div id="pr" style="display:none;flex-direction:column;gap:10px"><div class="card" id="prc"><div id="prh"></div><div style="display:flex;gap:8px;margin:12px 0"><button type="button" class="alt" id="prs_r" style="flex:1">الغرف</button><button type="button" class="alt" id="prs_b" style="flex:1">منشوراتي</button><button type="button" class="alt" id="prs_p" style="flex:1">الأشخاص</button></div><b>تعديل الملف</b><div id="pre"></div></div><div class="card" id="prg"><b>الأصدقاء والإعدادات</b><div id="prg2"></div></div></div>
- <div id="po" style="display:none;flex-direction:column;gap:10px">
+ <div id="po" style="display:none;flex-direction:column;gap:10px"><div id="poc" class="rcf"><button type="button" data-m="0" class="on">كل المنشورات</button><button type="button" data-m="1">منشوراتي</button></div>
   <div class="card"><b>منشور جديد</b>
    <p style="font-size:12px;color:#555;line-height:1.7;margin:4px 0">أي منشور بتنزله هيظهر لكل مستخدمي التطبيق، وتقدر تمسحه بعد كده. مفيش مسح تلقائي دلوقتي.</p>
    <textarea id="pot" maxlength="500" rows="3" placeholder="اكتب منشور…" style="width:100%;box-sizing:border-box"></textarea>
@@ -188,7 +188,7 @@ async function loadFeat(){for(const n of ['friends','room_notices','chat_gifts']
  if(FEAT.friends){$('frc').style.display='block';try{const r=await sb.rpc('get_room_notice');$('rns').value=r.data||'off'}catch(e){}loadFollows();setInterval(loadFollows,30000)}
  $('rns').style.display=FEAT.room_notices?'':'none';
  if(FEAT.room_notices){pollNotices();setInterval(pollNotices,20000)}}
-function pfMove(){try{if($('pr').dataset.m)return;$('pr').dataset.m='1';const h=$('pfh');h.style.order='';h.style.margin='0';$('prh').appendChild(h);const pe=$('pre');pe.appendChild($('dn').parentNode);pe.appendChild($('mycode').parentNode);const g=$('prg2');g.appendChild($('frc'));for(const id of ['idw','pushbtn','del']){const e=$(id).parentNode;g.appendChild(e)}g.appendChild($('gbox'));g.appendChild($('delp'));$('prs_r').onclick=()=>setTab('r');$('prs_b').onclick=()=>setTab('b');$('prs_p').onclick=()=>setTab('p')}catch(e){}}
+function pfMove(){try{if($('pr').dataset.m)return;$('pr').dataset.m='1';const h=$('pfh');h.style.order='';h.style.margin='0';$('prh').appendChild(h);const pe=$('pre');pe.appendChild($('dn').parentNode);pe.appendChild($('mycode').parentNode);const g=$('prg2');g.appendChild($('frc'));for(const id of ['idw','pushbtn','del']){const e=$(id).parentNode;g.appendChild(e)}g.appendChild($('gbox'));g.appendChild($('delp'));$('prs_r').onclick=()=>setTab('r');$('prs_b').onclick=()=>{poMine=true;poChips();setTab('b')};$('prs_p').onclick=()=>setTab('p')}catch(e){}}
 pfMove();
 function pfHero(){try{const nm=($('dn')&&$('dn').value||'').trim();setAv($('pav'),nm||myCode,myCode);$('pnm').textContent=nm||'بدون اسم';$('pcd').textContent=myCode||'';const st=$('pst');if(FEAT.friends&&Array.isArray(FL)){st.style.display='flex';$('pfr').textContent=FL.filter(x=>x.rel==='friend').length;$('pin').textContent=FL.filter(x=>x.rel==='incoming'||x.rel==='friend').length;$('pou').textContent=FL.filter(x=>x.rel==='outgoing'||x.rel==='friend').length}else st.style.display='none'}catch(e){}}
 setInterval(pfHero,1500);
@@ -506,8 +506,10 @@ function poRow(p){const c=document.createElement('div');c.className='card';c.dat
    const im=document.createElement('img');im.alt='صورة المنشور';im.style.cssText='display:block;max-width:100%;border-radius:10px;margin-top:8px';im.src='data:'+d.mime+';base64,'+d.data;ib.replaceWith(im)};c.append(ib)}
  return c}
 async function poLoad(more){if(poBusy)return;poBusy=true;const r=await sb.rpc('post_feed',{p_before:more?poLast:null});poBusy=false;if(r.error){note('المنشورات مقدرتش تتحمل');return}
- const l=$('pol');if(!more)l.innerHTML='';const rows=r.data||[];for(const p of rows)l.append(poRow(p));if(rows.length)poLast=rows[rows.length-1].id;
- $('pom').style.display=rows.length===20?'':'none';if(!more&&!rows.length){const e=document.createElement('p');e.className='empty';e.textContent='مفيش منشورات لسه. كون أول واحد.';l.append(e)}}
+ const l=$('pol');if(!more)l.innerHTML='';const rows=r.data||[];for(const p of rows){if(poMine&&!p.mine)continue;l.append(poRow(p))}if(rows.length)poLast=rows[rows.length-1].id;
+ $('pom').style.display=rows.length===20?'':'none';if(!more&&!l.children.length){const e=document.createElement('p');e.className='empty';e.textContent=poMine?(rows.length?'مفيش منشورات ليك في آخر المنشورات. اضغط «أقدم» للمزيد.':'مفيش منشورات ليك لسه.'):'مفيش منشورات لسه. كون أول واحد.';l.append(e)}}
+let poMine=false;document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#poc button');if(!b)return;poMine=b.dataset.m==='1';poChips();poLoad(false)});
+function poChips(){const c=$('poc');if(!c)return;c.querySelectorAll('button').forEach(b=>b.className=(b.dataset.m==='1')===poMine?'on':'')}
 function poReset(){poImg=null;$('pov').style.display='none';$('pov').removeAttribute('src');$('pox').style.display='none';$('pob').textContent='إضافة صورة'}
 $('pob').onclick=()=>$('pof').click();$('pox').onclick=poReset;$('pom').onclick=()=>poLoad(true);
 $('pof').onchange=async()=>{const f=$('pof').files[0];$('pof').value='';if(!f)return;if(!/^image\/(jpeg|png|webp)$/.test(f.type)){note('الصورة لازم تكون JPG أو PNG أو WebP');return}
