@@ -135,8 +135,8 @@ function startPresence(){
 }
 function updCall(){if(!friend)return;const nc=NOCALL.includes(friend.code);const on=online.has(friend.code);
  $('vc').style.display=$('vv').style.display=nc?'none':'';
- $('vc').disabled=!on||isBlk();$('vc').style.opacity=on?1:.5;$('vv').disabled=!VIDEO_ENABLED||!on;$('vv').style.opacity=.4;$('vv').textContent=VIDEO_ENABLED?'فيديو':'فيديو (قريبًا)';
- $('st').textContent=nc?'محادثة مع '+(friend.display_name||friend.code)+' (مفيش مكالمات)':'محادثة مع '+(friend.display_name||friend.code)+(on?' · الصفحة مفتوحة عنده':' · مش ظاهر إنه فاتح الصفحة')}
+ $('vc').disabled=isBlk();$('vc').style.opacity=isBlk()?.5:1;$('vv').disabled=!VIDEO_ENABLED||!on;$('vv').style.opacity=.4;$('vv').textContent=VIDEO_ENABLED?'فيديو':'فيديو (قريبًا)';
+ $('st').textContent=nc?'محادثة مع '+(friend.display_name||friend.code)+' (مفيش مكالمات)':'محادثة مع '+(friend.display_name||friend.code)+(on?' · الصفحة مفتوحة عنده':' · مش ظاهر إنه فاتح الصفحة (ممكن تتصل، هنحاول نوصله 40 ثانية)')}
 const hue=c=>{let h=0;for(const x of c)h=(h*31+x.charCodeAt(0))%360;return h};
 function setAv(el,name,code){el.textContent=(name||code||'?').trim().charAt(0).toUpperCase();el.style.background='hsl('+hue(code)+',45%,40%)'}
 async function loadRecent(){
