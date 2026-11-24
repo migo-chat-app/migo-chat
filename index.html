@@ -155,7 +155,7 @@ async function adminLoad(){const r=await asb.rpc('admin_list_reports');
   for(const m of (x.attached||[])){const q=document.createElement('div');q.style.cssText='margin:3px 0;padding:4px 8px;background:#fff;border-radius:8px';q.textContent=m.from+': '+m.body;d.appendChild(q)}
   for(const [st,lb] of [['reviewed','تمت المراجعة'],['dismissed','تجاهل'],['open','فتح تاني']]){if(st===x.status)continue;const b=document.createElement('button');b.className='alt';b.style.margin='3px';b.textContent=lb;b.onclick=async()=>{await asb.rpc('admin_set_report_status',{p_id:x.id,p_status:st});adminLoad()};d.appendChild(b)}
   $('adr').appendChild(d)}}
-$('ads').onclick=async()=>{const e=$('ade').value.trim();if(!e)return;const r=await asb.auth.signInWithOtp({email:e,options:{shouldCreateUser:false}});$('ade2').textContent=r.error?'ماتبعتش الكود':'لو الإيميل ده تابع للمالك، الرابط اتبعت'};
+$('ads').onclick=async()=>{const e=$('ade').value.trim();if(!e)return;const r=await asb.auth.signInWithOtp({email:e,options:{shouldCreateUser:false,emailRedirectTo:'https://migo-chat-app.github.io/migo-chat/'}});$('ade2').textContent=r.error?'ماتبعتش الكود':'لو الإيميل ده تابع للمالك، الرابط اتبعت'};
 $('adx').onclick=()=>{$('adm').style.display='none';history.replaceState(null,'',location.pathname)};
 if(location.hash==='#admin'||ADMIN_LINK)setTimeout(async()=>{adminOpen();if(ADMIN_LINK){await new Promise(r=>setTimeout(r,1500));adminLoad();history.replaceState(null,'',location.pathname+'#admin')}},0);
 $('rpno').onclick=()=>{$('rp').style.display='none'};
