@@ -33,7 +33,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
   <p style="font-size:13px;color:#555">ابعت الكود لصاحبك، وهو يكتبه عنده. أو اكتب كوده هنا.</p>
   <input id="peerid" placeholder="كود صاحبك" autocapitalize="none" style="direction:ltr;text-align:left">
   <p><button id="go" type="button">افتح المحادثة</button></p>
-  <p><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
+  <p><button class="alt" id="rmo" type="button">غرفة صوت (معاينة، مش شغالة)</button></p>
   <div id="recent"></div>
   <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
@@ -61,7 +61,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
 <div id="rmm"></div><div id="rmaud" style="display:none"></div>
 <p style="display:flex;gap:8px"><button class="alt" id="rmmu" type="button">كتم</button><button class="red" id="rml2" type="button">خروج</button></p>
 <p style="margin:4px 0;font-size:13px">هدايا تجريبية (مفيش قيمة مالية، مفيش تحويل ولا سحب):</p>
-<p style="display:flex;gap:8px"><button class="alt" data-g="star" type="button">⭐</button><button class="alt" data-g="flower" type="button">🌸</button><button class="alt" data-g="heart" type="button">❤️</button></p>
+<p style="display:flex;gap:8px"><button class="alt" data-g="star" type="button">نجمة</button><button class="alt" data-g="flower" type="button">وردة</button><button class="alt" data-g="heart" type="button">قلب</button></p>
 <div id="rmg" style="font-size:13px"></div><p id="rmn2" style="color:#c0392b;font-size:13px"></p></div>
 </div></div>
 <div id="call"><div id="cs">…</div><div style="position:relative"><video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video></div>
@@ -173,7 +173,7 @@ $('rpb').onclick=()=>{if(!friend)return;$('rpn').textContent=friend.display_name
  $('rp').style.display='block'};
 
 let room=null,rcalls={},rstream=null,rtimer=null,rmuted=false,savedCfg=null;
-const GIFT={star:'⭐',flower:'🌸',heart:'❤️'};
+const GIFT={star:'نجمة',flower:'وردة',heart:'قلب'};
 const REM={not_found:'الكود غلط أو الغرفة اتقفلت',kicked:'مش مسموحلك تدخل الغرفة دي',blocked:'مش هتقدر تدخل الغرفة دي',full:'الغرفة مليانة (الحد 4)',rate_limited:'محاولات كتير، استنى شوية',too_many_rooms:'عندك غرفتين مفتوحين، اقفل واحدة الأول',bad_name:'اكتب اسم للغرفة'};
 const rmsg=e=>{const m=(e&&e.message)||'';for(const k in REM)if(m.indexOf(k)>=0)return REM[k];return 'حصلت مشكلة، حاول تاني'};
 function roomDown(){if(rtimer){clearInterval(rtimer);rtimer=null}for(const k in rcalls){try{rcalls[k].close()}catch(e){}}rcalls={};if(rstream){rstream.getTracks().forEach(t=>t.stop());rstream=null}
@@ -203,7 +203,9 @@ async function roomPing(){if(!room)return;const id=room.id;const r=await sb.rpc(
 function wireRoom(c){rcalls[c.peer]=c;c._t0=Date.now();
  c.on('stream',s=>{c._live=true;let a=$('a_'+c.peer);if(!a){a=document.createElement('audio');a.id='a_'+c.peer;a.autoplay=true;a.setAttribute('playsinline','');$('rmaud').appendChild(a)}a.srcObject=s;try{a.play()}catch(e){}});
  const gone=()=>{if(rcalls[c.peer]===c)delete rcalls[c.peer];const a=$('a_'+c.peer);if(a)a.remove()};c.on('close',gone);c.on('error',gone)}
+const ROOMS_ENABLED=false;
 $('rmo').onclick=()=>{$('rme').textContent='';roomUI();$('rm').style.display='block'};
+if(!ROOMS_ENABLED){$('rml').innerHTML='<p><b>الغرف الصوتية لسه مش متاحة.</b><br>جربنا النسخة الأولى وصوتها مش مضمون يوصل لكل الناس، فاتقفلت لحد ما نختار طريقة أثبت. الهدايا هتبقى تجريبية بس، من غير قيمة مالية.</p><button class="alt" id="rmx" type="button">رجوع</button>';$('rmx').onclick=()=>{$('rm').style.display='none'};}
 $('rmx').onclick=()=>{$('rm').style.display='none'};
 $('rmc').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('create_room',{p_name:$('rmn').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
 $('rmjb').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('join_room',{p_code:$('rmj').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
