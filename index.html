@@ -253,13 +253,13 @@ async function startPeer(){
   if(r.ok){const j=await r.json();iceServers=j.iceServers;turnOk=true}}catch(e){}
  peer=new Peer(myCode,{debug:1,config:{iceServers,iceTransportPolicy:location.hash==='#relay'?'relay':'all'}});
  peer.on('error',e=>{if(e.type==='peer-unavailable'&&cur&&cur._out&&!cur._live&&friend&&cur.peer===friend.code){const c0=cur,t0=c0._t0||Date.now();if(!c0._inv){sb.rpc('invite_call',{p_recipient:friend.id}).then(()=>{},()=>{});$('cs').textContent='بنحاول نوصله… (بنبعتله إشعار لو مفعّل الإشعارات)'}if(Date.now()-t0>40000){note('صاحبك مش فاتح الصفحة دلوقتي، المكالمة مش هتوصل. الرسايل لسه بتوصل.');endCall();return}c0._retry=1;setTimeout(()=>{if(cur!==c0||c0._live)return;const v=!!(c0.metadata&&c0.metadata.video);const c=peer.call(friend.code,local,{metadata:{video:v}});c._out=true;c._inv=1;c._t0=t0;wire(c,v)},4000);return}const M={'peer-unavailable':'صاحبك مش فاتح الصفحة دلوقتي، المكالمة مش هتوصل. الرسايل لسه بتوصل.','network':'مفيش اتصال بسيرفر المكالمات','server-error':'سيرفر المكالمات مش شغال دلوقتي','unavailable-id':'الصفحة مفتوحة في مكان تاني','browser-incompatible':'المتصفح ده مش بيدعم المكالمات'};note(M[e.type]||'مشكلة في المكالمة');if(cur)endCall()});
- peer.on('connection',dc=>{dc.on('data',d=>{if(d==='reject'&&cur&&!cur._live&&cur.peer===dc.peer)endCall('رفض المكالمة');if(d==='cancel'&&ringing&&ringing.peer===dc.peer){const r=ringing;ringing=null;try{r.close()}catch(e){}$('call').style.display='none';note('فاتتك مكالمة من '+dc.peer)}})});
+ peer.on('connection',dc=>{dc.on('data',d=>{if(d==='reject'&&cur&&!cur._live&&cur.peer===dc.peer)endCall('رفض المكالمة');if(d==='busy'&&cur&&!cur._live&&cur.peer===dc.peer)endCall('مشغول في مكالمة تانية دلوقتي');if(d==='cancel'&&ringing&&ringing.peer===dc.peer){const r=ringing;ringing=null;try{r.close()}catch(e){}$('call').style.display='none';note('فاتتك مكالمة من '+dc.peer)}})});
  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
  peer.on('call',c=>{if(blockedCodes.has(c.peer)){try{c.close()}catch(e){}return}
   if(c.metadata&&c.metadata.room){try{c.close()}catch(e){}return}
   const video=!!(c.metadata&&c.metadata.video);if(video&&!VIDEO_ENABLED){try{c.close()}catch(e){}note('حد حاول يكلمك فيديو، الفيديو لسه مش متاح');return}
   const who=c.peer;
-  if(cur||ringing||room){try{c.close()}catch(e){}note('حد ('+who+') كلمك وإنت في مكالمة');return}
+  if(cur||ringing||room){try{const dc=peer.connect(who,{reliable:true});dc.on('open',()=>{dc.send('busy');setTimeout(()=>{try{dc.close()}catch(e){}},800)})}catch(e){}try{c.close()}catch(e){}note('حد ('+who+') كلمك وإنت في مكالمة');return}
   ringing=c;
   c.on('close',()=>{c._migoClosed=true;if(ringing===c){ringing=null;$('call').style.display='none';note('فاتتك مكالمة من '+who)}});
   try{navigator.vibrate&&navigator.vibrate([300,200,300])}catch(e){}
