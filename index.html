@@ -806,12 +806,13 @@ setInterval(()=>{if(window.__tab==='b')mark()},30000);window.__liveMark=mark})()
 </style>
 <script>(()=>{const q=id=>document.getElementById(id);const MS={3:'crown',5:'bracelet',7:'ring',10:'ae',14:'eg',21:'ma',30:'vip'};
 function ensure(){let g=q('pmckg');if(!g){g=document.createElement('div');g.id='pmckg';q('pmckt').after(g)}return g}
-async function draw(){const r=await sb.rpc('my_checkins');if(r.error||!r.data)return;const d=r.data,g=ensure();const st=Math.min(d.streak,30);const nx=d.today?0:Math.min(d.streak+1,30);
- g.innerHTML='<div class="cgh">كل يوم تسجّل فيه حضورك بيزوّد سلسلتك. لو فوّت يوم بتبدأ من الأول. اليوم بيتجدد الساعة 12 بالليل بتوقيت مصر، وتسجّل مرة واحدة في اليوم. الهدايا على الأيام المميزة مجانية جوه التطبيق.</div><div class="cgg"></div>';const gg=g.querySelector('.cgg');
- for(let i=1;i<=30;i++){const c=document.createElement('div');const m=MS[i];c.className='cgc'+(i<=st?' dn':'')+(i===nx?' nx':'')+(m?' gf':'');
+async function draw(){const r=await sb.rpc('my_checkins');if(r.error||!r.data)return;const d=r.data,g=ensure();const S=d.streak;const cyc=S>0?((S-1)%30)+1:0;const cn=S>0?Math.floor((S-1)/30)+1:1;const nx=d.today?0:(S%30)+1;
+ q('pmckt').innerHTML=(d.today?'<b style="color:#1f6f5c">✓ سجّلت حضور النهارده</b>':'<b style="color:#c9701a">لسه ما سجلتش النهارده</b>')+'<br>إجمالي أيام الحضور: '+d.total+' | أيام متتالية: '+S+'<br>'+(d.today?'مكانك في الدورة: يوم '+cyc+' من 30 (دورة '+cn+'). اليوم الجاي: '+((cyc%30)+1):'لو سجّلت دلوقتي هتبقى في يوم '+nx+' من 30 (دورة '+(S>0&&S%30===0?cn+1:cn)+')');
+ g.innerHTML='<div class="cgh">كل يوم تسجّل فيه حضورك بيزوّد سلسلتك. لو فوّت يوم بتبدأ من الأول. اليوم بيتجدد الساعة 12 بالليل بتوقيت مصر، وتسجّل مرة واحدة في اليوم. بعد يوم 30 بتبدأ دورة جديدة بنفس الهدايا، والعدّاد الكلي بيكمّل. الهدايا مجانية جوه التطبيق.</div><div class="cgg"></div>';const gg=g.querySelector('.cgg');
+ for(let i=1;i<=30;i++){const c=document.createElement('div');const m=MS[i];c.className='cgc'+(i<=cyc?' dn':'')+(i===nx?' nx':'')+(m?' gf':'');
   const n=document.createElement('span');n.className='n';n.textContent=i;c.append(n);
-  if(m&&window.GART&&GART[m]){const w=document.createElement('div');w.style.cssText='display:flex;width:100%;height:100%;align-items:center;justify-content:center';w.innerHTML=GART[m];c.append(w)}else{const t=document.createElement('span');t.textContent=i<=st?'✓':i;c.append(t)}
-  if(m&&i<=st){const k=document.createElement('span');k.className='ck';k.textContent='✓';c.append(k)}
+  if(m&&window.GART&&GART[m]){const w=document.createElement('div');w.style.cssText='display:flex;width:100%;height:100%;align-items:center;justify-content:center';w.innerHTML=GART[m];c.append(w)}else{const t=document.createElement('span');t.textContent=i<=cyc?'✓':'';c.append(t)}
+  if(m&&i<=cyc){const k=document.createElement('span');k.className='ck';k.textContent='✓';c.append(k)}
   gg.append(c)}}
 document.querySelector('[data-pm=chk]').addEventListener('click',()=>setTimeout(draw,600),true);
 q('pmckb').addEventListener('click',()=>setTimeout(draw,1500));window.__ckDraw=draw})();</script></body></html>
