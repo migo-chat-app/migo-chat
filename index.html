@@ -46,7 +46,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
 </div>
 <div id="rp" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:6;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px"><b>إبلاغ عن <span id="rpn"></span></b><p style="margin:6px 0">البلاغ بيوصل لميجو، صاحب التطبيق، وهو اللي بيراجعه بنفسه. هيشوف السبب واسم الكود بتاعك وبتاع الشخص، والرسايل اللي تختارها تحت بس (المحادثة كلها مش بتتبعت). مفيش وعد برد أو إشعار، ومفيش فريق مراجعة.</p><textarea id="rpr" maxlength="500" placeholder="سبب البلاغ (مطلوب)" style="width:100%;height:80px;font:inherit;padding:8px;border:1px solid #ccc;border-radius:10px"></textarea><p style="margin:8px 0 2px">اختار رسايل ترفقها (اختياري، لحد 10):</p><div id="rpm"></div><p id="rpe" style="color:#c0392b;margin:4px 0"></p><button class="red" id="rpok" type="button">ابعت البلاغ</button> <button class="alt" id="rpno" type="button">إلغاء</button></div></div>
 <div id="adm" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:7;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px"><b>مراجعة البلاغات (للمالك فقط)</b>
-<div id="adl"><p style="margin:6px 0">الدخول بكود بيوصل على إيميل المالك. كود الشات العادي مش بيفتح الصفحة دي.</p><input id="ade" type="email" placeholder="إيميل المالك" style="direction:ltr;text-align:left"><p><button id="ads" type="button">ابعت كود الدخول</button></p><input id="adc" inputmode="numeric" placeholder="الكود اللي وصل" style="direction:ltr;text-align:left"><p><button id="adv" type="button">دخول</button></p></div>
+<div id="adl"><p style="margin:6px 0">الدخول برابط بيوصل على إيميل المالك (بتفتحه من نفس المتصفح). كود الشات العادي مش بيفتح الصفحة دي.</p><input id="ade" type="email" placeholder="إيميل المالك" style="direction:ltr;text-align:left"><p><button id="ads" type="button">ابعت رابط الدخول</button></p></div>
 <div id="adr" style="display:none"></div><p id="ade2" style="color:#c0392b"></p><button class="alt" id="adx" type="button">رجوع للتطبيق</button></div></div>
 <div id="call"><div id="cs">…</div><div style="position:relative"><video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video></div>
  <div id="cb"></div></div>
@@ -63,7 +63,8 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
 <script>
 const $=id=>document.getElementById(id);
 const SB_URL='https://gpjjjdgtvuqyvqdtfgve.supabase.co',SB_KEY='sb_publishable_cJU3HaLomnHr5oLtNtkWew_1xiGvAOd';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{detectSessionInUrl:false}});
+const ADMIN_LINK=/access_token=|error_code=|[?&]code=/.test(location.hash+location.search);
 const rnd=()=>Math.random().toString(36).slice(2,8).replace(/[01lo]/g,'x');
 const log=(t,c)=>{const d=document.createElement('div');d.className='msg '+c;d.textContent=t;$('log').appendChild(d);$('main').scrollTop=1e9;return d};
 let blockedIds=new Set(),blockedCodes=new Set(),myName='',me=null,myCode=null,friend=null,peer=null,cur=null,local=null,lastId=0,seen=new Set(),iceServers=[{urls:'stun:stun.l.google.com:19302'}],turnOk=false;
@@ -143,7 +144,7 @@ $('rpb').onclick=()=>{if(!friend)return;$('rpn').textContent=friend.display_name
  for(const m of ms){const l=document.createElement('label');l.style.cssText='display:flex;gap:8px;align-items:flex-start;margin:4px 0;padding:6px;background:#f6f1e7;border-radius:8px';const c=document.createElement('input');c.type='checkbox';c.value=m.dataset.id;c.style.cssText='width:auto;margin-top:5px';const t=document.createElement('span');t.textContent=(m.classList.contains('me')?'أنا: ':'هو: ')+m.firstChild.textContent;l.append(c,t);box.appendChild(l)}
  $('rp').style.display='block'};
 let asb=null;
-function adminOpen(){$('adm').style.display='block';if(!asb)asb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'migo-admin-session',persistSession:true,autoRefreshToken:true}});adminLoad()}
+function adminOpen(){$('adm').style.display='block';if(!asb)asb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'migo-admin-session',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});adminLoad()}
 async function adminLoad(){const r=await asb.rpc('admin_list_reports');
  if(r.error){$('adl').style.display='block';$('adr').style.display='none';if(!/not owner|JWT|permission|42501/i.test(r.error.message+r.error.code))$('ade2').textContent='مشكلة في التحميل';return}
  $('adl').style.display='none';$('adr').style.display='block';$('adr').innerHTML='<p>البلاغات ('+r.data.length+')</p>';
@@ -154,10 +155,9 @@ async function adminLoad(){const r=await asb.rpc('admin_list_reports');
   for(const m of (x.attached||[])){const q=document.createElement('div');q.style.cssText='margin:3px 0;padding:4px 8px;background:#fff;border-radius:8px';q.textContent=m.from+': '+m.body;d.appendChild(q)}
   for(const [st,lb] of [['reviewed','تمت المراجعة'],['dismissed','تجاهل'],['open','فتح تاني']]){if(st===x.status)continue;const b=document.createElement('button');b.className='alt';b.style.margin='3px';b.textContent=lb;b.onclick=async()=>{await asb.rpc('admin_set_report_status',{p_id:x.id,p_status:st});adminLoad()};d.appendChild(b)}
   $('adr').appendChild(d)}}
-$('ads').onclick=async()=>{const e=$('ade').value.trim();if(!e)return;const r=await asb.auth.signInWithOtp({email:e,options:{shouldCreateUser:false}});$('ade2').textContent=r.error?'ماتبعتش الكود':'لو الإيميل ده تابع للمالك، الكود اتبعت'};
-$('adv').onclick=async()=>{const r=await asb.auth.verifyOtp({email:$('ade').value.trim(),token:$('adc').value.trim(),type:'email'});if(r.error){$('ade2').textContent='الكود غلط أو انتهى';return}$('ade2').textContent='';adminLoad()};
+$('ads').onclick=async()=>{const e=$('ade').value.trim();if(!e)return;const r=await asb.auth.signInWithOtp({email:e,options:{shouldCreateUser:false}});$('ade2').textContent=r.error?'ماتبعتش الكود':'لو الإيميل ده تابع للمالك، الرابط اتبعت'};
 $('adx').onclick=()=>{$('adm').style.display='none';history.replaceState(null,'',location.pathname)};
-if(location.hash==='#admin')setTimeout(adminOpen,0);
+if(location.hash==='#admin'||ADMIN_LINK)setTimeout(async()=>{adminOpen();if(ADMIN_LINK){await new Promise(r=>setTimeout(r,1500));adminLoad();history.replaceState(null,'',location.pathname+'#admin')}},0);
 $('rpno').onclick=()=>{$('rp').style.display='none'};
 $('rpok').onclick=async()=>{const reason=$('rpr').value.trim();if(reason.length<3){$('rpe').textContent='اكتب سبب البلاغ.';return}
  const ids=[...$('rpm').querySelectorAll('input:checked')].map(x=>+x.value);
