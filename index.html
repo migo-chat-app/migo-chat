@@ -36,7 +36,7 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
 .ci{background:#fff!important;border-radius:14px!important;padding:10px!important;box-shadow:0 1px 3px #0002}.ci .av{width:44px;height:44px;font-size:18px}.ci .nm{font-weight:700;font-size:15px}
 </style></head><body>
 <div class="demo" id="demo">نسخة تجريبية: الرسايل بتتخزن على سيرفر. المكالمات بتوصل لو صاحبك فاتح الصفحة، أو فعّل الإشعارات وفتحها خلال حوالي 40 ثانية. الإشعارات تجريبية ومش مضمونة.</div>
-<header><b id="back" style="cursor:pointer">ميجو شات</b><span id="st">جاري التجهيز…</span><button id="vc" type="button" class="hc" style="display:none" aria-label="مكالمة صوت"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>اتصال</span></button></header>
+<header><b id="back" style="cursor:pointer">ميجو شات</b><span id="st">جاري التجهيز…</span><button id="vc" type="button" class="hc" style="display:none" aria-label="مكالمة صوت"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>اتصال</span></button><button id="mm" type="button" class="hc" aria-label="خيارات" aria-haspopup="true" style="display:none;padding:6px 10px"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><circle cx="12" cy="5" r="1.6" fill="#1f6f5c"/><circle cx="12" cy="12" r="1.6" fill="#1f6f5c"/><circle cx="12" cy="19" r="1.6" fill="#1f6f5c"/></svg></button></header>
 <main id="main">
  <div class="card" id="guide" style="display:none;background:#fff8e1;line-height:1.7;font-size:14px"><b>إزاي التطبيق شغال</b><br>• الرسايل بتتخزن على سيرفر وبتوصل حتى لو صاحبك مش فاتح الصفحة.<br>• المكالمات الصوتية بتوصل لو صاحبك فاتح الصفحة. لو مقفولة، التطبيق بيحاول يوصله حوالي 40 ثانية، ولو مفعّل الإشعارات (اختياري) ممكن يوصله إشعار يفتح منه. مفيش رنين زي مكالمة الموبايل، ووصول الإشعار تجريبي ومش مضمون.<br>• الفيديو مقفول دلوقتي.<br>• لو المكالمة مقدرتش تتوصل مباشرة بتعدي على سيرفر مجاني للتجربة، وسعته 500 ميجا بس لكل المستخدمين مع بعض. لو خلصت المكالمات ممكن تفشل والرسايل تفضل شغالة.<br>• التطبيق تجريبي، ومتجربش على موبايلين حقيقيين لسه.<br><button id="gok" type="button" style="margin-top:6px">تمام، فهمت</button></div>
  <div class="card" id="home">
@@ -60,9 +60,12 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
  <div id="log" style="display:flex;flex-direction:column;gap:8px"></div>
 </main>
 <div id="bar" style="display:none;flex-direction:column;background:#fff;flex:none">
- <div class="row tools"><button class="alt" id="vv" type="button">فيديو</button><button class="alt" id="blk" type="button">حظر</button><button class="alt" id="rpb" type="button">إبلاغ</button></div>
- <div class="row"><input id="txt" placeholder="اكتب رسالة" style="flex:1;min-width:0"><button id="send" type="button" class="rb g" aria-label="إرسال"><svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button><button id="mic" type="button" class="rb" aria-label="تسجيل فويس"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button><button id="micx" type="button" class="alt" style="display:none">إلغاء</button></div>
+ <div class="row tools" id="tl" style="display:none"><button class="alt" id="img" type="button" aria-label="إرسال صورة">🖼 صورة</button><button class="alt" id="vv" type="button">فيديو</button></div><div style="display:none"><button id="blk" type="button">حظر</button><button id="rpb" type="button">إبلاغ</button></div>
+ <div class="row"><input id="txt" placeholder="اكتب رسالة" style="flex:1;min-width:0"><button id="send" type="button" class="rb g" aria-label="إرسال"><svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button><input id="imgf" type="file" accept="image/jpeg,image/png,image/webp" style="display:none"><button id="mic" type="button" class="rb" aria-label="تسجيل فويس"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button><button id="micx" type="button" class="alt" style="display:none">إلغاء</button></div>
 </div>
+<div id="imgp" style="display:none;position:fixed;inset:0;background:#000c;z-index:50;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px"><img id="imgpv" alt="معاينة" style="max-width:100%;max-height:65vh;border-radius:10px;background:#fff"><div id="imgpt" style="color:#fff;font-size:13px"></div><div style="display:flex;gap:10px"><button id="imgps" type="button">إرسال</button><button id="imgpc" type="button" class="alt">إلغاء</button></div></div>
+<div id="mmenu" style="display:none;position:fixed;top:54px;left:8px;background:#fff;border-radius:12px;box-shadow:0 4px 16px #0004;z-index:40;min-width:170px;overflow:hidden;flex-direction:column"><button id="mmp" type="button" class="alt" style="border-radius:0;text-align:right">الملف الشخصي</button><button id="mmb" type="button" class="alt" style="border-radius:0;text-align:right"></button><button id="mmr" type="button" class="alt" style="border-radius:0;text-align:right;color:#b3261e">إبلاغ</button></div>
+<div id="prf" style="display:none;position:fixed;inset:0;background:#000a;z-index:45;align-items:center;justify-content:center;padding:20px"><div class="card" style="width:100%;max-width:320px;text-align:center;line-height:1.9"><span id="prfa" class="av" style="width:64px;height:64px;font-size:28px"></span><div id="prfn" style="font-weight:700;font-size:18px"></div><div id="prfc" style="direction:ltr;color:#555;font-size:13px"></div><div id="prfo" style="font-size:13px;color:#1f6f5c"></div><p style="margin-top:12px"><button id="prfx" type="button" class="alt">إغلاق</button></p></div></div>
 <nav id="tabs"><button type="button" data-t="m" class="on"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>الرسايل</button><button type="button" data-t="r" class=""><svg viewBox="0 0 24 24"><path d="M3 11v2M7 8v8M11 5v14M15 8v8M19 10v4"/></svg>الغرف</button><button type="button" data-t="p" class=""><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6"/></svg>الناس</button><button type="button" data-t="b" class=""><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg>البوستات</button></nav>
 <div id="rp" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:6;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px"><b>إبلاغ عن <span id="rpn"></span></b><p style="margin:6px 0">البلاغ بيوصل لميجو، صاحب التطبيق، وهو اللي بيراجعه بنفسه. هيشوف السبب واسم الكود بتاعك وبتاع الشخص، والرسايل اللي تختارها تحت بس (المحادثة كلها مش بتتبعت). مفيش وعد برد أو إشعار، ومفيش فريق مراجعة.</p><textarea id="rpr" maxlength="500" placeholder="سبب البلاغ (مطلوب)" style="width:100%;height:80px;font:inherit;padding:8px;border:1px solid #ccc;border-radius:10px"></textarea><p style="margin:8px 0 2px">اختار رسايل ترفقها (اختياري، لحد 10):</p><div id="rpm"></div><p id="rpe" style="color:#c0392b;margin:4px 0"></p><button class="red" id="rpok" type="button">ابعت البلاغ</button> <button class="alt" id="rpno" type="button">إلغاء</button></div></div>
 <div id="adm" style="display:none;position:fixed;inset:0;background:#f6f1e7;z-index:7;overflow:auto;padding:14px"><div class="card" style="line-height:1.7;font-size:14px"><b>مراجعة البلاغات (للمالك فقط)</b>
@@ -146,13 +149,11 @@ async function startPeer(){
   addEventListener('pagehide',()=>{try{if(room){sb.rpc('leave_room',{p_room:room.id});roomDown()}if(cur)cur.close();if(ringing)ringing.close();peer.destroy()}catch(e){}});
 }
 const VIDEO_ENABLED=false;const NOCALL=['migotest','instinct1'];let online=new Set();
-function startPresence(){
- const ch=sb.channel('online',{config:{presence:{key:myCode}}});
- ch.on('presence',{event:'sync'},()=>{online=new Set(Object.keys(ch.presenceState()));updCall()});
- ch.subscribe(s=>{if(s==='SUBSCRIBED')ch.track({t:Date.now()})});
-}
-function updCall(){if(!friend)return;const nc=NOCALL.includes(friend.code);const on=online.has(friend.code);
- $('vc').style.display=$('vv').style.display=nc?'none':'';$('mic').style.display=nc?'none':'';$('mic').disabled=isBlk();
+let onTimer=null;
+function pollOnline(){if(!friend||NOCALL.includes(friend.code)){return}const c=friend.code;sb.rpc('is_online',{p_code:c}).then(r=>{if(!friend||friend.code!==c)return;online=r&&r.data===true?new Set([c]):new Set();updCall()},()=>{})}
+function startPresence(){const beat=()=>{sb.rpc('presence_beat').then(()=>{},()=>{})};beat();setInterval(beat,25000);setInterval(pollOnline,10000)}
+function updCall(){if(!friend)return;$('mm').style.display='flex';const nc=NOCALL.includes(friend.code);const on=online.has(friend.code);
+ $('vc').style.display=$('vv').style.display=nc?'none':'';$('mic').style.display=nc?'none':'';$('img').style.display=nc?'none':'';$('img').disabled=isBlk();$('mic').disabled=isBlk();
  $('vc').disabled=isBlk();$('vc').style.opacity=isBlk()?.5:1;$('vv').disabled=!VIDEO_ENABLED||!on;$('vv').style.opacity=.4;$('vv').textContent=VIDEO_ENABLED?'فيديو':'فيديو (قريبًا)';
  $('st').textContent=(friend.display_name||friend.code)+(nc?' (مفيش مكالمات)':(on?' · فاتح دلوقتي':''))}
 const hue=c=>{let h=0;for(const x of c)h=(h*31+x.charCodeAt(0))%360;return h};
@@ -261,7 +262,7 @@ $('rpok').onclick=async()=>{const reason=$('rpr').value.trim();if(reason.length<
  const r=await sb.rpc('submit_report',{p_reported:friend.id,p_reason:reason,p_msgs:ids});
  if(r.error){$('rpe').textContent='البلاغ ماتبعتش، حاول تاني.';return}
  $('rp').style.display='none';note('البلاغ اتبعت لميجو (صاحب التطبيق). مفيش وعد برد.')};
-function goHome(){stopRec(false);$('vc').style.display='none';if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
+function goHome(){stopRec(false);$('vc').style.display='none';$('mm').style.display='none';$('mmenu').style.display='none';$('prf').style.display='none';$('tl').style.display='none';if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
 async function markRead(){if(!friend)return;await sb.from('messages').update({read_at:new Date().toISOString()}).eq('recipient',me).eq('sender',friend.id).is('read_at',null)}
 async function openChat(c){
  c=(c||'').trim().toLowerCase();if(!c)return;
@@ -270,13 +271,13 @@ async function openChat(c){
  const r={error:rr.error,data:rr.data&&rr.data[0]};
  if(r.error){E('مشكلة في السيرفر');return}
  if(!r.data){log('الكود ده مش موجود','sys');return}
- friend=r.data;$('home').style.display='none';$('bar').style.display='flex';$('log').innerHTML='';seen=new Set();lastId=0;
+ friend=r.data;online=new Set();pollOnline();$('home').style.display='none';$('bar').style.display='flex';$('log').innerHTML='';seen=new Set();lastId=0;
  updBlk();
  const h=await sb.from('messages').select('*').or('and(sender.eq.'+me+',recipient.eq.'+friend.id+'),and(sender.eq.'+friend.id+',recipient.eq.'+me+')').order('id').limit(200);
  for(const m of (h.data||[]))show(m);markRead();
 }
 function bubble(m){const d=document.createElement('div');d.className='msg '+(m.sender===me?'me':'them');d.dataset.id=m.id;
- const t=document.createElement('div');if(/^VN:[0-9a-f-]{36}$/.test(m.body)){const pb=document.createElement('button');pb.type='button';pb.className='alt';pb.textContent='▶ فويس';pb.onclick=()=>playVN(m.body.slice(3),pb);t.appendChild(pb)}else t.textContent=m.body;d.appendChild(t);
+ const t=document.createElement('div');if(/^VN:[0-9a-f-]{36}$/.test(m.body)){const pb=document.createElement('button');pb.type='button';pb.className='alt';pb.textContent='▶ فويس';pb.onclick=()=>playVN(m.body.slice(3),pb);t.appendChild(pb)}else if(/^IMG:[0-9a-f-]{36}$/.test(m.body)){const ib=document.createElement('button');ib.type='button';ib.className='alt';ib.textContent='🖼 صورة (اضغط للعرض)';ib.onclick=()=>showImg(m.body.slice(4),ib,t);t.appendChild(ib)}else t.textContent=m.body;d.appendChild(t);
  const tm=document.createElement('div');tm.className='tm';tm.textContent=new Date(m.created_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});d.appendChild(tm);
  const nx=[...$('log').querySelectorAll('.msg[data-id]')].find(x=>+x.dataset.id>m.id);$('log').insertBefore(d,nx||null);$('main').scrollTop=1e9}
 function show(m){if(seen.has(m.id))return;seen.add(m.id);if(m.id>lastId)lastId=m.id;
@@ -344,15 +345,47 @@ function renderPeople(){const b=$('ppb'),x=$('ppx'),l=$('ppl');if(!b)return;l.in
  for(const m of discRows){if(n>=50)break;const code=m.code;if(code===myCode||blockedCodes.has(code)||NOCALL.includes(code))continue;
   const nm=String(m.display_name||'').trim().slice(0,30);n++;
   const r=document.createElement('div');r.className='ci';r.style.cssText='display:flex;gap:10px;align-items:center';
-  const a=document.createElement('span');a.className='av';setAv(a,nm,code);
+  const a0=document.createElement('span');a0.className='av';setAv(a0,nm,code);const a=document.createElement('span');a.style.cssText='position:relative;flex:none;display:inline-block';const dot=document.createElement('span');dot.setAttribute('aria-label','فاتح دلوقتي');dot.style.cssText='position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:#2ecc40;border:2px solid #fff';a.append(a0,dot);
   const t=document.createElement('div');t.style.flex='1';const e1=document.createElement('div');e1.className='nm';e1.textContent=nm||code;
   const e2=document.createElement('div');e2.style.cssText='font-size:12px;color:#1f6f5c';e2.textContent='فاتح دلوقتي · '+code;t.append(e1,e2);
   const o=document.createElement('button');o.type='button';o.className='alt';o.textContent='افتح شات';o.onclick=()=>{setTab('m');openChat(code)};
-  r.append(a,t,o);l.append(r)}
+  const wv=document.createElement('button');wv.type='button';wv.setAttribute('aria-label','ترحيب');wv.style.cssText='background:none;color:#1f6f5c;padding:2px 6px;display:flex;flex-direction:column;align-items:center;font-size:11px;line-height:1.2;box-shadow:none';wv.innerHTML='<span style="font-size:22px">👋</span><span>ترحيب</span>';wv.onclick=()=>note('الترحيب لسه مش شغال. لسه بنحدد بيعمل إيه.');
+  r.append(a,t,wv,o);l.append(r)}
  if(!n){const p=document.createElement('p');p.className='empty';p.style.fontSize='13px';p.textContent='مفيش حد تاني فاتح دلوقتي.';l.append(p)}}
 $('ppb').onclick=()=>{discOn=!discOn;localStorage.setItem('migo_disc',discOn?'1':'0');if(discOn)discStart();else discStop();renderPeople()};
 addEventListener('pagehide',()=>{if(discOn)try{sb.rpc('discover_off').then(()=>{},()=>{})}catch(e){}});
 renderPeople();
+
+let imgPend=null;
+async function showImg(id,btn,box){btn.textContent='...';btn.disabled=true;const r=await sb.from('chat_images').select('data,mime').eq('id',id).maybeSingle();
+ if(r.error||!r.data){btn.textContent='الصورة مش متاحة';return}
+ const im=document.createElement('img');im.alt='صورة';im.style.cssText='display:block;max-width:220px;max-height:260px;border-radius:10px;cursor:pointer';im.src='data:'+r.data.mime+';base64,'+r.data.data;
+ im.onclick=()=>{im.style.maxWidth=im.style.maxWidth==='220px'?'100%':'220px';im.style.maxHeight=im.style.maxHeight==='260px'?'none':'260px'};box.replaceChildren(im)}
+async function shrink(file){const bm=await createImageBitmap(file);let sc=Math.min(1,1280/Math.max(bm.width,bm.height));
+ for(let k=0;k<6;k++){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(bm.width*sc));c.height=Math.max(1,Math.round(bm.height*sc));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bm,0,0,c.width,c.height);
+  for(const q of [0.8,0.65,0.5]){const u=c.toDataURL('image/jpeg',q);const b=u.split(',')[1];if(b.length<=440000)return {url:u,b64:b}}
+  sc*=0.75}return null}
+$('img').onclick=()=>{if(friend&&!isBlk())$('imgf').click()};
+$('imgf').onchange=async()=>{const f=$('imgf').files[0];$('imgf').value='';if(!f||!friend)return;
+ if(!/^image\/(jpeg|png|webp)$/.test(f.type)){note('الصورة لازم تكون JPG أو PNG أو WebP');return}
+ if(f.size>25e6){note('الصورة كبيرة أوي');return}
+ let r;try{r=await shrink(f)}catch(e){r=null}if(!r){note('مقدرتش أجهّز الصورة');return}
+ imgPend={to:friend.id,b64:r.b64};$('imgpv').src=r.url;$('imgpt').textContent='هتتبعت لـ '+(friend.display_name||friend.code)+'. معاينة قبل الإرسال.';$('imgp').style.display='flex'};
+$('imgpc').onclick=()=>{imgPend=null;$('imgp').style.display='none';$('imgpv').removeAttribute('src')};
+$('imgps').onclick=async()=>{if(!imgPend||!friend||friend.id!==imgPend.to){$('imgpc').click();return}
+ const p=imgPend;$('imgps').disabled=true;const x=await sb.rpc('send_image',{p_recipient:p.to,p_data:p.b64,p_mime:'image/jpeg'});$('imgps').disabled=false;
+ if(x.error){const e=x.error.message;note(/blocked/.test(e)?'محظور':/limit/.test(e)?'بعتّ صور كتير، استنى شوية':/full/.test(e)?'مساحة الصور امتلأت':'الصورة ماتبعتتش');return}
+ $('imgpc').click();const m=await sb.from('messages').select('*').eq('sender',me).eq('recipient',p.to).eq('body','IMG:'+x.data).maybeSingle();if(m.data)show(m.data)};
+
+const barEl=$('bar');function showTl(){const nc=friend&&NOCALL.includes(friend.code);$('tl').style.display=nc?'none':'flex'}
+barEl.addEventListener('focusin',showTl);
+barEl.addEventListener('focusout',()=>setTimeout(()=>{if(!barEl.contains(document.activeElement))$('tl').style.display='none'},200));
+$('mm').onclick=e=>{e.stopPropagation();if(!friend)return;$('mmb').textContent=isBlk()?'إلغاء الحظر':'حظر';$('mmenu').style.display=$('mmenu').style.display==='flex'?'none':'flex'};
+document.addEventListener('click',e=>{if(!$('mmenu').contains(e.target)&&e.target!==$('mm'))$('mmenu').style.display='none'});
+$('mmb').onclick=()=>{$('mmenu').style.display='none';$('blk').click()};
+$('mmr').onclick=()=>{$('mmenu').style.display='none';$('rpb').click()};
+$('mmp').onclick=()=>{$('mmenu').style.display='none';if(!friend)return;const f=friend;setAv($('prfa'),f.display_name,f.code);$('prfn').textContent=f.display_name||'من غير اسم';$('prfc').textContent=f.code;$('prfo').textContent=online.has(f.code)?'فاتح دلوقتي':'';$('prf').style.display='flex'};
+$('prfx').onclick=()=>{$('prf').style.display='none'};
 document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
 $('rmx').addEventListener('click',()=>setTab('m'));
 $('send').onclick=send;$('txt').onkeydown=e=>{if(e.key==='Enter')send()};
