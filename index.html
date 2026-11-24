@@ -36,6 +36,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
   <p><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
   <div id="recent"></div>
   <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
+  <p><button class="alt" id="pushbtn" type="button">تفعيل إشعارات الرسايل</button> <span id="pushst" style="font-size:12px"></span></p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
   <div id="delp" style="display:none;background:#fdecea;border-radius:10px;padding:10px;font-size:13px;line-height:1.6">هيتمسح نهائيًا: حسابك وكودك واسمك، وكل الرسايل اللي بعتّها أو استلمتها (هتختفي عند الطرف التاني كمان)، وقائمة الحظر بتاعتك. مش هيتأثر أي حاجة تانية عند الناس الباقيين. مفيش تراجع، وهتاخد كود جديد لو فتحت الموقع تاني.<br><button class="red" id="delok" type="button" style="margin:6px 4px 0 0">أيوه، امسح كل حاجة</button><button class="alt" id="delno" type="button" style="margin-top:6px">إلغاء</button></div>
  </div>
@@ -164,7 +165,12 @@ $('blk').onclick=async()=>{if(!friend)return;if(isBlk()){const r=await sb.from('
 $('del').onclick=()=>{$('delp').style.display='block';$('delp').scrollIntoView({block:'end'})};
 try{if(!localStorage.getItem('guide1'))$('guide').style.display='block'}catch(e){}
 $('gok').onclick=()=>{$('guide').style.display='none';try{localStorage.setItem('guide1','1')}catch(e){}};$('delno').onclick=()=>{$('delp').style.display='none'};
-$('delok').onclick=async()=>{const r=await sb.rpc('delete_my_data');if(r.error){note('المسح ماتمش، حاول تاني');return}
+const VAPID='BDjIHk0sUgMAdDgzWJlG7zz0fLkZdLQQQj4kwUdyytftg6Yjm1f4qCIoNPkrxp43lMZi07XyYPoK0Sm0z8rYjBo';
+function u8(b){b=b.replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(b+'==='.slice((b.length+3)%4)),c=>c.charCodeAt(0))}
+async function pushState(){const b=$('pushbtn'),s=$('pushst');if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){b.style.display='none';s.textContent='المتصفح ده مش بيدعم إشعارات';return}try{const reg=await navigator.serviceWorker.getRegistration('./');const sub=reg&&await reg.pushManager.getSubscription();b.textContent=sub?'إيقاف الإشعارات':'تفعيل إشعارات الرسايل'}catch(e){}}
+$('pushbtn').onclick=async()=>{const s=$('pushst');s.textContent='';try{const reg=await navigator.serviceWorker.register('sw.js',{scope:'./'});await navigator.serviceWorker.ready;const cur=await reg.pushManager.getSubscription();if(cur){await sb.rpc('push_unsubscribe',{p_endpoint:cur.endpoint});await cur.unsubscribe();s.textContent='الإشعارات اتقفلت';pushState();return}const p=await Notification.requestPermission();if(p!=='granted'){s.textContent='مفيش إذن للإشعارات';return}const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});const j=sub.toJSON();const r=await sb.rpc('push_subscribe',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});if(r.error){await sub.unsubscribe();s.textContent='التفعيل مانفعش';return}s.textContent='الإشعارات اتفعلت. هتوصلك إشارة عامة بدون محتوى الرسالة.';pushState()}catch(e){s.textContent='التفعيل مانفعش'}};
+pushState();
+$('delok').onclick=async()=>{try{const rg=await navigator.serviceWorker.getRegistration('./');const s0=rg&&await rg.pushManager.getSubscription();if(s0){await sb.rpc('push_unsubscribe',{p_endpoint:s0.endpoint});await s0.unsubscribe()}}catch(e){}const r=await sb.rpc('delete_my_data');if(r.error){note('المسح ماتمش، حاول تاني');return}
  try{await sb.auth.signOut()}catch(e){}try{localStorage.clear()}catch(e){}location.reload()};
 $('rpb').onclick=()=>{if(!friend)return;$('rpn').textContent=friend.display_name||friend.code;$('rpr').value='';$('rpe').textContent='';const box=$('rpm');box.innerHTML='';
  const ms=[...$('log').querySelectorAll('.msg[data-id]')].slice(-10).reverse();
