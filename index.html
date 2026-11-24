@@ -188,7 +188,7 @@ async function roomEnter(id,code){
  const LK=window.LivekitClient;const r=new LK.Room();
  r.on(LK.RoomEvent.TrackSubscribed,(tr,pub,p)=>{if(tr.kind==='audio'){const a=tr.attach();a.id='a_'+p.identity;$('rmaud').appendChild(a)}});
  r.on(LK.RoomEvent.TrackUnsubscribed,tr=>{tr.detach().forEach(e=>e.remove())});
- r.on(LK.RoomEvent.Disconnected,async()=>{if(lkr!==r||!room)return;if(!r._rc){r._rc=1;const t2=await roomFn({action:'token',room:id});if(t2.ok){try{await r.connect(t2.j.url,t2.j.token);r._rc=0;if(r.localParticipant.permissions&&r.localParticipant.permissions.canPublish&&!rmuted){try{await r.localParticipant.setMicrophoneEnabled(true)}catch(e){}}return}catch(e){}}}if(lkr===r&&room)roomOut('اتقطع الاتصال بالغرفة')});
+ r.on(LK.RoomEvent.Disconnected,async()=>{if(lkr!==r||!room)return;if(!r._rc){r._rc=1;const t2=await roomFn({action:'token',room:id});if(t2.ok){try{await r.connect(t2.j.url,t2.j.token);r._rc=0;if(r.localParticipant.permissions&&r.localParticipant.permissions.canPublish&&!rmuted){try{await r.localParticipant.setMicrophoneEnabled(true)}catch(e){}}return}catch(e){}}}if(lkr===r&&room)roomOut('الغرفة اتقفلت أو خرجت منها')});
  r.on(LK.RoomEvent.LocalTrackUnpublished,()=>{});
  r.on(LK.RoomEvent.ParticipantPermissionsChanged,(prev,p)=>{if(p===r.localParticipant&&!p.permissions.canPublish){rmuted=true;$('rmmu').textContent='مكتوم من المضيف';$('rmn2').textContent='المضيف كتمك'}else if(p===r.localParticipant&&p.permissions.canPublish){$('rmn2').textContent='';$('rmmu').textContent=rmuted?'إلغاء الكتم':'كتم'}});
  try{await r.connect(t.j.url,t.j.token)}catch(e){await bail('الاتصال بخدمة الصوت فشل');return}
