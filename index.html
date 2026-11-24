@@ -33,7 +33,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
   <p style="font-size:13px;color:#555">ابعت الكود لصاحبك، وهو يكتبه عنده. أو اكتب كوده هنا.</p>
   <input id="peerid" placeholder="كود صاحبك" autocapitalize="none" style="direction:ltr;text-align:left">
   <p><button id="go" type="button">افتح المحادثة</button></p>
-  <p><button class="alt" id="rmo" type="button">غرفة صوت (معاينة، مش شغالة)</button></p>
+  <p><button class="alt" id="rmo" type="button">غرفة صوت (تجربة)</button></p>
   <div id="recent"></div>
   <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش فريق مراجعة. زر «إبلاغ» داخل المحادثة بيبعت البلاغ لميجو صاحب التطبيق بس، من غير وعد برد. الحظر بيمنع الشخص يبعتلك ويكلمك.</p>
   <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
@@ -174,7 +174,7 @@ $('rpb').onclick=()=>{if(!friend)return;$('rpn').textContent=friend.display_name
 
 let room=null,lkr=null,rtimer=null,rmuted=false,lkLoad=null;
 const GIFT={star:'نجمة',flower:'وردة',heart:'قلب'};
-const REM={not_found:'الكود غلط أو الغرفة اتقفلت',kicked:'مش مسموحلك تدخل الغرفة دي',blocked:'مش هتقدر تدخل الغرفة دي',full:'الغرفة مليانة (الحد 4)',rate_limited:'محاولات كتير، استنى شوية',too_many_rooms:'عندك غرفتين مفتوحين، اقفل واحدة الأول',bad_name:'اكتب اسم للغرفة'};
+const REM={not_found:'الكود غلط أو الغرفة اتقفلت',kicked:'مش مسموحلك تدخل الغرفة دي',blocked:'مش هتقدر تدخل الغرفة دي',full:'الغرفة مليانة (الحد 4)',rate_limited:'محاولات كتير، استنى شوية',rooms_closed:'الغرف لسه مقفولة، هتتفتح لما تتجهز',too_many_rooms:'عندك غرفتين مفتوحين، اقفل واحدة الأول',bad_name:'اكتب اسم للغرفة'};
 const rmsg=e=>{const m=(e&&e.message)||'';for(const k in REM)if(m.indexOf(k)>=0)return REM[k];return 'حصلت مشكلة، حاول تاني'};
 function loadLK(){if(window.LivekitClient)return Promise.resolve();if(lkLoad)return lkLoad;lkLoad=new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/livekit-client@2.25.0/dist/livekit-client.umd.js';s.onload=ok;s.onerror=()=>{lkLoad=null;no(new Error('lk'))};document.head.appendChild(s)});return lkLoad}
 async function roomFn(body){const {data:{session}}=await sb.auth.getSession();const r=await fetch(SB_URL+'/functions/v1/room-token',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify(body)});let j={};try{j=await r.json()}catch(e){}return {ok:r.ok,j}}
@@ -188,7 +188,7 @@ async function roomEnter(id,code){
  const LK=window.LivekitClient;const r=new LK.Room();
  r.on(LK.RoomEvent.TrackSubscribed,(tr,pub,p)=>{if(tr.kind==='audio'){const a=tr.attach();a.id='a_'+p.identity;$('rmaud').appendChild(a)}});
  r.on(LK.RoomEvent.TrackUnsubscribed,tr=>{tr.detach().forEach(e=>e.remove())});
- r.on(LK.RoomEvent.Disconnected,()=>{if(lkr===r&&room)roomOut('اتقطع الاتصال بالغرفة')});
+ r.on(LK.RoomEvent.Disconnected,async()=>{if(lkr!==r||!room)return;if(!r._rc){r._rc=1;const t2=await roomFn({action:'token',room:id});if(t2.ok){try{await r.connect(t2.j.url,t2.j.token);r._rc=0;if(r.localParticipant.permissions&&r.localParticipant.permissions.canPublish&&!rmuted){try{await r.localParticipant.setMicrophoneEnabled(true)}catch(e){}}return}catch(e){}}}if(lkr===r&&room)roomOut('اتقطع الاتصال بالغرفة')});
  r.on(LK.RoomEvent.LocalTrackUnpublished,()=>{});
  r.on(LK.RoomEvent.ParticipantPermissionsChanged,(prev,p)=>{if(p===r.localParticipant&&!p.permissions.canPublish){rmuted=true;$('rmmu').textContent='مكتوم من المضيف';$('rmn2').textContent='المضيف كتمك'}else if(p===r.localParticipant&&p.permissions.canPublish){$('rmn2').textContent='';$('rmmu').textContent=rmuted?'إلغاء الكتم':'كتم'}});
  try{await r.connect(t.j.url,t.j.token)}catch(e){await bail('الاتصال بخدمة الصوت فشل');return}
@@ -207,7 +207,7 @@ async function roomPing(){if(!room)return;const id=room.id;const r=await sb.rpc(
   if(room.host===myCode&&m.code!==myCode){for(const [l,fn] of [['كتم',()=>roomFn({action:'mute',room:id,code:m.code,muted:true})],['رفع الكتم',()=>roomFn({action:'mute',room:id,code:m.code,muted:false})],['طرد',async()=>{await roomFn({action:'kick',room:id,code:m.code});roomPing()}]]){const b=document.createElement('button');b.type='button';b.className='alt';b.style.padding='4px 8px';b.textContent=l;b.onclick=fn;row.appendChild(b)}}
   box.appendChild(row)}
  for(const g of d.gifts){if(g.id>room.lastGift){room.lastGift=g.id;const p=document.createElement('div');p.textContent=(g.sender_code===myCode?'أنت':g.sender_code)+' بعت '+(GIFT[g.gift]||'هدية')+' (هدية تجريبية)';$('rmg').appendChild(p)}}}
-const ROOMS_ENABLED=false;
+const ROOMS_ENABLED=true;
 $('rmo').onclick=()=>{$('rme').textContent='';roomUI();$('rm').style.display='block'};
 $('rmx').onclick=()=>{$('rm').style.display='none'};
 $('rmc').onclick=async()=>{$('rme').textContent='';const r=await sb.rpc('create_room',{p_name:$('rmn').value});if(r.error){$('rme').textContent=rmsg(r.error);return}await roomEnter(r.data.id,r.data.code)};
