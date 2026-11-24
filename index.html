@@ -56,8 +56,12 @@ let conn=null,cur=null,local=null;
 const peer=new Peer(code,{debug:1});
 const log=(t,c)=>{const d=document.createElement('div');d.className='msg '+c;d.textContent=t;$('log').appendChild(d);$('main').scrollTop=1e9};
 peer.on('open',id=>{$('mycode').textContent=id;$('st').textContent='جاهز'});
-peer.on('error',e=>{$('st').textContent='خطأ: '+e.type;log('مشكلة في الاتصال: '+e.type,'sys')});
-function setup(c){conn=c;c.on('open',()=>{$('home').style.display='none';$('bar').style.display='flex';$('st').textContent='متصل';log('اتوصّلتوا ببعض','sys')});
+peer.on('error',e=>{$('st').textContent='خطأ: '+e.type;log(e.type==='peer-unavailable'?'الكود ده مش موجود أو صاحبه قفل الصفحة':'مشكلة في الاتصال: '+e.type,'sys')});peer.on('disconnected',()=>{$('st').textContent='السيرفر الوسيط فصل';peer.reconnect()});
+function setup(c){conn=c;$('st').textContent='جاري الاتصال…';log('بحاول أتصل… ممكن ياخد ثواني','sys');
+ const tm=setTimeout(()=>{if(!c.open){const pc=c.peerConnection;const ice=pc?pc.iceConnectionState:'?';$('st').textContent='الاتصال ماتمش';log('الاتصال ماتمش بعد 15 ثانية (حالة: '+ice+'). اتأكد إن صاحبك فاتح الصفحة وكتب الكود صح، أو جرّب شبكة تانية.','sys')}},15000);
+ c.on('open',()=>clearTimeout(tm));
+ if(c.peerConnection)c.peerConnection.oniceconnectionstatechange=()=>{if(!c.open)$('st').textContent='جاري الاتصال… ('+c.peerConnection.iceConnectionState+')'};
+ c.on('open',()=>{$('home').style.display='none';$('bar').style.display='flex';$('st').textContent='متصل';log('اتوصّلتوا ببعض','sys')});
  c.on('data',d=>log(d,'them'));c.on('close',()=>{$('st').textContent='اتقطع';log('الاتصال اتقطع','sys')})}
 peer.on('connection',setup);
 $('go').onclick=()=>{const id=$('peerid').value.trim().toLowerCase();if(id)setup(peer.connect(id,{reliable:true}))};
