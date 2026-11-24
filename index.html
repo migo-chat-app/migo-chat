@@ -14,7 +14,7 @@ button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#1f
 button.alt{background:#e4ddcc;color:#222}button.red{background:#c0392b}
 .msg{max-width:80%;padding:8px 12px;border-radius:14px;word-wrap:break-word}
 .me{background:#d7f0e4;align-self:flex-start}.them{background:#fff;align-self:flex-end}
-.sys{align-self:center;font-size:12px;color:#666}
+.tm{font-size:10px;color:#777;margin-top:2px}.sys{align-self:center;font-size:12px;color:#666}
 .row{display:flex;gap:8px;padding:10px;background:#fff}
 #call{position:fixed;inset:0;background:#10231e;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:5}
 #call video{max-width:100%;max-height:55dvh;border-radius:12px;background:#000}
@@ -33,12 +33,15 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
   <input id="peerid" placeholder="كود صاحبك" autocapitalize="none" style="direction:ltr;text-align:left">
   <p><button id="go" type="button">افتح المحادثة</button></p>
   <div id="recent"></div>
+  <p style="font-size:12px;color:#555;line-height:1.6;margin-top:14px">مهم: هويتك محفوظة في المتصفح ده بس، من غير إيميل أو باسورد. لو مسحت بيانات الموقع أو غيّرت المتصفح أو الموبايل هتاخد كود جديد ومش هتقدر ترجع محادثاتك. مفيش مراجعة بشرية للمحادثات ولا خدمة بلاغات؛ الحظر بيمنع الشخص يبعتلك بس.</p>
+  <p><button class="alt" id="del" type="button">مسح بياناتي</button></p>
+  <div id="delp" style="display:none;background:#fdecea;border-radius:10px;padding:10px;font-size:13px;line-height:1.6">هيتمسح نهائيًا: حسابك وكودك واسمك، وكل الرسايل اللي بعتّها أو استلمتها (هتختفي عند الطرف التاني كمان)، وقائمة الحظر بتاعتك. مش هيتأثر أي حاجة تانية عند الناس الباقيين. مفيش تراجع، وهتاخد كود جديد لو فتحت الموقع تاني.<br><button class="red" id="delok" type="button" style="margin:6px 4px 0 0">أيوه، امسح كل حاجة</button><button class="alt" id="delno" type="button" style="margin-top:6px">إلغاء</button></div>
  </div>
  <div id="log" style="display:flex;flex-direction:column;gap:8px"></div>
 </main>
 <div class="row" id="bar" style="display:none">
  <button class="alt" id="vc" type="button">صوت</button><button class="alt" id="vv" type="button">فيديو</button>
- <input id="txt" placeholder="اكتب رسالة"><button id="send" type="button">إرسال</button>
+ <button class="alt" id="blk" type="button" style="padding:10px 8px">حظر</button><input id="txt" placeholder="اكتب رسالة"><button id="send" type="button">إرسال</button>
 </div>
 <div id="call"><div id="cs">…</div><div style="position:relative"><video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video></div>
  <div id="cb"></div></div>
@@ -58,7 +61,7 @@ const SB_URL='https://gpjjjdgtvuqyvqdtfgve.supabase.co',SB_KEY='sb_publishable_c
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const rnd=()=>Math.random().toString(36).slice(2,8).replace(/[01lo]/g,'x');
 const log=(t,c)=>{const d=document.createElement('div');d.className='msg '+c;d.textContent=t;$('log').appendChild(d);$('main').scrollTop=1e9;return d};
-let myName='',me=null,myCode=null,friend=null,peer=null,cur=null,local=null,lastId=0,seen=new Set(),iceServers=[{urls:'stun:stun.l.google.com:19302'}],turnOk=false;
+let blockedIds=new Set(),blockedCodes=new Set(),myName='',me=null,myCode=null,friend=null,peer=null,cur=null,local=null,lastId=0,seen=new Set(),iceServers=[{urls:'stun:stun.l.google.com:19302'}],turnOk=false;
 let lastN='',lastT=0;const note=m=>{const n=Date.now();if(m===lastN&&n-lastT<15000)return;lastN=m;lastT=n;log(m,'sys')};
 const E=m=>{$('st').textContent='في مشكلة';log(m,'sys')};
 let retried=false;
@@ -74,7 +77,7 @@ async function init(){
   if(!myCode)throw new Error('code');
   $('mycode').textContent=myCode;$('dn').value=myName;setAv($('av'),myName||myCode,myCode);$('st').textContent='جاهز';
  }catch(e){if(!retried){retried=true;try{await sb.auth.signOut()}catch(x){}myCode=null;return init()}E('مقدرتش أتصل بالسيرفر. شوف النت وحدّث الصفحة.');return}
- loadRecent();startPeer();startPresence();
+ loadBlocks().then(loadRecent);startPeer();startPresence();
  setInterval(poll,4000);
  sb.channel('inbox').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'recipient=eq.'+me},p=>onMsg(p.new)).subscribe();
 }
@@ -85,7 +88,8 @@ async function startPeer(){
  peer=new Peer(myCode,{debug:1,config:{iceServers,iceTransportPolicy:location.hash==='#relay'?'relay':'all'}});
  peer.on('error',e=>{const M={'peer-unavailable':'صاحبك مش فاتح الصفحة دلوقتي، المكالمة مش هتوصل. الرسايل لسه بتوصل.','network':'مفيش اتصال بسيرفر المكالمات','server-error':'سيرفر المكالمات مش شغال دلوقتي','unavailable-id':'الصفحة مفتوحة في مكان تاني','browser-incompatible':'المتصفح ده مش بيدعم المكالمات'};note(M[e.type]||'مشكلة في المكالمة');if(cur)endCall()});
  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
- peer.on('call',c=>{const video=!!(c.metadata&&c.metadata.video);if(video&&!VIDEO_ENABLED){try{c.close()}catch(e){}note('حد حاول يكلمك فيديو، الفيديو لسه مش متاح');return}
+ peer.on('call',c=>{if(blockedCodes.has(c.peer)){try{c.close()}catch(e){}return}
+  const video=!!(c.metadata&&c.metadata.video);if(video&&!VIDEO_ENABLED){try{c.close()}catch(e){}note('حد حاول يكلمك فيديو، الفيديو لسه مش متاح');return}
   showCall(c,video,(video?'مكالمة فيديو واردة':'مكالمة صوت واردة'),[['رد',async()=>{try{local=await media(video)}catch(e){log('مقدرتش أفتح المايك/الكاميرا','sys');c.close();endCall();return}$('lv').srcObject=local;c.answer(local);wire(c,video);showCall(c,video,'بيتوصل…',[['إنهاء',endCall,'red']])}],['رفض',()=>{c.close();endCall()},'red']])});
 }
 const VIDEO_ENABLED=false;const NOCALL=['migotest','instinct1'];let online=new Set();
@@ -96,7 +100,7 @@ function startPresence(){
 }
 function updCall(){if(!friend)return;const nc=NOCALL.includes(friend.code);const on=online.has(friend.code);
  $('vc').style.display=$('vv').style.display=nc?'none':'';
- $('vc').disabled=!on;$('vc').style.opacity=on?1:.5;$('vv').disabled=!VIDEO_ENABLED||!on;$('vv').style.opacity=.4;$('vv').textContent=VIDEO_ENABLED?'فيديو':'فيديو (قريبًا)';
+ $('vc').disabled=!on||isBlk();$('vc').style.opacity=on?1:.5;$('vv').disabled=!VIDEO_ENABLED||!on;$('vv').style.opacity=.4;$('vv').textContent=VIDEO_ENABLED?'فيديو':'فيديو (قريبًا)';
  $('st').textContent=nc?'محادثة مع '+(friend.display_name||friend.code)+' (مفيش مكالمات)':'محادثة مع '+(friend.display_name||friend.code)+(on?' · الصفحة مفتوحة عنده':' · مش ظاهر إنه فاتح الصفحة')}
 const hue=c=>{let h=0;for(const x of c)h=(h*31+x.charCodeAt(0))%360;return h};
 function setAv(el,name,code){el.textContent=(name||code||'?').trim().charAt(0).toUpperCase();el.style.background='hsl('+hue(code)+',45%,40%)'}
@@ -116,6 +120,16 @@ async function loadRecent(){
   if(un[id]){const d=document.createElement('span');d.className='bd';d.textContent=un[id];b.append(d)}
   b.onclick=()=>openChat(x.code);$('recent').appendChild(b)}
 }
+async function loadBlocks(){const r=await sb.from('blocks').select('blocked');if(r.error||!r.data)return;blockedIds=new Set(r.data.map(x=>x.blocked));
+ blockedCodes=new Set();if(blockedIds.size){const p=await sb.from('profiles').select('id,code').in('id',[...blockedIds]);for(const x of (p.data||[]))blockedCodes.add(x.code)}}
+function isBlk(){return friend&&blockedIds.has(friend.id)}
+function updBlk(){if(!friend)return;const b=isBlk();$('blk').textContent=b?'إلغاء الحظر':'حظر';$('txt').disabled=b;$('send').disabled=b;$('txt').placeholder=b?'محظور':'اكتب رسالة';updCall()}
+$('blk').onclick=async()=>{if(!friend)return;if(isBlk()){const r=await sb.from('blocks').delete().eq('blocked',friend.id);if(r.error){note('مقدرتش ألغي الحظر');return}}
+ else{if(!confirm('تحظر '+(friend.display_name||friend.code)+'؟ مش هيقدر يبعتلك رسايل ولا يكلمك.'))return;const r=await sb.from('blocks').insert({blocked:friend.id});if(r.error){note('الحظر ماتسجلش');return}}
+ await loadBlocks();updBlk();note(isBlk()?'تم الحظر':'اتلغى الحظر')};
+$('del').onclick=()=>{$('delp').style.display='block'};$('delno').onclick=()=>{$('delp').style.display='none'};
+$('delok').onclick=async()=>{const r=await sb.rpc('delete_my_data');if(r.error){note('المسح ماتمش، حاول تاني');return}
+ try{await sb.auth.signOut()}catch(e){}try{localStorage.clear()}catch(e){}location.reload()};
 function goHome(){if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
 async function markRead(){if(!friend)return;await sb.from('messages').update({read_at:new Date().toISOString()}).eq('recipient',me).eq('sender',friend.id).is('read_at',null)}
 async function openChat(c){
@@ -126,12 +140,16 @@ async function openChat(c){
  if(r.error){E('مشكلة في السيرفر');return}
  if(!r.data){log('الكود ده مش موجود','sys');return}
  friend=r.data;$('home').style.display='none';$('bar').style.display='flex';$('log').innerHTML='';seen=new Set();lastId=0;
- updCall();
+ updBlk();
  const h=await sb.from('messages').select('*').or('and(sender.eq.'+me+',recipient.eq.'+friend.id+'),and(sender.eq.'+friend.id+',recipient.eq.'+me+')').order('id').limit(200);
  for(const m of (h.data||[]))show(m);markRead();
 }
+function bubble(m){const d=document.createElement('div');d.className='msg '+(m.sender===me?'me':'them');d.dataset.id=m.id;
+ const t=document.createElement('div');t.textContent=m.body;d.appendChild(t);
+ const tm=document.createElement('div');tm.className='tm';tm.textContent=new Date(m.created_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});d.appendChild(tm);
+ const nx=[...$('log').querySelectorAll('.msg[data-id]')].find(x=>+x.dataset.id>m.id);$('log').insertBefore(d,nx||null);$('main').scrollTop=1e9}
 function show(m){if(seen.has(m.id))return;seen.add(m.id);if(m.id>lastId)lastId=m.id;
- if(!friend||(m.sender!==friend.id&&m.recipient!==friend.id))return;log(m.body,m.sender===me?'me':'them');if(m.sender!==me)markRead()}
+ if(!friend||(m.sender!==friend.id&&m.recipient!==friend.id))return;bubble(m);if(m.sender!==me)markRead()}
 function onMsg(m){if(friend&&m.sender===friend.id)show(m);else if(!friend||m.sender!==friend.id){$('st').textContent='جاتلك رسالة جديدة'}}
 async function poll(){if(!me)return;
  const q=sb.from('messages').select('*').eq('recipient',me).gt('id',lastId).order('id').limit(100);
