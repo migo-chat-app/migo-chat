@@ -328,20 +328,21 @@ function setTab(t){if(room&&t!=='r'){note('اخرج من الغرفة الأول
  if(t==='r'){$('rmo').click()}else if(!room){$('rm').style.display='none'}
  $('pp').style.display=t==='p'?'':'none';$('po').style.display=t==='b'?'':'none';
  if(!friend)$('home').style.display=t==='m'?'':'none';
- if(t==='p')renderPeople();
+ if(t==='p'){renderPeople();discFetch()}
  tabUI(t)}
 
-let disc=null,discOn=localStorage.getItem('migo_disc')==='1';
-function discStart(){if(disc||!discOn||!myCode)return;disc=sb.channel('discover',{config:{presence:{key:myCode}}});
- disc.on('presence',{event:'sync'},renderPeople);disc.subscribe(s=>{if(s==='SUBSCRIBED')disc.track({n:(myName||'').slice(0,30),t:Date.now()})})}
-function discStop(){if(!disc)return;const d=disc;disc=null;try{d.untrack()}catch(e){}try{sb.removeChannel(d)}catch(e){}}
-function discRetrack(){if(disc)try{disc.track({n:(myName||'').slice(0,30),t:Date.now()})}catch(e){}}
+let discOn=localStorage.getItem('migo_disc')==='1',discBeat=null,discPoll=null,discRows=[];
+async function discBeatNow(){if(!discOn)return;try{await sb.rpc('discover_beat')}catch(e){}}
+async function discFetch(){if(!discOn||window.__tab!=='p'){return}try{const r=await sb.rpc('discover_list');if(!r.error){discRows=r.data||[];renderPeople()}}catch(e){}}
+function discStart(){if(!discOn||!myCode||discBeat)return;discBeatNow().then(discFetch);discBeat=setInterval(discBeatNow,20000);discPoll=setInterval(discFetch,8000)}
+function discStop(){clearInterval(discBeat);clearInterval(discPoll);discBeat=discPoll=null;discRows=[];try{sb.rpc('discover_off').then(()=>{},()=>{})}catch(e){}}
+function discRetrack(){}
 function renderPeople(){const b=$('ppb'),x=$('ppx'),l=$('ppl');if(!b)return;l.innerHTML='';
- if(!discOn){x.textContent='لو فعّلت الميزة دي، اسمك (أو كودك لو مفيش اسم) هيظهر لأي حد فاتح الميزة دي وهو فاتح التطبيق، وإنت كمان هتشوفهم. مفيش صور لسه. تقدر توقفها في أي وقت وتختفي فورًا. مفيش حاجة بتتبعت لحد من غير ما تضغط.';b.textContent='فعّل ظهوري';b.className='';return}
- x.textContent='إنت ظاهر دلوقتي للي فاعلين الميزة. بتختفي أول ما تقفلها أو تقفل التطبيق.';b.textContent='وقّف ظهوري';b.className='alt';
- const st=disc?disc.presenceState():{};let n=0;
- for(const code of Object.keys(st)){if(n>=50)break;if(code===myCode||blockedCodes.has(code)||NOCALL.includes(code))continue;
-  const m=(st[code]&&st[code][0])||{};const nm=String(m.n||'').trim().slice(0,30);n++;
+ if(!discOn){x.textContent='لو فعّلت الميزة دي، اسمك (أو كودك لو مفيش اسم) هيظهر لأي حد فاتح الميزة دي وهو فاتح التطبيق، وإنت كمان هتشوفهم. مفيش صور لسه. تقدر توقفها في أي وقت وتختفي بسرعة (لو قفلت التطبيق ممكن تفضل ظاهر حوالي دقيقة). مفيش حاجة بتتبعت لحد من غير ما تضغط.';b.textContent='فعّل ظهوري';b.className='';return}
+ x.textContent='إنت ظاهر دلوقتي للي فاعلين الميزة. لما تقفلها بتختفي خلال ثواني، ولما تقفل التطبيق بتختفي خلال حوالي دقيقة.';b.textContent='وقّف ظهوري';b.className='alt';
+ let n=0;
+ for(const m of discRows){if(n>=50)break;const code=m.code;if(code===myCode||blockedCodes.has(code)||NOCALL.includes(code))continue;
+  const nm=String(m.display_name||'').trim().slice(0,30);n++;
   const r=document.createElement('div');r.className='ci';r.style.cssText='display:flex;gap:10px;align-items:center';
   const a=document.createElement('span');a.className='av';setAv(a,nm,code);
   const t=document.createElement('div');t.style.flex='1';const e1=document.createElement('div');e1.className='nm';e1.textContent=nm||code;
@@ -350,6 +351,7 @@ function renderPeople(){const b=$('ppb'),x=$('ppx'),l=$('ppl');if(!b)return;l.in
   r.append(a,t,o);l.append(r)}
  if(!n){const p=document.createElement('p');p.className='empty';p.style.fontSize='13px';p.textContent='مفيش حد تاني فاتح دلوقتي.';l.append(p)}}
 $('ppb').onclick=()=>{discOn=!discOn;localStorage.setItem('migo_disc',discOn?'1':'0');if(discOn)discStart();else discStop();renderPeople()};
+addEventListener('pagehide',()=>{if(discOn)try{sb.rpc('discover_off').then(()=>{},()=>{})}catch(e){}});
 renderPeople();
 document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
 $('rmx').addEventListener('click',()=>setTab('m'));
