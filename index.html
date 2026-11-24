@@ -750,7 +750,7 @@ g('pvm').onclick=()=>{mSync();g('pvs').classList.add('on')};g('pvx').onclick=()=
 g('pvt').onclick=()=>{mOn=!mOn;localStorage.setItem('migo_match',mOn?'1':'0');if(mOn&&discOn)mStart();else mStop();mSync()};
 g('ppb').addEventListener('click',()=>setTimeout(()=>{if(!discOn)mStop();else if(mOn)mStart();mSync()},50));
 if(mOn&&discOn)setTimeout(mStart,3000);
-g('pvg').onclick=async()=>{const b=g('pvg'),st=g('pvst');b.disabled=true;st.textContent='بندوّر على حد…';
+g('pvg').onclick=async()=>{const b=g('pvg'),st=g('pvst');if(cur||ringing||room){st.textContent='إنت في مكالمة أو في اتصال دلوقتي. خلّصها الأول.';return}b.disabled=true;st.textContent='بندوّر على حد…';
  await sb.rpc('match_beat');const r=await sb.rpc('match_pick');
  if(r.error){const m=r.error.message||'';st.textContent=/adult/.test(m)?'لازم تكمّل بياناتك (18+) الأول.':/rate/.test(m)?'وصلت للحد (20 مرة في الساعة). جرّب بعد شوية.':/not_on/.test(m)?'الاستقبال مش شغال لسه. اقفله وافتحه تاني.':'التطابق ماشتغلش دلوقتي.';b.disabled=false;return}
  const row=r.data&&r.data[0];if(!row){st.textContent='مفيش حد متاح للتطابق دلوقتي. جرّب بعد شوية.';b.disabled=false;return}
@@ -758,7 +758,7 @@ g('pvg').onclick=async()=>{const b=g('pvg'),st=g('pvst');b.disabled=true;st.text
  try{g('pvs').classList.remove('on');setTab('m');await openChat(row.code);await new Promise(r=>setTimeout(r,400));await dial(false)}catch(e){note('المكالمة ماتبدّتش')}
  b.disabled=false};
 const IC={like:'❤️',comment:'💬',follow_req:'➕',follow_ok:'✅'};
-function txt(k){const n=k.display_name||k.code;return k.kind==='like'?n+' عمل قلب على منشورك'+(k.snippet?' «'+k.snippet+'»':''):k.kind==='comment'?n+' علّق: '+k.snippet:k.kind==='follow_req'?n+' طلب يتابعك. تقدر تقبله من «ملفي».':n+' قبل متابعتك'}
+function txt(k){const n=k.display_name||k.code;return k.kind==='like'?(k.n>1?k.n+' ناس عملوا قلب':'قلب واحد')+' على منشورك'+(k.snippet?' «'+k.snippet+'»':''):k.kind==='comment'?n+' علّق: '+k.snippet:k.kind==='follow_req'?n+' طلب يتابعك. تقدر تقبله من «ملفي».':n+' قبل متابعتك'}
 async function aLoad(show){const r=await sb.rpc('activity_list');if(r.error)return;const rows=r.data||[];const seen=+localStorage.getItem('migo_act_seen')||0;const nw=rows.filter(x=>new Date(x.at).getTime()>seen).length;g('pvac').textContent=nw?nw+' جديد':rows.length?'آخر تفاعلاتك':'لسه مفيش جديد';
  if(!show)return;const l=g('pal');l.innerHTML='';if(!rows.length){const p=document.createElement('p');p.className='pvn';p.textContent='لسه مفيش تفاعلات. لما حد يعمل قلب أو تعليق على منشورك أو يتابعك هتلاقيه هنا.';l.append(p)}
  for(const k of rows){const d=document.createElement('div');d.className='ai';const i=document.createElement('span');i.className='ic';i.textContent=IC[k.kind]||'•';const t=document.createElement('div');const a=document.createElement('span');a.textContent=txt(k);const s=document.createElement('small');s.textContent=poAgo(k.at);t.append(a,s);d.append(i,t);l.append(d)}
@@ -766,4 +766,4 @@ async function aLoad(show){const r=await sb.rpc('activity_list');if(r.error)retu
 g('pva').onclick=()=>{g('pas').classList.add('on');aLoad(true)};g('pax').onclick=()=>g('pas').classList.remove('on');g('pas').querySelector('.pcb').onclick=()=>g('pas').classList.remove('on');
 document.querySelector('#tabs button[data-t=p]').addEventListener('click',()=>setTimeout(()=>aLoad(false),300));setTimeout(()=>aLoad(false),4000);
 })();
-</script></body></html>
+</script><script>(()=>{const orig=renderPeople;let busy=false;window.renderPeople=renderPeople=function(){orig();if(busy||!discOn)return;const cs=(discRows||[]).map(r=>r.code).filter(c=>c&&!(c in AVC)&&c!==myCode);if(!cs.length)return;busy=true;sb.from('profiles').select('code,avatar').in('code',cs).then(r=>{busy=false;let ch=false;for(const x of (r.data||[])){if(x.avatar){AVC[x.code]=x.avatar;ch=true}}for(const c of cs)if(!(c in AVC))AVC[c]=null;if(ch)orig()},()=>{busy=false})};})();</script></body></html>
