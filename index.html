@@ -505,9 +505,9 @@ function poRow(p){const c=document.createElement('div');c.className='card';c.dat
   ib.onclick=async()=>{ib.disabled=true;ib.textContent='...';const r=await sb.rpc('post_image',{p_id:p.id});const d=r.data&&r.data[0];if(!d){ib.textContent='الصورة مش متاحة';return}
    const im=document.createElement('img');im.alt='صورة المنشور';im.style.cssText='display:block;max-width:100%;border-radius:10px;margin-top:8px';im.src='data:'+d.mime+';base64,'+d.data;ib.replaceWith(im)};c.append(ib)}
  return c}
-async function poLoad(more){if(poBusy)return;poBusy=true;const r=await sb.rpc('post_feed',{p_before:more?poLast:null});poBusy=false;if(r.error){note('المنشورات مقدرتش تتحمل');return}
- const l=$('pol');if(!more)l.innerHTML='';const rows=r.data||[];for(const p of rows){if(poMine&&!p.mine)continue;l.append(poRow(p))}if(rows.length)poLast=rows[rows.length-1].id;
- $('pom').style.display=rows.length===20?'':'none';if(!more&&!l.children.length){const e=document.createElement('p');e.className='empty';e.textContent=poMine?(rows.length?'مفيش منشورات ليك في آخر المنشورات. اضغط «أقدم» للمزيد.':'مفيش منشورات ليك لسه.'):'مفيش منشورات لسه. كون أول واحد.';l.append(e)}}
+async function poLoad(more){if(poBusy)return;poBusy=true;const r=await sb.rpc(poMine?'post_mine':'post_feed',{p_before:more?poLast:null});poBusy=false;if(r.error){note('المنشورات مقدرتش تتحمل');return}
+ const l=$('pol');if(!more)l.innerHTML='';const rows=r.data||[];for(const p of rows)l.append(poRow(p));if(rows.length)poLast=rows[rows.length-1].id;
+ $('pom').style.display=rows.length===20?'':'none';if(!more&&!l.children.length){const e=document.createElement('p');e.className='empty';e.textContent=poMine?'مفيش منشورات ليك لسه.':'مفيش منشورات لسه. كون أول واحد.';l.append(e)}}
 let poMine=false;document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#poc button');if(!b)return;poMine=b.dataset.m==='1';poChips();poLoad(false)});
 function poChips(){const c=$('poc');if(!c)return;c.querySelectorAll('button').forEach(b=>b.className=(b.dataset.m==='1')===poMine?'on':'')}
 function poReset(){poImg=null;$('pov').style.display='none';$('pov').removeAttribute('src');$('pox').style.display='none';$('pob').textContent='إضافة صورة'}
