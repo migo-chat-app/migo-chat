@@ -14,9 +14,9 @@ button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#1f
 button.alt{background:#e4ddcc;color:#222}button.red{background:#c0392b}
 .msg{max-width:80%;padding:8px 12px;border-radius:14px;word-wrap:break-word}
 .me{background:#d7f0e4;align-self:flex-start}.them{background:#fff;align-self:flex-end}
-.tm{font-size:10px;color:#777;margin-top:2px}.sys{align-self:center;font-size:12px;color:#666}
+.tools{padding:6px 10px 0}.tools button{flex:1;padding:7px 4px;font-size:14px;white-space:nowrap}.tools button:disabled{opacity:.5}.tm{font-size:10px;color:#777;margin-top:2px}.sys{align-self:center;font-size:12px;color:#666}
 .row{display:flex;gap:8px;padding:10px;background:#fff}
-#call{position:fixed;inset:0;background:#10231e;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:5}
+#main{min-height:0}#call{position:fixed;inset:0;background:#10231e;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:5}
 #call video{max-width:100%;max-height:55dvh;border-radius:12px;background:#000}
 #lv{position:absolute;top:12px;left:12px;width:90px!important;border:2px solid #fff}
 .av{flex:none;width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
@@ -26,6 +26,7 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
 <div class="demo" id="demo">نسخة تجريبية: الرسايل بتتخزن على سيرفر. المكالمات بتشتغل بس لو صاحبك فاتح الصفحة.</div>
 <header><b id="back" style="cursor:pointer">ميجو شات</b><span id="st">جاري التجهيز…</span></header>
 <main id="main">
+ <div class="card" id="guide" style="display:none;background:#fff8e1;line-height:1.7;font-size:14px"><b>إزاي التطبيق شغال</b><br>• الرسايل بتتخزن على سيرفر وبتوصل حتى لو صاحبك مش فاتح الصفحة.<br>• المكالمات الصوتية بتشتغل بس والاتنين فاتحين الصفحة في نفس الوقت. مفيش رنين ولا إشعار لما الصفحة تكون مقفولة، التطبيق ده لسه مفيهوش الميزة دي.<br>• الفيديو مقفول دلوقتي.<br>• لو المكالمة مقدرتش تتوصل مباشرة بتعدي على سيرفر مجاني للتجربة، وسعته 500 ميجا بس لكل المستخدمين مع بعض. لو خلصت المكالمات ممكن تفشل والرسايل تفضل شغالة.<br>• التطبيق تجريبي، ومتجربش على موبايلين حقيقيين لسه.<br><button id="gok" type="button" style="margin-top:6px">تمام، فهمت</button></div>
  <div class="card" id="home">
   <p>كودك: <code id="mycode">…</code></p>
   <p style="display:flex;gap:8px;align-items:center"><span id="av" class="av"></span><input id="dn" maxlength="30" placeholder="اسمك (اختياري)"><button id="dnb" type="button" class="alt">حفظ</button></p>
@@ -39,9 +40,9 @@ code{font-size:22px;letter-spacing:2px;direction:ltr;display:inline-block;backgr
  </div>
  <div id="log" style="display:flex;flex-direction:column;gap:8px"></div>
 </main>
-<div class="row" id="bar" style="display:none">
- <button class="alt" id="vc" type="button">صوت</button><button class="alt" id="vv" type="button">فيديو</button>
- <button class="alt" id="blk" type="button" style="padding:10px 8px">حظر</button><input id="txt" placeholder="اكتب رسالة"><button id="send" type="button">إرسال</button>
+<div id="bar" style="display:none;flex-direction:column;background:#fff;flex:none">
+ <div class="row tools"><button class="alt" id="vc" type="button">صوت</button><button class="alt" id="vv" type="button">فيديو</button><button class="alt" id="blk" type="button">حظر</button></div>
+ <div class="row"><input id="txt" placeholder="اكتب رسالة" style="flex:1;min-width:0"><button id="send" type="button">إرسال</button></div>
 </div>
 <div id="call"><div id="cs">…</div><div style="position:relative"><video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video></div>
  <div id="cb"></div></div>
@@ -127,7 +128,9 @@ function updBlk(){if(!friend)return;const b=isBlk();$('blk').textContent=b?'إل
 $('blk').onclick=async()=>{if(!friend)return;if(isBlk()){const r=await sb.from('blocks').delete().eq('blocked',friend.id);if(r.error){note('مقدرتش ألغي الحظر');return}}
  else{if(!confirm('تحظر '+(friend.display_name||friend.code)+'؟ مش هيقدر يبعتلك رسايل ولا يكلمك.'))return;const r=await sb.from('blocks').insert({blocked:friend.id});if(r.error){note('الحظر ماتسجلش');return}}
  await loadBlocks();updBlk();note(isBlk()?'تم الحظر':'اتلغى الحظر')};
-$('del').onclick=()=>{$('delp').style.display='block'};$('delno').onclick=()=>{$('delp').style.display='none'};
+$('del').onclick=()=>{$('delp').style.display='block';$('delp').scrollIntoView({block:'end'})};
+try{if(!localStorage.getItem('guide1'))$('guide').style.display='block'}catch(e){}
+$('gok').onclick=()=>{$('guide').style.display='none';try{localStorage.setItem('guide1','1')}catch(e){}};$('delno').onclick=()=>{$('delp').style.display='none'};
 $('delok').onclick=async()=>{const r=await sb.rpc('delete_my_data');if(r.error){note('المسح ماتمش، حاول تاني');return}
  try{await sb.auth.signOut()}catch(e){}try{localStorage.clear()}catch(e){}location.reload()};
 function goHome(){if(!friend)return;friend=null;$('bar').style.display='none';$('log').innerHTML='';$('home').style.display='';$('st').textContent='جاهز';loadRecent()}
