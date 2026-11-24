@@ -56,7 +56,17 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
   <p id="ppx" style="font-size:13px;line-height:1.8;color:#555"></p>
   <button type="button" id="ppb"></button>
   <div id="ppl" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div></div>
- <div class="card empty" id="po" style="display:none"><b>المنشورات</b><p>المنشورات لسه مش موجودة في التطبيق. الصفحة دي مكانها المستقبلي.</p></div>
+ <div id="po" style="display:none;flex-direction:column;gap:10px">
+  <div class="card"><b>منشور جديد</b>
+   <p style="font-size:12px;color:#555;line-height:1.7;margin:4px 0">أي منشور بتنزله هيظهر لكل مستخدمي التطبيق، وتقدر تمسحه بعد كده. مفيش مسح تلقائي دلوقتي.</p>
+   <textarea id="pot" maxlength="500" rows="3" placeholder="اكتب منشور…" style="width:100%;box-sizing:border-box"></textarea>
+   <img id="pov" alt="معاينة الصورة" style="display:none;max-width:100%;max-height:200px;border-radius:10px;margin-top:6px">
+   <div style="display:flex;gap:8px;margin-top:8px"><button type="button" id="pob" class="alt">إضافة صورة</button><button type="button" id="pox" class="alt" style="display:none">شيل الصورة</button><button type="button" id="pop" style="margin-inline-start:auto">نشر</button></div>
+   <input id="pof" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
+  </div>
+  <div id="pol" style="display:flex;flex-direction:column;gap:10px"></div>
+  <button type="button" id="pom" class="alt" style="display:none">تحميل المزيد</button>
+ </div>
  <div id="log" style="display:flex;flex-direction:column;gap:8px"></div>
 </main>
 <div id="bar" style="display:none;flex-direction:column;background:#fff;flex:none">
@@ -327,7 +337,7 @@ function tabUI(t){document.querySelectorAll('#tabs button').forEach(b=>b.classLi
 function setTab(t){if(room&&t!=='r'){note('اخرج من الغرفة الأول');return}
  if(friend&&(t!=='m'||window.__tab==='m'))goHome();
  if(t==='r'){$('rmo').click()}else if(!room){$('rm').style.display='none'}
- $('pp').style.display=t==='p'?'':'none';$('po').style.display=t==='b'?'':'none';
+ $('pp').style.display=t==='p'?'':'none';$('po').style.display=t==='b'?'flex':'none';if(t==='b')poLoad(false);
  if(!friend)$('home').style.display=t==='m'?'':'none';
  if(t==='p'){renderPeople();discFetch()}
  tabUI(t)}
@@ -392,6 +402,33 @@ $('mmb').onclick=()=>{$('mmenu').style.display='none';$('blk').click()};
 $('mmr').onclick=()=>{$('mmenu').style.display='none';$('rpb').click()};
 $('mmp').onclick=()=>{$('mmenu').style.display='none';if(!friend)return;const f=friend;setAv($('prfa'),f.display_name,f.code);$('prfn').textContent=f.display_name||'من غير اسم';$('prfc').textContent=f.code;$('prfo').textContent=online.has(f.code)?'فاتح دلوقتي':'';$('prf').style.display='flex'};
 $('prfx').onclick=()=>{$('prf').style.display='none'};
+
+let poImg=null,poLast=null,poBusy=false;
+function poAgo(t){const m=Math.floor((Date.now()-new Date(t))/60000);if(m<1)return 'دلوقتي';if(m<60)return m+' د';const h=Math.floor(m/60);if(h<24)return h+' س';return Math.floor(h/24)+' يوم'}
+function poRow(p){const c=document.createElement('div');c.className='card';c.dataset.id=p.id;
+ const h=document.createElement('div');h.style.cssText='display:flex;gap:8px;align-items:center';
+ const av=document.createElement('span');av.className='av';setAv(av,p.author_name,p.author_code);
+ const n=document.createElement('div');n.style.flex='1';const n1=document.createElement('div');n1.className='nm';n1.style.fontWeight='700';n1.textContent=p.author_name||p.author_code;const n2=document.createElement('div');n2.style.cssText='font-size:11px;color:#777';n2.textContent=poAgo(p.created_at);n.append(n1,n2);
+ const mb=document.createElement('button');mb.type='button';mb.className='alt';mb.style.cssText='padding:4px 10px;font-size:13px';mb.textContent=p.mine?'مسح':'إبلاغ';
+ mb.onclick=async()=>{if(p.mine){if(!confirm('تمسح المنشور ده؟'))return;const r=await sb.rpc('post_delete',{p_id:p.id});if(r.error){note('المسح ماتمش');return}c.remove();note('اتمسح')}
+  else{const why=prompt('سبب الإبلاغ؟ (بيتبعت لميجو صاحب التطبيق بس)');if(!why||why.trim().length<3)return;const r=await sb.rpc('report_post',{p_id:p.id,p_reason:why.trim()});note(r.error?(/rate/.test(r.error.message)?'بلاغات كتير النهارده':'البلاغ ماتبعتش'):'البلاغ اتبعت لميجو. مفيش وعد برد.')}};
+ h.append(av,n,mb);c.append(h);
+ if(p.body){const t=document.createElement('div');t.style.cssText='margin-top:8px;white-space:pre-wrap;word-break:break-word;line-height:1.7';t.textContent=p.body;c.append(t)}
+ if(p.has_img){const ib=document.createElement('button');ib.type='button';ib.className='alt';ib.style.marginTop='8px';ib.textContent='عرض الصورة';
+  ib.onclick=async()=>{ib.disabled=true;ib.textContent='...';const r=await sb.rpc('post_image',{p_id:p.id});const d=r.data&&r.data[0];if(!d){ib.textContent='الصورة مش متاحة';return}
+   const im=document.createElement('img');im.alt='صورة المنشور';im.style.cssText='display:block;max-width:100%;border-radius:10px;margin-top:8px';im.src='data:'+d.mime+';base64,'+d.data;ib.replaceWith(im)};c.append(ib)}
+ return c}
+async function poLoad(more){if(poBusy)return;poBusy=true;const r=await sb.rpc('post_feed',{p_before:more?poLast:null});poBusy=false;if(r.error){note('المنشورات مقدرتش تتحمل');return}
+ const l=$('pol');if(!more)l.innerHTML='';const rows=r.data||[];for(const p of rows)l.append(poRow(p));if(rows.length)poLast=rows[rows.length-1].id;
+ $('pom').style.display=rows.length===20?'':'none';if(!more&&!rows.length){const e=document.createElement('p');e.className='empty';e.textContent='مفيش منشورات لسه. كون أول واحد.';l.append(e)}}
+function poReset(){poImg=null;$('pov').style.display='none';$('pov').removeAttribute('src');$('pox').style.display='none';$('pob').textContent='إضافة صورة'}
+$('pob').onclick=()=>$('pof').click();$('pox').onclick=poReset;$('pom').onclick=()=>poLoad(true);
+$('pof').onchange=async()=>{const f=$('pof').files[0];$('pof').value='';if(!f)return;if(!/^image\/(jpeg|png|webp)$/.test(f.type)){note('الصورة لازم تكون JPG أو PNG أو WebP');return}
+ let r;try{r=await shrink(f)}catch(e){r=null}if(!r){note('مقدرتش أجهّز الصورة');return}poImg=r.b64;$('pov').src=r.url;$('pov').style.display='block';$('pox').style.display='';$('pob').textContent='غيّر الصورة'};
+$('pop').onclick=async()=>{const b=$('pot').value.trim();if(!b&&!poImg){note('اكتب حاجة أو اختار صورة');return}
+ $('pop').disabled=true;const r=await sb.rpc('post_create',{p_body:b,p_img:poImg});$('pop').disabled=false;
+ if(r.error){const e=r.error.message;note(/limit/.test(e)?'نزلت منشورات كتير، استنى شوية':/full/.test(e)?'مساحة الصور امتلأت':'المنشور ماتنزلش');return}
+ $('pot').value='';poReset();note('المنشور نزل');poLoad(false)};
 document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
 $('rmx').addEventListener('click',()=>setTab('m'));
 $('send').onclick=send;$('txt').onkeydown=e=>{if(e.key==='Enter')send()};
