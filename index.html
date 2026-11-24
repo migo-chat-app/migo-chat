@@ -37,6 +37,26 @@ header{min-height:52px}.hc{background:#fff;color:#1f6f5c;border-radius:20px;padd
 @keyframes wv{0%,60%,100%{transform:rotate(0)}10%{transform:rotate(16deg)}20%{transform:rotate(-10deg)}30%{transform:rotate(16deg)}40%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}.wvg{transform-origin:70% 90%;animation:wv 2.4s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.wvg{animation:none}}</style></head><body>
 <div class="demo" id="demo">نسخة تجريبية: الرسايل بتتخزن على سيرفر. المكالمات بتوصل لو صاحبك فاتح الصفحة، أو فعّل الإشعارات وفتحها خلال حوالي 40 ثانية. الإشعارات تجريبية ومش مضمونة.</div>
 <header><b id="back" style="cursor:pointer">ميجو شات</b><span id="st">جاري التجهيز…</span><button id="vc" type="button" class="hc" style="display:none" aria-label="مكالمة صوت"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>اتصال</span></button><button id="mm" type="button" class="hc" aria-label="خيارات" aria-haspopup="true" style="display:none;padding:6px 10px"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><circle cx="12" cy="5" r="1.6" fill="#1f6f5c"/><circle cx="12" cy="12" r="1.6" fill="#1f6f5c"/><circle cx="12" cy="19" r="1.6" fill="#1f6f5c"/></svg></button></header>
+<div id="entry" dir="rtl" style="display:none;position:fixed;inset:0;z-index:99;background:radial-gradient(120% 70% at 50% 18%,#2f9a74 0%,#1f6f54 38%,#0e2a21 100%);color:#fff;flex-direction:column;justify-content:space-between;padding:0;overflow:auto">
+ <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 8px;text-align:center;position:relative">
+  <div style="position:absolute;inset:0;opacity:.14;background-image:radial-gradient(#fff 1.5px,transparent 1.5px);background-size:26px 26px;pointer-events:none"></div>
+  <img src="icon.svg" alt="" style="width:92px;height:92px;border-radius:24px;box-shadow:0 10px 30px #0006;position:relative">
+  <div style="font-size:34px;font-weight:700;margin-top:18px;position:relative">ميجو شات</div>
+  <div style="font-size:15px;opacity:.85;margin-top:8px;line-height:1.7;position:relative">رسايل وصوت وغرف مع صحابك، ومنشورات تشاركها مع الناس</div>
+ </div>
+ <div style="padding:20px 22px 26px;display:flex;flex-direction:column;gap:12px">
+  <div style="font-size:24px;font-weight:700;text-align:right;margin-bottom:6px">ابدأ مع أصحابك</div>
+  <button id="eg" type="button" style="background:#fff;color:#222;border-radius:30px;padding:15px 18px;font-size:17px;display:flex;align-items:center;gap:12px;justify-content:center"><svg viewBox="0 0 48 48" width="24" height="24"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.1 5.3-4.5 7l7.3 5.7c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-2.9-.8-4.7s.3-3.3.8-4.7l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.3-5.7c-2 1.4-4.9 2.4-8.6 2.4-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg><span id="egt">كمّل بحساب جوجل</span></button>
+  <button id="ea" type="button" style="background:transparent;color:#fff;border:2px solid #ffffff99;border-radius:30px;padding:14px 18px;font-size:17px">كمّل من غير حساب</button>
+  <button id="eo" type="button" style="background:transparent;color:#fff;font-size:15px;opacity:.9">خيارات تانية ‹</button>
+  <div id="eom" style="display:none;flex-direction:column;gap:10px">
+   <button type="button" disabled style="background:#ffffff22;color:#ffffffcc;border-radius:30px;padding:13px 18px;font-size:16px">تيك توك (قريبًا)</button>
+   <button type="button" disabled style="background:#ffffff22;color:#ffffffcc;border-radius:30px;padding:13px 18px;font-size:16px">فيسبوك (قريبًا)</button>
+   <button type="button" disabled style="background:#ffffff22;color:#ffffffcc;border-radius:30px;padding:13px 18px;font-size:16px">رقم الموبايل (قريبًا)</button>
+  </div>
+  <div style="font-size:12px;opacity:.75;line-height:1.7;text-align:center;margin-top:4px">لما تكمّل بتوافق على الاستخدام التجريبي. اقرأ <a href="privacy.html" target="_blank" style="color:#fff;text-decoration:underline">سياسة الخصوصية والشروط</a></div>
+ </div>
+</div>
 <main id="main">
  <div class="card" id="guide" style="display:none;background:#fff8e1;line-height:1.7;font-size:14px"><b>إزاي التطبيق شغال</b><br>• الرسايل بتتخزن على سيرفر وبتوصل حتى لو صاحبك مش فاتح الصفحة.<br>• المكالمات الصوتية بتوصل لو صاحبك فاتح الصفحة. لو مقفولة، التطبيق بيحاول يوصله حوالي 40 ثانية، ولو مفعّل الإشعارات (اختياري) ممكن يوصله إشعار يفتح منه. مفيش رنين زي مكالمة الموبايل، ووصول الإشعار تجريبي ومش مضمون.<br>• الفيديو مقفول دلوقتي.<br>• لو المكالمة مقدرتش تتوصل مباشرة بتعدي على سيرفر مجاني للتجربة، وسعته 500 ميجا بس لكل المستخدمين مع بعض. لو خلصت المكالمات ممكن تفشل والرسايل تفضل شغالة.<br>• التطبيق تجريبي، ومتجربش على موبايلين حقيقيين لسه.<br><button id="gok" type="button" style="margin-top:6px">تمام، فهمت</button></div>
  <div class="card" id="home">
@@ -122,8 +142,18 @@ const log=(t,c)=>{const d=document.createElement('div');d.className='msg '+c;d.t
 let blockedIds=new Set(),blockedCodes=new Set(),myName='',me=null,myCode=null,friend=null,peer=null,cur=null,local=null,lastId=0,seen=new Set(),iceServers=[{urls:'stun:stun.l.google.com:19302'}],turnOk=false;
 let lastN='',lastT=0;const note=m=>{const n=Date.now();if(m===lastN&&n-lastT<15000)return;lastN=m;lastT=n;log(m,'sys')};
 const E=m=>{$('st').textContent='في مشكلة';log(m,'sys')};
+
+let ENTRY_DONE=false;
+function hasSavedSession(){try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&/^sb-.*-auth-token$/.test(k))return true}}catch(e){}return false}
+function entryNeeded(){return !ENTRY_DONE&&!OAUTH_RET&&gShown()&&!hasSavedSession()}
+function showEntry(){const e=$('entry');e.style.display='flex';
+ const gok=true;$('egt').textContent='كمّل بحساب جوجل (تجريبي)';
+ $('ea').onclick=()=>{ENTRY_DONE=true;e.style.display='none';init()};
+ $('eo').onclick=()=>{const m=$('eom');m.style.display=m.style.display==='flex'?'none':'flex'};
+ $('eg').onclick=async()=>{if(!confirm('هتكمّل بجوجل. لو الحساب ده مش مربوط قبل كده هيتعمل حساب جديد. متأكد؟'))return;try{localStorage.setItem('migo_oauth','login')}catch(x){}const r=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(r.error){try{localStorage.removeItem('migo_oauth')}catch(x){}alert('مقدرتش أبدأ الدخول')}}}
 let retried=false;
 async function init(){
+ if(entryNeeded()){showEntry();return}
  try{
   let oauthErr='';
   if(OAUTH_RET){const q=new URLSearchParams(location.search);try{localStorage.removeItem('migo_oauth')}catch(e){}history.replaceState(null,'',location.pathname);if(q.get('code')){const x=await sb.auth.exchangeCodeForSession(q.get('code'));if(x.error)oauthErr=x.error.message||'error'}else oauthErr=q.get('error_description')||q.get('error')||'error'}
