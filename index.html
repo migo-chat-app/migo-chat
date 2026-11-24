@@ -781,4 +781,16 @@ document.querySelector('#tabs button[data-t=p]').addEventListener('click',()=>se
 #pol .empty{background:#fff;border-radius:18px;padding:18px}
 #pop{border-radius:18px 18px 18px 5px!important;background:linear-gradient(135deg,#1f6f5c,#2fb88a)!important}
 </style>
-<script>(()=>{const b=document.getElementById('ponew');if(b)b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H11l-4 4v-4H7a3 3 0 0 1-3-3z"/><path d="M12 6v6M9 9h6"/></svg><span>انشر</span>'})();</script></body></html>
+<script>(()=>{const b=document.getElementById('ponew');if(b)b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H11l-4 4v-4H7a3 3 0 0 1-3-3z"/><path d="M12 6v6M9 9h6"/></svg><span>انشر</span>'})();</script><style>
+.av.lvr{position:relative!important;overflow:visible!important;box-shadow:0 0 0 2px #fff,0 0 0 5px #2fb88a;animation:lvp 2s ease-in-out infinite}
+@keyframes lvp{0%,100%{box-shadow:0 0 0 2px #fff,0 0 0 5px #2fb88a}50%{box-shadow:0 0 0 2px #fff,0 0 0 5px #ff9a3c}}
+.lvb{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);background:#1f6f5c;color:#fff;border:2px solid #fff;border-radius:10px 10px 10px 3px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap;line-height:1.5;font-family:inherit}
+.lvb i{display:inline-block;width:3px;height:8px;background:#fff;border-radius:2px;margin-inline-start:3px;vertical-align:middle;animation:lvw 0.9s ease-in-out infinite}
+@keyframes lvw{0%,100%{height:4px}50%{height:10px}}
+</style>
+<script>(()=>{const op=window.poRow;window.poRow=function(p){const c=op(p);c.dataset.ac=p.author_code||'';return c};
+const ol=window.poLoad;let lt=null;
+async function mark(){try{const cs=[...document.querySelectorAll('#pol .pp')].map(c=>c.dataset.ac).filter(Boolean);const u=[...new Set(cs)].slice(0,40);if(!u.length)return;const r=await sb.rpc('post_live',{p_codes:u});const on=new Set((r.data||[]).map(x=>x.code));
+ document.querySelectorAll('#pol .pp').forEach(c=>{const a=c.querySelector('.pph .av');if(!a)return;const live=on.has(c.dataset.ac);const has=a.classList.contains('lvr');if(live&&!has){a.classList.add('lvr');const b=document.createElement('span');b.className='lvb';b.innerHTML='مباشر<i></i>';b.setAttribute('aria-label','في غرفة صوتية شغالة دلوقتي');a.append(b)}else if(!live&&has){a.classList.remove('lvr');a.querySelector('.lvb')?.remove()}})}catch(e){}}
+window.poLoad=async function(m){await ol(m);mark()};
+setInterval(()=>{if(window.__tab==='b')mark()},30000);window.__liveMark=mark})();</script></body></html>
