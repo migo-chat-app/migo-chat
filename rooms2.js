@@ -219,7 +219,7 @@ const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 #pcdc .tile small{display:block;font-size:10.5px;font-weight:600;opacity:.92}#pcdc .tile b{font-size:17px}
 #pcdc .tile.g{background:linear-gradient(120deg,#2fae78,#7bd34a)}#pcdc .tile.o{background:linear-gradient(120deg,#f08c00,#ffcf4a);color:#3a2300}
 #pcdc .sec{margin:10px 12px 0;padding:6px 12px;border-radius:12px;background:#f3eefc;font-size:13px}
-#pcdc .row{display:flex;justify-content:space-between;padding:5px 0}#pcdc .row+.row{border-top:1px solid #e3d9f3}#pcdc .row em{font-style:normal;color:#6a4fa0;font-weight:700}
+#pcdc .prw{display:flex;justify-content:space-between;padding:5px 0}#pcdc .prw+.row{border-top:1px solid #e3d9f3}#pcdc .prw em{font-style:normal;color:#6a4fa0;font-weight:700}
 #pcdc .ac{display:flex;gap:8px;padding:12px;position:sticky;bottom:0;background:#fff}
 #pcdc .ac button{flex:1;padding:10px;border-radius:22px;font-size:14px;font-weight:700;border:2px solid #e8590c;background:#fff;color:#e8590c}
 #pcdc .ac button.p{background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}#pcdc .ac button.m{flex:.6;border-color:#6a4fa0;color:#6a4fa0}
@@ -230,7 +230,7 @@ function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  const c=(cos&&cos[code])||{};const fr=c.frame||'',en=c.ent||c.entrance||'';const host=(typeof room!=='undefined'&&room&&room.host===myCode);
  w.innerHTML='<div id="pcdc"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div><div class="tx"><div class="nm"></div><div class="cd"></div><div class="ch"></div></div></div>'+
  '<div class="tl"><div class="tile"><small>نشاط الغرفة</small><b></b></div><div class="tile g"><small>المقعد</small><b></b></div><div class="tile o"><small>الدور</small><b></b></div></div>'+
- '<div class="sec"><div class="row"><span>الإطار</span><em></em></div><div class="row"><span>احتفال الدخول</span><em></em></div></div>'+
+ '<div class="sec"><div class="prw"><span>الإطار</span><em></em></div><div class="prw"><span>احتفال الدخول</span><em></em></div></div>'+
  '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button>'+((host||isMe)?'<button id="pcm" class="m">'+(isMe?'مقعدي':'إدارة')+'</button>':'')+'</div></div>';
  const q=x=>w.querySelector(x);q('.nm').textContent=name;q('.cd').textContent='ID: '+code;
  const t=w.querySelectorAll('.tile b');t[0].textContent=pill||'0';t[1].textContent=seatNo||'-';t[2].textContent=role==='host'?'المضيف':'عضو';
