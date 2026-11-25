@@ -202,6 +202,46 @@ const sec=document.createElement('div');sec.innerHTML='<div class="ir"><b>إطا
 const mk=(box,map,key)=>{Object.keys(map).forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=map[k];if(mine[key]===k)b.className='on';b.onclick=async()=>{mine[key]=k;box.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_cosmetics',{p_frame:mine.frame,p_ent:mine.ent});poll()};box.append(b)})};
 mk(sec.querySelector('#cpf'),FR,'frame');mk(sec.querySelector('#cpe'),EN,'ent');
 const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
+/* profile card */
+(function(){const st=document.createElement('style');st.textContent=`
+#pcw{position:fixed;inset:0;z-index:50;background:#0007;display:none;align-items:flex-end;justify-content:center}
+#pcw.on{display:flex}
+#pcd{width:100%;max-width:520px;max-height:84dvh;overflow:auto;background:#fff;color:#2b2118;border-radius:22px 22px 0 0;animation:pcup .25s ease both}
+@keyframes pcup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#pcd .tp{background:radial-gradient(circle at 50% 30%,#5a3a8a,#1d1233 75%);padding:22px 12px 40px;text-align:center;color:#fff;border-radius:22px 22px 0 0;position:relative}
+#pcd .tp:after{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;background:linear-gradient(#fff0,#fff)}
+#pcd .av{width:92px;height:92px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:700;border:3px solid #ffffffcc;position:relative;z-index:1}
+#pcd .av.fr-f1{border-color:#ffd54a;box-shadow:0 0 0 3px #b8860b,0 0 16px #ffd54a}#pcd .av.fr-f2{border-color:#4dd0e1;box-shadow:0 0 0 4px #7a2e8e,0 0 18px #4dd0e1}#pcd .av.fr-f3{border-color:#f08c00;box-shadow:0 0 0 4px #e8590c,0 0 20px #f08c00}#pcd .av.fr-f4{border-color:#b8f2c0;box-shadow:0 0 0 4px #3a7d44,0 0 14px #b8f2c0}
+#pcd .nm{font-size:20px;font-weight:700;margin-top:10px;position:relative;z-index:1}
+#pcd .cd{font-size:12px;opacity:.8;position:relative;z-index:1;margin-top:2px}
+#pcd .tl{display:flex;gap:8px;padding:0 12px;margin-top:-6px;position:relative;z-index:1}
+#pcd .tile{flex:1;border-radius:12px;padding:8px 10px;color:#fff;font-weight:700;background:linear-gradient(120deg,#8a3fd1,#d04fb5)}
+#pcd .tile small{display:block;font-size:11px;font-weight:600;opacity:.9}#pcd .tile b{font-size:20px}
+#pcd .tile.g{background:linear-gradient(120deg,#35b36a,#7bd34a)}
+#pcd .sec{margin:14px 12px 0;padding:10px;border-radius:14px;background:#f3eefc;font-size:13px}
+#pcd .sec h4{margin:0 0 6px;font-size:14px}#pcd .sec .mut{color:#8a7f96}
+#pcd .ac{display:flex;gap:10px;padding:14px 12px 16px;position:sticky;bottom:0;background:#fff}
+#pcd .ac button{flex:1;padding:12px;border-radius:24px;font-size:15px;font-weight:700;border:2px solid #e8590c;background:#fff;color:#e8590c}
+#pcd .ac button.p{background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}
+`;document.head.appendChild(st)})();
+const PFN={f1:'إطار ذهبي',f2:'إطار سماوي',f3:'إطار ناري',f4:'إطار أخضر'},PEN={e1:'احتفال التاج',e2:'احتفال النجوم',e3:'احتفال الورق'};
+function pcOpen(name,code,pill,isMe){
+ let w=document.getElementById('pcw');if(!w){w=document.createElement('div');w.id='pcw';w.onclick=e=>{if(e.target===w)w.classList.remove('on')};document.body.append(w)}
+ const c=(cos&&cos[code])||{};const fr=c.frame||'',en=c.ent||c.entrance||'';
+ w.innerHTML='<div id="pcd"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div><div class="nm"></div><div class="cd"></div></div>'+
+ '<div class="tl"><div class="tile"><small>النشاط في الغرفة</small><b>'+(pill||'0')+'</b></div><div class="tile g"><small>الكود</small><b style="font-size:15px"></b></div></div>'+
+ '<div class="sec"><h4>مؤثرات الدخول والإطارات</h4><div>'+(fr?PFN[fr]:'<span class="mut">بدون إطار</span>')+' · '+(en?PEN[en]:'<span class="mut">بدون احتفال دخول</span>')+'</div></div>'+
+ '<div class="sec"><h4>العلاقات والمنشورات</h4><div class="mut">لسه مش متاحة في بطاقة الغرفة</div></div>'+
+ '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button></div></div>';
+ w.querySelector('.nm').textContent=name;w.querySelector('.cd').textContent='ID: '+code;w.querySelector('.tile.g b').textContent=code;
+ setAv(w.querySelector('#pcav'),name,code);
+ const g=w.querySelector('#pcg'),f=w.querySelector('#pcf');
+ if(isMe){g.style.display='none';f.textContent='إغلاق';f.onclick=()=>w.classList.remove('on')}
+ else{g.onclick=()=>{room.giftTo=code;w.classList.remove('on');window.openRoomGift&&window.openRoomGift(name)};
+  f.onclick=async()=>{f.disabled=true;try{const p=await sb.rpc('find_profile',{c:code});const pr=p.data&&p.data[0];if(!pr){f.textContent='مش لاقيه';return}const r=await sb.rpc('follow_request',{p_to:pr.id});f.textContent=r.error?'المتابعة مش متاحة لحسابك دلوقتي':'تم إرسال طلب المتابعة'}catch(e){f.textContent='حصل خطأ'}};}
+ w.classList.add('on')}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#rm.inroom #rmsg .rms.oc');if(!b)return;const sn=b.querySelector('.sn');if(!sn)return;const L=(typeof room!=='undefined'&&room&&room.mlist)||[];const nm=sn.textContent;let code,name=nm;const me=nm==='أنت';if(me){code=myCode;const m=L.find(x=>x.code===myCode);name=(m&&(m.name||m.code))||'أنت'}else{const m=L.find(x=>(x.name||x.code)===nm);if(!m)return;code=m.code;name=m.name||m.code}
+ const pp=b.querySelector('.pp');pcOpen(name,code,pp?pp.textContent.replace(/[^0-9]/g,''):'',me)});
 })();
 
 (function(){const st=document.createElement('style');st.textContent=`
