@@ -198,7 +198,7 @@ try{const m=await sb.rpc('my_cosmetics');if(m&&m.data)mine={frame:m.data.frame||
 const sec=document.createElement('div');sec.innerHTML='<div class="ir"><b>إطار صورتي</b><span></span></div><div class="cpk" id="cpf"></div><div class="ir"><b>احتفال دخولي</b><span></span></div><div class="cpk" id="cpe"></div>';
 const mk=(box,map,key)=>{Object.keys(map).forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=map[k];if(mine[key]===k)b.className='on';b.onclick=async()=>{mine[key]=k;box.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_cosmetics',{p_frame:mine.frame,p_ent:mine.ent});poll()};box.append(b)})};
 mk(sec.querySelector('#cpf'),FR,'frame');mk(sec.querySelector('#cpe'),EN,'ent');
-{const h=document.createElement('div');h.className='ir';h.innerHTML='<b>شكل حروف اسمي</b><span></span>';const bx=document.createElement('div');bx.className='cpk';bx.id='cpn';Object.keys(NSL).forEach(k=>{const b=document.createElement('button');b.type='button';const sp=document.createElement('span');sp.textContent=k?'أحمد':'عادي';if(k)sp.className='nsw '+k;b.append(sp);if((mine.ns||'')===k)b.className='on';b.onclick=async()=>{mine.ns=k;bx.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_name_style',{p_code:k});poll()};bx.append(b)});sec.append(h,bx)}
+let nsa=null;try{const r=await sb.rpc('my_name_style_access');nsa=r&&r.data}catch(e){}if(nsa&&(nsa.all||(nsa.codes&&nsa.codes.length))){const ok=k=>!k||nsa.all||(nsa.codes||[]).includes(k);const h=document.createElement('div');h.className='ir';h.innerHTML='<b>شكل حروف اسمي</b><span></span>';const bx=document.createElement('div');bx.className='cpk';bx.id='cpn';Object.keys(NSL).filter(ok).forEach(k=>{const b=document.createElement('button');b.type='button';const sp=document.createElement('span');sp.textContent=k?'أحمد':'عادي';if(k)sp.className='nsw '+k;b.append(sp);if((mine.ns||'')===k)b.className='on';b.onclick=async()=>{mine.ns=k;bx.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_name_style',{p_code:k});poll()};bx.append(b)});sec.append(h,bx)}
 const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 /* profile card */
 (function(){const st=document.createElement('style');st.textContent=`
@@ -277,6 +277,8 @@ document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.c
 /* name letter styles (letters only) */
 (function(){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@800;900&family=Noto+Naskh+Arabic:wght@700&family=Noto+Nastaliq+Urdu:wght@700&family=Noto+Sans+Arabic:wght@900&display=swap';document.head.appendChild(l);const st=document.createElement('style');st.textContent=`.nsw{display:inline-block;max-width:100%;vertical-align:bottom}
 #rmsg .rms .sn.nsw{max-width:120%;filter:none}
+#pnm.nsw,#prfn.nsw,#pkn.nsw{display:block}
+.cpk .ns8,#pcdc .ns8,#ppl .ns8,.rci .ns8,#prfn.ns8,.pn .ns8,.pph .ns8{color:#007c89;text-shadow:0 0 3px #00e5ff,0 0 9px #00b8d4}
 .ns1{font-family:'Noto Kufi Arabic','Noto Sans Arabic',sans-serif;font-weight:900}
 .ns2{font-family:'Noto Naskh Arabic','Noto Sans Arabic',serif;font-weight:700;font-style:italic}
 .ns3{font-family:'Noto Nastaliq Urdu','Noto Naskh Arabic',serif;font-weight:700;line-height:1.9}
@@ -303,10 +305,13 @@ document.querySelectorAll('#rmch>div.entm').forEach(e=>{const c=e.dataset.c,k=K(
 const pn=document.querySelector('#pcdc .nm');if(pn){const c=pn.dataset.c;nsCls(pn,K(c))}}catch(e){}}
 setInterval(nsApply,800);
 
-/* app-wide: styled names outside the room (matched by unique display name), refreshed every 20s */
-let SNM={};async function snLoad(){try{const d=await sb.rpc('styled_names');if(d&&!d.error){const m={};(d.data||[]).forEach(x=>{m[x.name]=x.ns});SNM=m}}catch(e){}}
+/* app-wide: styled names by stable user code (never by display name), refreshed every 20s */
+(function(){const o=window.setAv;if(typeof o==='function'&&!o.__ns){const f=function(el,name,code){try{el.dataset.code=code||'';el.dataset.nm=name||''}catch(e){}return o.apply(this,arguments)};f.__ns=1;window.setAv=f}})();
+let SNM={};async function snLoad(){try{const d=await sb.rpc('styled_codes');if(d&&!d.error){const m={};(d.data||[]).forEach(x=>{m[x.code]=x.ns});SNM=m}}catch(e){}}
 setInterval(snLoad,20000);setTimeout(snLoad,2500);
-function snApply(){try{const sel='#ppl .ci .nm,.rci .nm,#prfn,#pkn';document.querySelectorAll(sel).forEach(e=>{const k=SNM[e.textContent.trim()]||'';nsCls(e,k)})}catch(e){}}
+function snApply(){try{document.querySelectorAll('.av[data-code]').forEach(av=>{const c=av.dataset.code;if(!c)return;const k=SNM[c]||'';let e=null;
+if(av.id==='prfa')e=document.getElementById('prfn');else if(av.id==='pkav')e=document.getElementById('pkn');else if(av.id==='pav')e=document.getElementById('pnm');else if(av.id==='pcav')return;else{const ct=av.closest('.ci,.pph')||av.parentElement;if(!ct)return;e=ct.querySelector('.nm, .pn > b');if(!e){const d=ct.querySelector('div[style*="line-height:1.5"]');if(d){const nm=av.dataset.nm;if(nm){const f=d.firstChild;if(k)nsWrap(d,nm,k);else if(f&&f.nodeType===1&&f.classList.contains('nsw')){f.className=''}}return}}}
+if(e&&e.textContent.trim()===(av.dataset.nm||'').trim()||e&&e.textContent.trim()===c)nsCls(e,k)})}catch(e){}}
 setInterval(snApply,800);
 /* heavier text app-wide (ordinary weight, separate from the chosen letter styles) */
 (function(){const st=document.createElement('style');st.textContent='body,input,textarea,select,button{font-weight:600}.pv,.cm,#rmch .cm{font-weight:600}';document.head.appendChild(st)})();
