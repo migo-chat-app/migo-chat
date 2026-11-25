@@ -258,3 +258,4 @@ document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.c
 (function(){const st=document.createElement('style');st.textContent=`
 #rment .eb,#rment .e2b,#rment .e3b{background:transparent!important;box-shadow:none!important;color:#fff!important;text-shadow:0 1px 3px #000c,0 0 10px #000a;font-size:17px}
 `;document.head.appendChild(st)})();
+(function(){const st=document.createElement('style');st.textContent=`#rment .eb,#rment .e2b,#rment .e3b{border:1.5px solid rgba(255,255,255,.5)!important;border-radius:24px}`;document.head.appendChild(st)})();
