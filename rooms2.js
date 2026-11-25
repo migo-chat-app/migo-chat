@@ -108,3 +108,28 @@ window.__roomColors=BG;window.__bgOf=bgOf;
 })();
 (function(){const st=document.createElement('style');st.textContent='#rmsg{gap:6px!important}#rmsg .rms{max-width:62px;width:100%;justify-self:center}#rmhc{width:44px!important;height:44px!important;border-radius:12px!important}#rmhn small{display:block;font-size:10px!important;opacity:.8}#rmhn code{font-size:10px!important;padding:0 4px!important;letter-spacing:0!important}#rmhn b{font-size:15px!important}#rmcz{font-size:0!important;padding:6px 8px!important}#rmcz:before{content:"🎨";font-size:16px}#rmhd{gap:8px!important;margin:0!important}#rmi{padding-bottom:150px!important}#rm:not(.inroom){background:#140d2b!important}#rm:not(.inroom) > .card{background:transparent!important;box-shadow:none!important;color:#d9d0f5!important;padding:0!important}#rm:not(.inroom) > .card b{color:#fff}#rmj,#rmjb{display:none!important}#rmx{display:none!important}#rm.inroom #rmn2{position:fixed;left:14px;right:14px;bottom:128px;z-index:30;background:#000000cc;color:#ffd1c9!important;border-radius:10px;padding:6px 10px;font-size:12px;text-align:center}#rm.inroom #rmn2:empty{display:none}#rmau{padding:4px 8px!important}#rmm{max-height:none}.rmhint{display:none!important}';document.head.appendChild(st);
 setInterval(()=>{document.querySelectorAll('#rmi p').forEach(p=>{if(p.textContent.indexOf('اضغط «هدية»')>-1)p.classList.add('rmhint')})},700)})();
+(function(){const st=document.createElement('style');st.textContent=`
+#rm.inroom #rmsg{row-gap:6px;margin-top:6px}
+#rm.inroom #rmsg .rms{position:relative;aspect-ratio:1/1;height:auto;margin-bottom:24px;border-radius:50%}
+#rm.inroom #rmsg .rms.oc{border:2px solid #ffffffcc;background:#ffffff26;box-shadow:0 2px 8px #0004}
+#rm.inroom #rmsg .rms.oc.me{border-color:#ffd27a}
+#rm.inroom #rmsg .rms .av{position:absolute;inset:2px;width:auto;height:auto;border-radius:50%;background-size:cover!important;background-position:center!important}
+#rm.inroom #rmsg .rms .sn{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;max-width:120%;font-size:11px;line-height:1.2;text-align:center}
+#rm.inroom #rmsg .pp{bottom:2px;left:2px;transform:none;background:#000000a0;color:#ffd27a;font-size:10px;padding:0 5px;border:1px solid #ffffff33}
+#rm.inroom #rmsg .rms:not(.oc) svg{width:18px;height:18px;opacity:.7}
+#rm.inroom #rmch{font-size:13px;line-height:1.4;padding:6px;min-height:120px}
+#rm.inroom #rmch>div{background:#ffffff17;border-radius:12px;padding:3px 10px;margin:0 0 4px;width:fit-content;max-width:100%;word-break:break-word}
+#rm.inroom #rmch>div>b{color:#ffd27a}
+#rm.inroom #rmhc{cursor:pointer}
+#rminf{display:none;position:fixed;inset:0;z-index:40;background:#0008;align-items:flex-end}#rminf>div{background:#fff;color:#2b2118;border-radius:18px 18px 0 0;padding:16px;width:100%;max-height:80vh;overflow:auto;text-align:right}#rminf .ir{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px solid #eee;font-size:14px}#rminf .ir b{color:#7a6a58;font-weight:600}#rminf button{width:100%;margin-top:10px;padding:12px;border:0;border-radius:14px;font-size:15px;font-weight:700}
+`;document.head.appendChild(st);
+const q=id=>document.getElementById(id);
+document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('#rmhc');if(!h)return;
+let o=q('rminf');if(!o){o=document.createElement('div');o.id='rminf';o.onclick=ev=>{if(ev.target===o)o.style.display='none'};document.body.append(o)}
+const t=(q('rmt')||{}).textContent||'',cnt=((q('rmcnt')||{}).textContent||'').replace(/[()]/g,''),act=((q('rmact')||{}).textContent||'').replace('🔥','').trim(),code=(q('rmcode')||{}).textContent||'';
+const fav=q('rmfav'),on=fav&&fav.getAttribute('aria-pressed')==='true';
+const cv=(q('rmhc')||{}).style?q('rmhc').style.background:'';
+o.innerHTML='<div><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="width:64px;height:64px;border-radius:16px;flex:none;background:'+(cv||'#7a2e8e').replace(/"/g,"'")+'"></div><b style="font-size:18px"></b></div><div class="ir"><span id="ii1"></span><b>الموجودين / الأماكن</b></div><div class="ir"><span id="ii2"></span><b>النشاط</b></div><div class="ir"><span id="ii3"></span><b>كود الدعوة</b></div><button id="iifav" style="background:#fff1e6;color:#c2410c"></button><button id="iix" style="background:#eee;color:#2b2118">إغلاق</button></div>';
+o.querySelector('b').textContent=t;o.querySelector('#ii1').textContent=cnt;o.querySelector('#ii2').textContent=act;o.querySelector('#ii3').textContent=code;
+const fb=o.querySelector('#iifav');fb.textContent=on?'★ في المفضلة (اضغط للإزالة)':'☆ إضافة للمفضلة';fb.onclick=()=>{fav&&fav.click();o.style.display='none'};o.querySelector('#iix').onclick=()=>{o.style.display='none'};o.style.display='flex'});
+})();
