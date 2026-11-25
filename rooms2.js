@@ -35,9 +35,9 @@ const ask=()=>new Promise(res=>{const o=E('div',{},'<div style="background:#fff;
 const orig=sb.rpc.bind(sb);
 sb.rpc=async function(n,a){
 if(n==='create_room'){const r=await orig(n,a);if(r&&r.data&&r.data.id){if(window.__pv)await orig('set_room_private',{p_room:r.data.id,p_private:true});if(window.__bg)await orig('set_room_look',{p_room:r.data.id,p_bg:window.__bg})}window.__pv=0;return r}
-if(n==='join_room'&&a&&a.p_code==null){const c=await ask();if(!c)return{data:null,error:{message:'cancel'}};return orig(n,{p_code:c})}
+if(n==='join_room'&&a&&(a.p_code==null||String(a.p_code).charAt(0)==='~')){const c=await ask();if(!c)return{data:null,error:{message:'cancel'}};return orig(n,{p_code:c})}
 const r=await orig(n,a);
-if(n==='list_rooms'&&r&&Array.isArray(r.data))r.data=r.data.map(x=>({...x,name:(x.priv?'🔒 ':'')+x.name,_bg:x.bg}));
+if(n==='list_rooms'&&r&&Array.isArray(r.data))r.data=r.data.map(x=>({...x,code:x.code||('~'+x.name),name:(x.priv?'🔒 ':'')+x.name,_bg:x.bg}));
 return r};
 // create screen
 const rm=$('rm'),cr=E('div',{id:'rmcr'});
