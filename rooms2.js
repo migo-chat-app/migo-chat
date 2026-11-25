@@ -141,7 +141,7 @@ const fb=o.querySelector('#iifav');fb.textContent=on?'★ في المفضلة (�
 #rm.inroom #rmhn small{font-size:11px;display:inline}
 #rm.inroom #rmact{display:inline-flex;margin:0 6px 0 0;padding:0 8px;font-size:11px;background:#0000004d}
 #rm.inroom #rmhd button{padding:5px 8px!important;font-size:15px!important;border-radius:10px!important;line-height:1!important;min-width:32px}
-#rm.inroom #rmsg{row-gap:2px!important;margin:4px 0 0!important}
+#rm.inroom #rmhd #rmcz{font-size:0!important;padding:6px 8px!important}#rm.inroom #rmsg{row-gap:2px!important;margin:4px 0 0!important}
 #rm.inroom #rmsg .rms{width:min(60px,100%)!important;height:auto!important;aspect-ratio:1/1;justify-self:center;margin-bottom:21px!important}
 #rm.inroom #rmsg .pp{left:50%!important;bottom:-8px!important;transform:translateX(-50%)!important;background:#fff!important;color:#c2410c!important;border:0!important;font-size:10px;padding:0 7px;line-height:15px}
 #rm.inroom #rmsg .rms .sn{margin-top:8px!important;font-size:10.5px!important}
@@ -160,7 +160,7 @@ const fb=o.querySelector('#iifav');fb.textContent=on?'★ في المفضلة (�
 `;document.head.appendChild(st);
 const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
 function fix(){const ch=document.getElementById('rmch');if(!ch)return;
-[...ch.children].forEach(d=>{if(d.tagName!=='DIV'||d.classList.contains('cm'))return;const b=d.querySelector(':scope>b');if(!b)return;const nm=b.textContent.replace(/[:：]\s*$/,'').trim();b.remove();const body=d.textContent.trim();d.classList.add('cm');d.innerHTML='';const a=document.createElement('div');a.className='cav';a.style.background='hsl('+hue(nm)+',45%,38%)';a.textContent=(nm==='أنت'?'أ':nm.charAt(0).toUpperCase());const c=document.createElement('div');c.className='cc';const n=document.createElement('div');n.className='cn';n.textContent=nm;const bb=document.createElement('div');bb.className='cb';bb.textContent=body;c.append(n,bb);d.append(a,c)});
+let chg=0;[...ch.children].forEach(d=>{if(d.tagName!=='DIV'||d.classList.contains('cm'))return;chg=1;const b=d.querySelector(':scope>b');if(!b)return;const nm=b.textContent.replace(/[:：]\s*$/,'').trim();b.remove();const body=d.textContent.trim();d.classList.add('cm');d.innerHTML='';const a=document.createElement('div');a.className='cav';a.style.background='hsl('+hue(nm)+',45%,38%)';a.textContent=(nm==='أنت'?'أ':nm.charAt(0).toUpperCase());const c=document.createElement('div');c.className='cc';const n=document.createElement('div');n.className='cn';n.textContent=nm;const bb=document.createElement('div');bb.className='cb';bb.textContent=body;c.append(n,bb);d.append(a,c)});if(chg)ch.scrollTop=ch.scrollHeight;
 const mo=document.getElementById('rmmore');if(mo&&/القائمة/.test(mo.textContent))mo.textContent='⋯';
 const au=document.getElementById('rmaun');if(au&&/الموجودين/.test(au.textContent))au.textContent='👥 '+(au.textContent.match(/\d+/)||[''])[0]}
 setInterval(fix,500);
@@ -188,7 +188,7 @@ for(let i=0;i<6;i++){const s=document.createElement('span');s.className='sp';s.t
 setTimeout(()=>b.remove(),3200)}
 async function poll(){try{const r=(typeof room!=='undefined'?room:null);if(!r||!r.id){lastRoom=null;seen=null;return}
 if(lastRoom!==r.id){lastRoom=r.id;seen=null;t0=Date.now()}
-const d=await sb.rpc('room_cosmetics',{p_room:r.id});const L=(d&&d.data)||[];cos={};L.forEach(x=>cos[x.code]=x);
+const d=await sb.rpc('room_cosmetics',{p_room:r.id});if(!d||d.error)return;const L=d.data||[];cos={};L.forEach(x=>cos[x.code]=x);
 const names={};(r.mlist||[]).forEach(m=>names[m.code]=m.name||m.code);
 const codes=(r.mlist||[]).map(m=>m.code);
 if(seen===null){seen=new Set(codes);const me=cos[myCode];if(me&&me.ent)play('أنت',me.ent)}
