@@ -194,7 +194,8 @@ const codes=(r.mlist||[]).map(m=>m.code);
 if(seen===null){seen=new Set(codes);const me=cos[myCode];if(me&&me.ent)play('أنت',me.ent)}
 else codes.forEach(c=>{if(!seen.has(c)){seen.add(c);const x=cos[c];if(x&&x.ent)play(names[c]||c,x.ent)}})}catch(e){}}
 setInterval(poll,4000);
-setInterval(()=>{try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const L=r.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const f=c&&cos[c]&&cos[c].frame;['f1','f2','f3','f4'].forEach(k=>b.classList.toggle('fr-'+k,f===k))})}catch(e){}},800);
+function applyFr(){try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const L=r.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const f=c&&cos[c]&&cos[c].frame;['f1','f2','f3','f4'].forEach(k=>b.classList.toggle('fr-'+k,f===k))})}catch(e){}}
+setInterval(applyFr,800);const _mo=new MutationObserver(applyFr);setInterval(()=>{const g=document.getElementById('rmsg');if(g&&!g.dataset.mo){g.dataset.mo=1;_mo.observe(g,{childList:true,subtree:true})}},500);
 document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('#rmhc');if(!h)return;setTimeout(async()=>{const o=document.querySelector('#rminf>div');if(!o||o.querySelector('.cpk'))return;
 try{const m=await sb.rpc('my_cosmetics');if(m&&m.data)mine={frame:m.data.frame||'',ent:m.data.ent||''}}catch(e){}
 const sec=document.createElement('div');sec.innerHTML='<div class="ir"><b>إطار صورتي</b><span></span></div><div class="cpk" id="cpf"></div><div class="ir"><b>احتفال دخولي</b><span></span></div><div class="cpk" id="cpe"></div>';
