@@ -28,23 +28,28 @@ var ia=document.getElementById('aga'),ie=document.getElementById('age_e');if(ia&
 })();
 (function(){if(window.__ng)return;window.__ng=1;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const st=document.createElement('style');st.textContent='body.ngon{padding-top:var(--ngh,0);box-sizing:border-box}body.ngon #rm{top:var(--ngh,0)!important}';document.head.append(st);
 const bar=document.createElement('div');bar.id='ngbar';bar.setAttribute('role','status');bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99;text-align:center;font-weight:700;font-size:13px;line-height:1.4;padding:6px 10px;color:#fff;background:#c0392b;display:none;direction:rtl';document.body.append(bar);
 let hideT=null,recovering=false;
-const show=(t,c)=>{clearTimeout(hideT);bar.textContent=t;bar.style.background=c||'#c0392b';bar.style.display='block'};
-const ok=t=>{show(t,'#1f6f5c');hideT=setTimeout(()=>{bar.style.display='none'},2500)};
+const hide=()=>{clearTimeout(hideT);bar.style.display='none';document.body.classList.remove('ngon')};
+const show=(t,c)=>{clearTimeout(hideT);bar.textContent=t;bar.style.background=c||'#c0392b';bar.style.display='block';document.documentElement.style.setProperty('--ngh',bar.offsetHeight+'px');document.body.classList.add('ngon')};
+const ok=t=>{show(t,'#1f6f5c');hideT=setTimeout(hide,2500)};
 addEventListener('offline',()=>show('النت قاطع، بنستنى يرجع…'));
-addEventListener('online',()=>{if(!recovering)ok('النت رجع')});
+addEventListener('online',()=>{if(recovering)show('جاري الاتصال');else ok('النت رجع')});
 if(navigator.onLine===false)show('النت قاطع، بنستنى يرجع…');
-let watched=null,wasMic=false;
-function attach(r){try{const E=window.LivekitClient.RoomEvent;r.on(E.Reconnecting,()=>show('الاتصال ضعيف، بنحاول نرجّع الصوت…'));r.on(E.Reconnected,()=>ok('رجع الاتصال'));r.on(E.Disconnected,async()=>{await sleep(2500);if(room&&lkr===r&&r.state==='disconnected'&&!recovering)recover()})}catch(e){}}
-setInterval(()=>{try{if(typeof lkr!=='undefined'&&lkr){if(lkr!==watched){watched=lkr;attach(lkr)}if(lkr.localParticipant)wasMic=!!lkr.localParticipant.isMicrophoneEnabled}}catch(e){}},1000);
+const ofn=window.roomFn;
+if(typeof ofn==='function')window.roomFn=async function(){try{return await ofn.apply(this,arguments)}catch(e){if(e&&e.name==='TypeError')return {ok:false,j:{},net:1};throw e}};
+let watched=null;
+function attach(r){try{const E=window.LivekitClient.RoomEvent;r.on(E.Reconnecting,()=>show('جاري الاتصال'));r.on(E.Reconnected,()=>ok('رجع الاتصال'));r.on(E.Disconnected,async()=>{await sleep(2500);if(room&&lkr===r&&r.state==='disconnected'&&!recovering)recover()})}catch(e){}}
+setInterval(()=>{try{if(typeof lkr!=='undefined'&&lkr&&lkr!==watched){watched=lkr;attach(lkr)}}catch(e){}},1000);
 const orig=window.roomOut;
-async function recover(){recovering=true;const r=lkr,id=room.id,mic=wasMic;show('الاتصال قطع، بنرجّعك للغرفة…');
-for(const d of [1500,3000,5000,8000,12000,15000,15000,15000]){await sleep(d);if(!room||room.id!==id||lkr!==r){recovering=false;return}
+async function recover(){recovering=true;const r=lkr,id=room.id;const live=()=>room&&room.id===id&&lkr===r;show('جاري الاتصال');
+for(const d of [1500,3000,5000,8000,12000,15000,15000,15000]){await sleep(d);if(!live()){recovering=false;hide();return}
 if(navigator.onLine===false){show('النت قاطع، بنستنى يرجع…');continue}
-try{const t=await roomFn({action:'token',room:id});if(!t.ok)continue;await r.connect(t.j.url,t.j.token);try{await r.startAudio()}catch(e){}
-if(mic&&r.localParticipant.permissions&&r.localParticipant.permissions.canPublish){try{await r.localParticipant.setMicrophoneEnabled(true)}catch(e){}}
-recovering=false;ok('رجعت للغرفة');return}catch(e){show('بنحاول نرجّعك للغرفة…')}}
-recovering=false;bar.style.display='none';orig('الاتصال قطع ومقدرناش نرجّعك، ادخل الغرفة تاني')}
+try{const t=await roomFn({action:'token',room:id});if(!live()){recovering=false;hide();return}if(!t.ok){const e=JSON.stringify(t.j||{});window.__ngLastTokErr=e;if(/kicked|blocked|not_found|closed/.test(e)){recovering=false;hide();orig(/kicked|blocked/.test(e)?'اتشلت من الغرفة':'الغرفة اتقفلت');return}continue}await r.connect(t.j.url,t.j.token);
+if(!live()){try{r.disconnect()}catch(e){}recovering=false;hide();return}
+try{await r.startAudio()}catch(e){}
+recovering=false;ok('رجعت للغرفة');return}catch(e){if(!live()){try{r.disconnect()}catch(_){}recovering=false;hide();return}show('جاري الاتصال')}}
+recovering=false;hide();if(live())orig('الاتصال قطع ومقدرناش نرجّعك، ادخل الغرفة تاني')}
 if(typeof orig==='function')window.roomOut=function(m){if(m==='الغرفة اتقفلت أو خرجت منها'&&room&&lkr&&!recovering){recover();return}return orig.apply(this,arguments)};
 })();
