@@ -24,4 +24,5 @@ var svg='<svg viewBox="0 0 320 200" role="img" aria-label="شاب وبنت بي�
 var d=document.createElement('div');d.id='wlc';d.innerHTML=svg;
 var img=hero.querySelector('img');if(img)img.style.display='none';
 hero.insertBefore(d,hero.children[1]);
+var ia=document.getElementById('aga'),ie=document.getElementById('age_e');if(ia&&ie)ia.addEventListener('input',function(){ie.textContent=''});
 })();
