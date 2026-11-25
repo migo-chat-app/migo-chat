@@ -208,40 +208,42 @@ const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 #pcwc.on{display:flex}
 #pcdc{width:100%;max-width:520px;max-height:84dvh;overflow:auto;background:#fff;color:#2b2118;border-radius:22px 22px 0 0;animation:pcup .25s ease both}
 @keyframes pcup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-#pcdc .tp{background:radial-gradient(circle at 50% 30%,#5a3a8a,#1d1233 75%);padding:22px 12px 40px;text-align:center;color:#fff;border-radius:22px 22px 0 0;position:relative}
-#pcdc .tp:after{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;background:linear-gradient(#fff0,#fff)}
-#pcdc .av{width:92px;height:92px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:700;border:3px solid #ffffffcc;position:relative;z-index:1}
-#pcdc .av.fr-f1{border-color:#ffd54a;box-shadow:0 0 0 3px #b8860b,0 0 16px #ffd54a}#pcdc .av.fr-f2{border-color:#4dd0e1;box-shadow:0 0 0 4px #7a2e8e,0 0 18px #4dd0e1}#pcdc .av.fr-f3{border-color:#f08c00;box-shadow:0 0 0 4px #e8590c,0 0 20px #f08c00}#pcdc .av.fr-f4{border-color:#b8f2c0;box-shadow:0 0 0 4px #3a7d44,0 0 14px #b8f2c0}
-#pcdc .nm{font-size:20px;font-weight:700;margin-top:10px;position:relative;z-index:1}
-#pcdc .cd{font-size:12px;opacity:.8;position:relative;z-index:1;margin-top:2px}
-#pcdc .tl{display:flex;gap:8px;padding:0 12px;margin-top:-6px;position:relative;z-index:1}
-#pcdc .tile{flex:1;border-radius:12px;padding:8px 10px;color:#fff;font-weight:700;background:linear-gradient(120deg,#8a3fd1,#d04fb5)}
-#pcdc .tile small{display:block;font-size:11px;font-weight:600;opacity:.9}#pcdc .tile b{font-size:20px}
-#pcdc .tile.g{background:linear-gradient(120deg,#35b36a,#7bd34a)}
-#pcdc .sec{margin:14px 12px 0;padding:10px;border-radius:14px;background:#f3eefc;font-size:13px}
-#pcdc .sec h4{margin:0 0 6px;font-size:14px}#pcdc .sec .mut{color:#8a7f96}
-#pcdc .ac{display:flex;gap:10px;padding:14px 12px 16px;position:sticky;bottom:0;background:#fff}
-#pcdc .ac button{flex:1;padding:12px;border-radius:24px;font-size:15px;font-weight:700;border:2px solid #e8590c;background:#fff;color:#e8590c}
-#pcdc .ac button.p{background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}
+#pcdc .tp{background:radial-gradient(circle at 20% 30%,#5a3a8a,#1d1233 80%);padding:16px 14px 22px;color:#fff;border-radius:22px 22px 0 0;display:flex;align-items:center;gap:12px;flex-direction:row-reverse;position:relative}
+#pcdc .tp:after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background:linear-gradient(#fff0,#fff)}
+#pcdc .av{flex:none;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;border:2px solid #ffffffcc}
+#pcdc .av.fr-f1{border-color:#ffd54a;box-shadow:0 0 0 2px #b8860b,0 0 12px #ffd54a}#pcdc .av.fr-f2{border-color:#4dd0e1;box-shadow:0 0 0 3px #7a2e8e,0 0 12px #4dd0e1}#pcdc .av.fr-f3{border-color:#f08c00;box-shadow:0 0 0 3px #e8590c,0 0 14px #f08c00}#pcdc .av.fr-f4{border-color:#b8f2c0;box-shadow:0 0 0 3px #3a7d44,0 0 10px #b8f2c0}
+#pcdc .tx{flex:1;min-width:0;text-align:right;position:relative;z-index:1}
+#pcdc .nm{font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#pcdc .cd{font-size:12px;opacity:.85;direction:ltr;text-align:right}
+#pcdc .tl{display:flex;gap:8px;padding:0 12px;margin-top:-4px;position:relative;z-index:1}
+#pcdc .tile{flex:1;border-radius:12px;padding:6px 8px;color:#fff;font-weight:700;background:linear-gradient(120deg,#8a3fd1,#d04fb5);text-align:center}
+#pcdc .tile small{display:block;font-size:10.5px;font-weight:600;opacity:.92}#pcdc .tile b{font-size:17px}
+#pcdc .tile.g{background:linear-gradient(120deg,#2fae78,#7bd34a)}#pcdc .tile.o{background:linear-gradient(120deg,#f08c00,#ffcf4a);color:#3a2300}
+#pcdc .sec{margin:10px 12px 0;padding:6px 12px;border-radius:12px;background:#f3eefc;font-size:13px}
+#pcdc .row{display:flex;justify-content:space-between;padding:5px 0}#pcdc .row+.row{border-top:1px solid #e3d9f3}#pcdc .row em{font-style:normal;color:#6a4fa0;font-weight:700}
+#pcdc .ac{display:flex;gap:8px;padding:12px;position:sticky;bottom:0;background:#fff}
+#pcdc .ac button{flex:1;padding:10px;border-radius:22px;font-size:14px;font-weight:700;border:2px solid #e8590c;background:#fff;color:#e8590c}
+#pcdc .ac button.p{background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}#pcdc .ac button.m{flex:.6;border-color:#6a4fa0;color:#6a4fa0}
 `;document.head.appendChild(st)})();
 const PFN={f1:'إطار ذهبي',f2:'إطار سماوي',f3:'إطار ناري',f4:'إطار أخضر'},PEN={e1:'احتفال التاج',e2:'احتفال النجوم',e3:'احتفال الورق'};
-function pcOpen(name,code,pill,isMe){
+function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  let w=document.getElementById('pcwc');if(!w){w=document.createElement('div');w.id='pcwc';w.onclick=e=>{if(e.target===w)w.classList.remove('on')};document.body.append(w)}
- const c=(cos&&cos[code])||{};const fr=c.frame||'',en=c.ent||c.entrance||'';
- w.innerHTML='<div id="pcdc"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div><div class="nm"></div><div class="cd"></div></div>'+
- '<div class="tl"><div class="tile"><small>النشاط في الغرفة</small><b>'+(pill||'0')+'</b></div><div class="tile g"><small>الكود</small><b style="font-size:15px"></b></div></div>'+
- '<div class="sec"><h4>مؤثرات الدخول والإطارات</h4><div>'+(fr?PFN[fr]:'<span class="mut">بدون إطار</span>')+' · '+(en?PEN[en]:'<span class="mut">بدون احتفال دخول</span>')+'</div></div>'+
- '<div class="sec"><h4>العلاقات والمنشورات</h4><div class="mut">لسه مش متاحة في بطاقة الغرفة</div></div>'+
- '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button></div></div>';
- w.querySelector('.nm').textContent=name;w.querySelector('.cd').textContent='ID: '+code;w.querySelector('.tile.g b').textContent=code;
- setAv(w.querySelector('#pcav'),name,code);
- const g=w.querySelector('#pcg'),f=w.querySelector('#pcf');
- if(isMe){g.style.display='none';f.textContent='إغلاق';f.onclick=()=>w.classList.remove('on')}
+ const c=(cos&&cos[code])||{};const fr=c.frame||'',en=c.ent||c.entrance||'';const host=(typeof room!=='undefined'&&room&&room.host===myCode);
+ w.innerHTML='<div id="pcdc"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div><div class="tx"><div class="nm"></div><div class="cd"></div><div class="ch"></div></div></div>'+
+ '<div class="tl"><div class="tile"><small>نشاط الغرفة</small><b></b></div><div class="tile g"><small>المقعد</small><b></b></div><div class="tile o"><small>الدور</small><b></b></div></div>'+
+ '<div class="sec"><div class="row"><span>الإطار</span><em></em></div><div class="row"><span>احتفال الدخول</span><em></em></div></div>'+
+ '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button>'+((host||isMe)?'<button id="pcm" class="m">'+(isMe?'مقعدي':'إدارة')+'</button>':'')+'</div></div>';
+ const q=x=>w.querySelector(x);q('.nm').textContent=name;q('.cd').textContent='ID: '+code;
+ const t=w.querySelectorAll('.tile b');t[0].textContent=pill||'0';t[1].textContent=seatNo||'-';t[2].textContent=role==='host'?'المضيف':'عضو';
+ const em=w.querySelectorAll('.sec em');em[0].textContent=fr?PFN[fr]:'بدون';em[1].textContent=en?PEN[en]:'بدون';
+ setAv(q('#pcav'),name,code);
+ const g=q('#pcg'),f=q('#pcf');
+ if(isMe){g.style.display='none';f.textContent='إغلاق';f.onclick=()=>w.classList.remove('on');const m0=q('#pcm');if(m0)m0.onclick=()=>{w.classList.remove('on');window.__pcBy=1;try{seatEl.click()}finally{window.__pcBy=0}}}
  else{g.onclick=()=>{room.giftTo=code;w.classList.remove('on');window.openRoomGift&&window.openRoomGift(name)};
-  f.onclick=async()=>{f.disabled=true;try{const p=await sb.rpc('find_profile',{c:code});const pr=p.data&&p.data[0];if(!pr){f.textContent='مش لاقيه';return}const r=await sb.rpc('follow_request',{p_to:pr.id});f.textContent=r.error?'المتابعة مش متاحة لحسابك دلوقتي':'تم إرسال طلب المتابعة'}catch(e){f.textContent='حصل خطأ'}};}
+  f.onclick=async()=>{f.disabled=true;try{const p=await sb.rpc('find_profile',{c:code});const pr=p.data&&p.data[0];if(!pr){f.textContent='مش لاقيه';return}const r=await sb.rpc('follow_request',{p_to:pr.id});f.textContent=r.error?'المتابعة مش متاحة لحسابك':'تم إرسال الطلب'}catch(e){f.textContent='حصل خطأ'}};
+  const m=q('#pcm');if(m)m.onclick=()=>{w.classList.remove('on');window.__pcBy=1;try{seatEl.click()}finally{window.__pcBy=0}}}
  w.classList.add('on')}
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#rm.inroom #rmsg .rms.oc');if(!b)return;const sn=b.querySelector('.sn');if(!sn)return;const L=(typeof room!=='undefined'&&room&&room.mlist)||[];const nm=sn.textContent;let code,name=nm;const me=nm==='أنت';if(me){code=myCode;const m=L.find(x=>x.code===myCode);name=(m&&(m.name||m.code))||'أنت'}else{const m=L.find(x=>(x.name||x.code)===nm);if(!m)return;code=m.code;name=m.name||m.code}
- const pp=b.querySelector('.pp');pcOpen(name,code,pp?pp.textContent.replace(/[^0-9]/g,''):'',me)},true);
+document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.closest&&e.target.closest('#rm.inroom #rmsg .rms.oc');if(!b)return;const sn=b.querySelector('.sn');if(!sn)return;const L=(typeof room!=='undefined'&&room&&room.mlist)||[];const nm=sn.textContent;let code,name=nm,role='member';const me=nm==='أنت';if(me){code=myCode;const m=L.find(x=>x.code===myCode);name=(m&&(m.name||m.code))||'أنت';role=m&&m.role}else{const m=L.find(x=>(x.name||x.code)===nm);if(!m)return;code=m.code;name=m.name||m.code;role=m.role}
+ const pp=b.querySelector('.pp');const no=[...document.querySelectorAll('#rmsg .rms')].indexOf(b)+1;e.stopImmediatePropagation();e.preventDefault();pcOpen(name,code,pp?pp.textContent.replace(/[^0-9]/g,''):'',me,no,role,b)},true);
 })();
 
 (function(){const st=document.createElement('style');st.textContent=`
