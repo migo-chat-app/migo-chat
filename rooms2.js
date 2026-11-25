@@ -133,3 +133,36 @@ o.innerHTML='<div><div style="display:flex;align-items:center;gap:12px;margin-bo
 o.querySelector('b').textContent=t;o.querySelector('#ii1').textContent=cnt;o.querySelector('#ii2').textContent=act;o.querySelector('#ii3').textContent=code;
 const fb=o.querySelector('#iifav');fb.textContent=on?'★ في المفضلة (اضغط للإزالة)':'☆ إضافة للمفضلة';fb.onclick=()=>{fav&&fav.click();o.style.display='none'};o.querySelector('#iix').onclick=()=>{o.style.display='none'};o.style.display='flex'});
 })();
+(function(){const st=document.createElement('style');st.textContent=`
+#rm.inroom>.card{padding:6px 8px 0!important}
+#rm.inroom #rmhd{gap:8px;padding:2px 0;margin:0 0 4px;flex-wrap:nowrap}
+#rm.inroom #rmhc{width:50px;height:50px;border-radius:12px;font-size:20px}
+#rm.inroom #rmhn b{font-size:15px}
+#rm.inroom #rmhn small{font-size:11px;display:inline}
+#rm.inroom #rmact{display:inline-flex;margin:0 6px 0 0;padding:0 8px;font-size:11px;background:#0000004d}
+#rm.inroom #rmhd button{padding:5px 8px!important;font-size:15px!important;border-radius:10px!important;line-height:1!important;min-width:32px}
+#rm.inroom #rmsg{row-gap:2px!important;margin:4px 0 0!important}
+#rm.inroom #rmsg .rms{width:min(64px,100%)!important;height:auto!important;aspect-ratio:1/1;justify-self:center;margin-bottom:24px!important}
+#rm.inroom #rmsg .pp{left:50%!important;bottom:-8px!important;transform:translateX(-50%)!important;background:#fff!important;color:#c2410c!important;border:0!important;font-size:10px;padding:0 7px;line-height:15px}
+#rm.inroom #rmsg .rms .sn{margin-top:8px!important;font-size:10.5px!important}
+#rm.inroom #rmsg .rms:not(.oc) svg{width:16px;height:16px}
+#rm.inroom #rmau{margin:2px 0 4px!important;padding:4px 6px!important}
+#rm.inroom #rmau .av{width:26px;height:26px}
+#rm.inroom #rmaun{height:26px;min-width:34px}
+#rm.inroom #rmch{background:transparent!important;border:0!important;max-height:none!important;height:40dvh;min-height:220px;padding:2px 2px!important;font-size:14px}
+#rm.inroom #rmch>div.cm{display:flex;gap:8px;align-items:flex-start;background:transparent!important;padding:0!important;margin:0 0 8px!important;width:auto!important;border-radius:0}
+#rm.inroom #rmch .cav{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;border:2px solid #ffffffaa}
+#rm.inroom #rmch .cc{min-width:0}
+#rm.inroom #rmch .cn{font-size:12px;color:#ffd27a;font-weight:700;margin-bottom:2px}
+#rm.inroom #rmch .cb{display:inline-block;background:#0000005c;border-radius:14px;padding:6px 12px;font-size:15px;line-height:1.35;word-break:break-word;max-width:100%}
+#rm.inroom #rmbar{direction:ltr;bottom:64px;padding:8px 10px;gap:8px}
+#rm.inroom #rmbar input{direction:rtl;border-radius:22px;height:42px;background:#ffffff26}
+`;document.head.appendChild(st);
+const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+function fix(){const ch=document.getElementById('rmch');if(!ch)return;
+[...ch.children].forEach(d=>{if(d.tagName!=='DIV'||d.classList.contains('cm'))return;const b=d.querySelector(':scope>b');if(!b)return;const nm=b.textContent.replace(/[:：]\s*$/,'').trim();b.remove();const body=d.textContent.trim();d.classList.add('cm');d.innerHTML='';const a=document.createElement('div');a.className='cav';a.style.background='hsl('+hue(nm)+',45%,38%)';a.textContent=(nm==='أنت'?'أ':nm.charAt(0).toUpperCase());const c=document.createElement('div');c.className='cc';const n=document.createElement('div');n.className='cn';n.textContent=nm;const bb=document.createElement('div');bb.className='cb';bb.textContent=body;c.append(n,bb);d.append(a,c)});
+const mo=document.getElementById('rmmore');if(mo&&/القائمة/.test(mo.textContent))mo.textContent='⋯';const cz=document.getElementById('rmcz');if(cz&&/تخصيص/.test(cz.textContent))cz.textContent='🎨';
+const au=document.getElementById('rmaun');if(au&&/الموجودين/.test(au.textContent))au.textContent='👥 '+(au.textContent.match(/\d+/)||[''])[0]}
+setInterval(fix,500);
+document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('#rmhc');if(!h)return;setTimeout(()=>{const t=document.querySelector('#rminf>div>div>div');const src=document.getElementById('rmhc');if(t&&src&&!src.style.background.includes('url')){t.textContent=src.textContent;t.style.cssText+=';display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:700'}},50)},true);
+})();
