@@ -95,3 +95,5 @@ o.querySelector('#czau').onchange=async e=>{const f=e.target.files[0];if(!f)retu
 o.querySelector('#czst').onclick=()=>stopMusic();o.querySelector('#czx').onclick=()=>o.remove();o.onclick=e=>{if(e.target===o)o.remove()}};
 window.__roomColors=BG;window.__bgOf=bgOf;
 })();
+(function(){const st=document.createElement('style');st.textContent='#rmsg{gap:6px!important}#rmsg .rms{max-width:62px;width:100%;justify-self:center}#rmhc{width:44px!important;height:44px!important;border-radius:12px!important}#rmhn small{display:block;font-size:10px!important;opacity:.8}#rmhn code{font-size:10px!important;padding:0 4px!important;letter-spacing:0!important}#rmhn b{font-size:15px!important}#rmcz{font-size:0!important;padding:6px 8px!important}#rmcz:before{content:"🎨";font-size:16px}#rmhd{gap:8px!important;margin:0!important}#rmi{padding-bottom:84px!important}#rmau{padding:4px 8px!important}#rmm{max-height:none}.rmhint{display:none!important}';document.head.appendChild(st);
+setInterval(()=>{document.querySelectorAll('#rmi p').forEach(p=>{if(p.textContent.indexOf('اضغط «هدية»')>-1)p.classList.add('rmhint')})},700)})();
