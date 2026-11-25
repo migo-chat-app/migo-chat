@@ -561,7 +561,7 @@ t.innerHTML='<div class="gart">'+GART[k]+'</div><div class="gname"></div><div cl
 t.onclick=()=>{sel=k;draw();const m=q('gmsg');m.textContent=have===0?('بتتكسب من: '+EARN[k]):'هدايا مجانية من غير قيمة مالية، وبتتبعت لما تضغط «إرسال» بس.'};g.appendChild(t)});
 const have=sel&&!BASIC.includes(sel)?(bag[sel]||0):99;q('gn').textContent=n;q('gsend').disabled=!sel||have<n}
 async function loadBag(){try{const r=await sb.rpc('my_bag');bag=(r.data)||{}}catch(e){bag={}}draw()}
-function open(c,who){ctx=c;sel=null;n=1;cat='basic';q('gwho').textContent=who;q('gmsg').textContent='هدايا مجانية من غير قيمة مالية، وبتتبعت لما تضغط «إرسال» بس.';draw();sh.style.display='flex';loadBag()}
+function open(c,who){ctx=c;sel=null;n=1;cat='basic';q('gwho').textContent=who;q('gmsg').textContent='هدايا مجانية من غير قيمة مالية، وبتتبعت لما تضغط «إرسال» بس. نوع الهدية وعددها بيظهروا للكل على بروفايل المستلم، من غير ما يظهر اسمك.';draw();sh.style.display='flex';loadBag()}
 function gwhoMark(nm,cd){try{if(!cd)return;const g=q('gwho');g.textContent='';g.append('إلى: ');const s=document.createElement('span');s.textContent=nm;s.dataset.sn=cd;g.append(s,g.dataset.suf||'')}catch(e){}}
 window.openRoomGift=nm=>{open('room','إلى: '+nm+' (في الغرفة)');try{q('gwho').dataset.suf=' (في الغرفة)';gwhoMark(nm,room.giftTo)}catch(e){}};
 q('gf').onclick=()=>{open('chat','إلى: '+((friend&&(friend.name||friend.code))||''));try{q('gwho').dataset.suf='';friend&&gwhoMark(friend.name||friend.code,friend.code)}catch(e){}};
