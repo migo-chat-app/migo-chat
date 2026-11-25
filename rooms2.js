@@ -204,31 +204,31 @@ mk(sec.querySelector('#cpf'),FR,'frame');mk(sec.querySelector('#cpe'),EN,'ent');
 const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 /* profile card */
 (function(){const st=document.createElement('style');st.textContent=`
-#pcw{position:fixed;inset:0;z-index:50;background:#0007;display:none;align-items:flex-end;justify-content:center}
-#pcw.on{display:flex}
-#pcd{width:100%;max-width:520px;max-height:84dvh;overflow:auto;background:#fff;color:#2b2118;border-radius:22px 22px 0 0;animation:pcup .25s ease both}
+#pcwc{position:fixed;inset:0;z-index:50;background:#0007;display:none;align-items:flex-end;justify-content:center}
+#pcwc.on{display:flex}
+#pcdc{width:100%;max-width:520px;max-height:84dvh;overflow:auto;background:#fff;color:#2b2118;border-radius:22px 22px 0 0;animation:pcup .25s ease both}
 @keyframes pcup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-#pcd .tp{background:radial-gradient(circle at 50% 30%,#5a3a8a,#1d1233 75%);padding:22px 12px 40px;text-align:center;color:#fff;border-radius:22px 22px 0 0;position:relative}
-#pcd .tp:after{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;background:linear-gradient(#fff0,#fff)}
-#pcd .av{width:92px;height:92px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:700;border:3px solid #ffffffcc;position:relative;z-index:1}
-#pcd .av.fr-f1{border-color:#ffd54a;box-shadow:0 0 0 3px #b8860b,0 0 16px #ffd54a}#pcd .av.fr-f2{border-color:#4dd0e1;box-shadow:0 0 0 4px #7a2e8e,0 0 18px #4dd0e1}#pcd .av.fr-f3{border-color:#f08c00;box-shadow:0 0 0 4px #e8590c,0 0 20px #f08c00}#pcd .av.fr-f4{border-color:#b8f2c0;box-shadow:0 0 0 4px #3a7d44,0 0 14px #b8f2c0}
-#pcd .nm{font-size:20px;font-weight:700;margin-top:10px;position:relative;z-index:1}
-#pcd .cd{font-size:12px;opacity:.8;position:relative;z-index:1;margin-top:2px}
-#pcd .tl{display:flex;gap:8px;padding:0 12px;margin-top:-6px;position:relative;z-index:1}
-#pcd .tile{flex:1;border-radius:12px;padding:8px 10px;color:#fff;font-weight:700;background:linear-gradient(120deg,#8a3fd1,#d04fb5)}
-#pcd .tile small{display:block;font-size:11px;font-weight:600;opacity:.9}#pcd .tile b{font-size:20px}
-#pcd .tile.g{background:linear-gradient(120deg,#35b36a,#7bd34a)}
-#pcd .sec{margin:14px 12px 0;padding:10px;border-radius:14px;background:#f3eefc;font-size:13px}
-#pcd .sec h4{margin:0 0 6px;font-size:14px}#pcd .sec .mut{color:#8a7f96}
-#pcd .ac{display:flex;gap:10px;padding:14px 12px 16px;position:sticky;bottom:0;background:#fff}
-#pcd .ac button{flex:1;padding:12px;border-radius:24px;font-size:15px;font-weight:700;border:2px solid #e8590c;background:#fff;color:#e8590c}
-#pcd .ac button.p{background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}
+#pcdc .tp{background:radial-gradient(circle at 50% 30%,#5a3a8a,#1d1233 75%);padding:22px 12px 40px;text-align:center;color:#fff;border-radius:22px 22px 0 0;position:relative}
+#pcdc .tp:after{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;background:linear-gradient(#fff0,#fff)}
+#pcdc .av{width:92px;height:92px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:700;border:3px solid #ffffffcc;position:relative;z-index:1}
+#pcdc .av.fr-f1{border-color:#ffd54a;box-shadow:0 0 0 3px #b8860b,0 0 16px #ffd54a}#pcdc .av.fr-f2{border-color:#4dd0e1;box-shadow:0 0 0 4px #7a2e8e,0 0 18px #4dd0e1}#pcdc .av.fr-f3{border-color:#f08c00;box-shadow:0 0 0 4px #e8590c,0 0 20px #f08c00}#pcdc .av.fr-f4{border-color:#b8f2c0;box-shadow:0 0 0 4px #3a7d44,0 0 14px #b8f2c0}
+#pcdc .nm{font-size:20px;font-weight:700;margin-top:10px;position:relative;z-index:1}
+#pcdc .cd{font-size:12px;opacity:.8;position:relative;z-index:1;margin-top:2px}
+#pcdc .tl{display:flex;gap:8px;padding:0 12px;margin-top:-6px;position:relative;z-index:1}
+#pcdc .tile{flex:1;border-radius:12px;padding:8px 10px;color:#fff;font-weight:700;background:linear-gradient(120deg,#8a3fd1,#d04fb5)}
+#pcdc .tile small{display:block;font-size:11px;font-weight:600;opacity:.9}#pcdc .tile b{font-size:20px}
+#pcdc .tile.g{background:linear-gradient(120deg,#35b36a,#7bd34a)}
+#pcdc .sec{margin:14px 12px 0;padding:10px;border-radius:14px;background:#f3eefc;font-size:13px}
+#pcdc .sec h4{margin:0 0 6px;font-size:14px}#pcdc .sec .mut{color:#8a7f96}
+#pcdc .ac{display:flex;gap:10px;padding:14px 12px 16px;position:sticky;bottom:0;background:#fff}
+#pcdc .ac button{flex:1;padding:12px;border-radius:24px;font-size:15px;font-weight:700;border:2px solid #e8590c;background:#fff;color:#e8590c}
+#pcdc .ac button.p{background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}
 `;document.head.appendChild(st)})();
 const PFN={f1:'إطار ذهبي',f2:'إطار سماوي',f3:'إطار ناري',f4:'إطار أخضر'},PEN={e1:'احتفال التاج',e2:'احتفال النجوم',e3:'احتفال الورق'};
 function pcOpen(name,code,pill,isMe){
- let w=document.getElementById('pcw');if(!w){w=document.createElement('div');w.id='pcw';w.onclick=e=>{if(e.target===w)w.classList.remove('on')};document.body.append(w)}
+ let w=document.getElementById('pcwc');if(!w){w=document.createElement('div');w.id='pcwc';w.onclick=e=>{if(e.target===w)w.classList.remove('on')};document.body.append(w)}
  const c=(cos&&cos[code])||{};const fr=c.frame||'',en=c.ent||c.entrance||'';
- w.innerHTML='<div id="pcd"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div><div class="nm"></div><div class="cd"></div></div>'+
+ w.innerHTML='<div id="pcdc"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div><div class="nm"></div><div class="cd"></div></div>'+
  '<div class="tl"><div class="tile"><small>النشاط في الغرفة</small><b>'+(pill||'0')+'</b></div><div class="tile g"><small>الكود</small><b style="font-size:15px"></b></div></div>'+
  '<div class="sec"><h4>مؤثرات الدخول والإطارات</h4><div>'+(fr?PFN[fr]:'<span class="mut">بدون إطار</span>')+' · '+(en?PEN[en]:'<span class="mut">بدون احتفال دخول</span>')+'</div></div>'+
  '<div class="sec"><h4>العلاقات والمنشورات</h4><div class="mut">لسه مش متاحة في بطاقة الغرفة</div></div>'+
