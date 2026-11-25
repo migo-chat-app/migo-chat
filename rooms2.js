@@ -181,8 +181,8 @@ document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest
 .cpk{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}.cpk button{width:auto!important;margin:0!important;padding:8px 12px!important;border-radius:12px!important;font-size:13px!important;background:#f3ece0;color:#2b2118;border:2px solid transparent!important}.cpk button.on{border-color:#e8590c!important;background:#fff1e6}
 `;document.head.appendChild(st);
 const FR={'':'بدون',f1:'ذهبي',f2:'بنفسجي',f3:'ناري',f4:'أخضر'},EN={'':'بدون',e1:'لافتة ذهبية',e2:'لافتة بنفسجي',e3:'لافتة خضراء'};
-let cos={},seen=null,mine={frame:'',ent:''},lastRoom=null,t0=0;
-function play(name,ent,code){const ch=document.getElementById('rmch');if(!ch)return;const near=ch.scrollHeight-ch.scrollTop-ch.clientHeight<80;const d=document.createElement('div');d.className='cm entm '+(ent==='e2'?'ent2':ent==='e3'?'ent3':'ent1');d.dataset.c=code||'';d.textContent=(ent==='e1'?'👑 ':ent==='e2'?'✨ ':'🌿 ')+name+' دخل الغرفة';ch.append(d);if(near)ch.scrollTop=ch.scrollHeight}
+let cos={},seen=null,mine={frame:'',ent:'',ns:''},lastRoom=null,t0=0;
+function play(name,ent,code){const ch=document.getElementById('rmch');if(!ch)return;const near=ch.scrollHeight-ch.scrollTop-ch.clientHeight<80;const d=document.createElement('div');d.className='cm entm '+(ent==='e2'?'ent2':ent==='e3'?'ent3':'ent1');d.dataset.c=code||'';d.appendChild(document.createTextNode(ent==='e1'?'👑 ':ent==='e2'?'✨ ':'🌿 '));const nsn=document.createElement('span');nsn.className='nsn';nsn.textContent=name;d.appendChild(nsn);d.appendChild(document.createTextNode(' دخل الغرفة'));ch.append(d);if(near)ch.scrollTop=ch.scrollHeight}
 async function poll(){try{const r=(typeof room!=='undefined'?room:null);if(!r||!r.id){lastRoom=null;seen=null;return}
 if(lastRoom!==r.id){lastRoom=r.id;seen=null;t0=Date.now()}
 const d=await sb.rpc('room_cosmetics',{p_room:r.id});if(!d||d.error)return;const L=d.data||[];cos={};L.forEach(x=>cos[x.code]=x);window.__cos=cos;
@@ -194,10 +194,11 @@ setInterval(poll,4000);
 function applyFr(){try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const L=r.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const f=c&&cos[c]&&cos[c].frame;['f1','f2','f3','f4'].forEach(k=>b.classList.toggle('fr-'+k,f===k))})}catch(e){}}
 setInterval(applyFr,800);const _mo=new MutationObserver(applyFr);setInterval(()=>{const g=document.getElementById('rmsg');if(g&&!g.dataset.mo){g.dataset.mo=1;_mo.observe(g,{childList:true,subtree:true})}},500);
 document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('#rmhc');if(!h)return;setTimeout(async()=>{const o=document.querySelector('#rminf>div');if(!o||o.querySelector('.cpk'))return;
-try{const m=await sb.rpc('my_cosmetics');if(m&&m.data)mine={frame:m.data.frame||'',ent:m.data.ent||''}}catch(e){}
+try{const m=await sb.rpc('my_cosmetics');if(m&&m.data)mine={frame:m.data.frame||'',ent:m.data.ent||'',ns:m.data.ns||''}}catch(e){}
 const sec=document.createElement('div');sec.innerHTML='<div class="ir"><b>إطار صورتي</b><span></span></div><div class="cpk" id="cpf"></div><div class="ir"><b>احتفال دخولي</b><span></span></div><div class="cpk" id="cpe"></div>';
 const mk=(box,map,key)=>{Object.keys(map).forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=map[k];if(mine[key]===k)b.className='on';b.onclick=async()=>{mine[key]=k;box.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_cosmetics',{p_frame:mine.frame,p_ent:mine.ent});poll()};box.append(b)})};
 mk(sec.querySelector('#cpf'),FR,'frame');mk(sec.querySelector('#cpe'),EN,'ent');
+{const h=document.createElement('div');h.className='ir';h.innerHTML='<b>شكل حروف اسمي</b><span></span>';const bx=document.createElement('div');bx.className='cpk';bx.id='cpn';Object.keys(NSL).forEach(k=>{const b=document.createElement('button');b.type='button';const sp=document.createElement('span');sp.textContent=k?'أحمد':'عادي';if(k)sp.className='nsw '+k;b.append(sp);if((mine.ns||'')===k)b.className='on';b.onclick=async()=>{mine.ns=k;bx.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_name_style',{p_code:k});poll()};bx.append(b)});sec.append(h,bx)}
 const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 /* profile card */
 (function(){const st=document.createElement('style');st.textContent=`
@@ -234,7 +235,7 @@ function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  '<div class="tl"><div class="tile"><small>نشاط الغرفة</small><b></b></div><div class="tile g"><small>المقعد</small><b></b></div><div class="tile o"><small>الدور</small><b></b></div></div>'+
  '<div class="sec"><div class="prw"><span>الإطار</span><em></em></div><div class="prw"><span>احتفال الدخول</span><em></em></div></div>'+
  '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button>'+((host||isMe)?'<button id="pcm" class="m">'+(isMe?'مقعدي':'خيارات المقعد')+'</button>':'')+'</div></div>';
- const q=x=>w.querySelector(x);q('.nm').textContent=name;q('.cd').textContent='ID: '+code;
+ const q=x=>w.querySelector(x);q('.nm').textContent=name;q('.nm').dataset.c=code;q('.cd').textContent='ID: '+code;
  const t=w.querySelectorAll('.tile b');t[0].textContent=pill||'0';t[1].textContent=seatNo||'-';t[2].textContent=role==='host'?'المضيف':'عضو';
  const em=w.querySelectorAll('.sec em');em[0].textContent=fr?PFN[fr]:'بدون';em[1].textContent=en?PEN[en]:'بدون';
  setAv(q('#pcav'),name,code);
@@ -273,3 +274,39 @@ document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.c
 
 /* available (empty, unlocked) seats show a small plus badge on the bottom rim of the circle */
 (function(){const st=document.createElement('style');st.textContent=`#rmsg .rms:not(.oc):not(.lk):after{content:"";position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#ff4f93 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6v12M6 12h12' stroke='white' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat;border:1.5px solid #fff;box-sizing:border-box;pointer-events:none;z-index:2}`;document.head.appendChild(st)})();
+/* name letter styles (letters only) */
+(function(){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@800;900&family=Noto+Naskh+Arabic:wght@700&family=Noto+Nastaliq+Urdu:wght@700&family=Noto+Sans+Arabic:wght@900&display=swap';document.head.appendChild(l);const st=document.createElement('style');st.textContent=`.nsw{display:inline-block;max-width:100%;vertical-align:bottom}
+#rmsg .rms .sn.nsw{max-width:120%;filter:none}
+.ns1{font-family:'Noto Kufi Arabic','Noto Sans Arabic',sans-serif;font-weight:900}
+.ns2{font-family:'Noto Naskh Arabic','Noto Sans Arabic',serif;font-weight:700;font-style:italic}
+.ns3{font-family:'Noto Nastaliq Urdu','Noto Naskh Arabic',serif;font-weight:700;line-height:1.9}
+.ns4{font-family:'Noto Sans Arabic',sans-serif;font-weight:900;font-style:italic;transform:skewX(-14deg)}
+.ns5{font-family:'Noto Kufi Arabic','Noto Sans Arabic',sans-serif;font-weight:900;color:#ffd54a;text-shadow:1px 1px 0 #b8860b,2px 2px 0 #b8860b,3px 3px 0 #b8860b,3px 5px 4px #0007}
+.ns6{font-family:'Noto Sans Arabic',sans-serif;font-weight:900;color:#8fd3ff;transform:skewX(-12deg);text-shadow:-1px 1px 0 #1565c0,-2px 2px 0 #1565c0,-3px 3px 0 #1565c0,-3px 5px 4px #0007}
+.ns7{font-family:'Noto Kufi Arabic','Noto Sans Arabic',sans-serif;font-weight:900;color:#ffd1e8;text-shadow:1px 1px 0 #d81b60,2px 2px 0 #d81b60,3px 3px 0 #d81b60,3px 5px 4px #0007}
+.ns8{font-family:'Noto Kufi Arabic','Noto Sans Arabic',sans-serif;font-weight:800;color:#e0ffff;text-shadow:0 0 3px #fff,0 0 8px #0ff,0 0 16px #0ff}
+.ns9{font-family:'Noto Sans Arabic',sans-serif;font-weight:900;background:linear-gradient(#fff 0%,#9aa7b5 45%,#2b3440 50%,#c9d3de 70%,#fff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(1px 1px 0 #1b222b) drop-shadow(0 2px 2px #0008)}
+.ns10{font-family:'Noto Naskh Arabic','Noto Sans Arabic',serif;font-weight:700;font-style:italic;background:linear-gradient(#fff3a0,#ffb300 45%,#e53900);-webkit-background-clip:text;background-clip:text;color:transparent;transform:skewX(-8deg);filter:drop-shadow(1px 1px 0 #5a1500) drop-shadow(0 2px 3px #0008)}
+.ns11{font-family:'Noto Kufi Arabic','Noto Sans Arabic',sans-serif;font-weight:900;color:#b9f6ca;text-shadow:1px 1px 0 #1b8a4a,2px 2px 0 #1b8a4a,3px 3px 0 #1b8a4a,3px 5px 4px #0007}
+.ns12{font-family:'Noto Nastaliq Urdu','Noto Naskh Arabic',serif;font-weight:700;line-height:1.9;color:#e1bee7;text-shadow:1px 1px 0 #6a1b9a,2px 2px 0 #6a1b9a,2px 4px 4px #0007}
+`;document.head.appendChild(st)})();
+
+const NSL={'':'عادي',ns1:'كوفي',ns2:'نسخ مائل',ns3:'نستعليق',ns4:'مائل عريض',ns5:'ثري دي ذهبي',ns6:'ثري دي أزرق',ns7:'ثري دي وردي',ns8:'نيون',ns9:'كروم',ns10:'ناري',ns11:'ثري دي أخضر',ns12:'بنفسجي'};
+function nsCls(e,k){if(!e)return;let c=[...e.classList].filter(x=>/^ns\d+$/.test(x));if(k){if(c.length===1&&c[0]===k&&e.classList.contains('nsw'))return}else if(!c.length&&!e.classList.contains('nsw'))return;c.forEach(x=>e.classList.remove(x));if(k){e.classList.add('nsw',k)}else e.classList.remove('nsw')}
+function nsWrap(host,name,k){/* style only the name part of a text node */if(!host)return;const f=host.firstChild;if(f&&f.nodeType===1&&f.classList.contains('nsw')){if(f.textContent!==name){host.removeChild(f)}else{nsCls(f,k);return}}
+const t=host.firstChild;if(!t||t.nodeType!==3||!t.nodeValue.startsWith(name)){return}const sp=document.createElement('span');sp.textContent=name;sp.className='nsw '+k;t.nodeValue=t.nodeValue.slice(name.length);host.insertBefore(sp,t)}
+function nsApply(){try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const CO=window.__cos||{};const nm={};(r.mlist||[]).forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;const K=c=>c&&CO[c]&&CO[c].ns||'';
+document.querySelectorAll('#rmch .cn').forEach(e=>nsCls(e,K(nm[e.textContent.trim()])));
+document.querySelectorAll('#rmsg .rms.oc .sn').forEach(e=>nsCls(e,K(nm[e.textContent.trim()])));
+document.querySelectorAll('#rmch>div.entm').forEach(e=>{const c=e.dataset.c,k=K(c);const sp=e.querySelector('.nsn');if(sp)nsCls(sp,k)});
+(r.mlist||[]).forEach(m=>{const k=K(m.code);if(!k)return;const nmv=m.name||m.code;document.querySelectorAll('#rmm span').forEach(x=>{if(x.style.flex==='1'||x.style.flex==='1 1 0%'){const f=x.firstChild;if((f&&f.nodeType===3&&f.nodeValue.startsWith(nmv))||(f&&f.classList&&f.classList.contains('nsw')&&f.textContent===nmv))nsWrap(x,nmv,k)}})});
+const pn=document.querySelector('#pcdc .nm');if(pn){const c=pn.dataset.c;nsCls(pn,K(c))}}catch(e){}}
+setInterval(nsApply,800);
+
+/* app-wide: styled names outside the room (matched by unique display name), refreshed every 20s */
+let SNM={};async function snLoad(){try{const d=await sb.rpc('styled_names');if(d&&!d.error){const m={};(d.data||[]).forEach(x=>{m[x.name]=x.ns});SNM=m}}catch(e){}}
+setInterval(snLoad,20000);setTimeout(snLoad,2500);
+function snApply(){try{const sel='#ppl .ci .nm,.rci .nm,#prfn,#pkn';document.querySelectorAll(sel).forEach(e=>{const k=SNM[e.textContent.trim()]||'';nsCls(e,k)})}catch(e){}}
+setInterval(snApply,800);
+/* heavier text app-wide (ordinary weight, separate from the chosen letter styles) */
+(function(){const st=document.createElement('style');st.textContent='body,input,textarea,select,button{font-weight:600}.pv,.cm,#rmch .cm{font-weight:600}';document.head.appendChild(st)})();
