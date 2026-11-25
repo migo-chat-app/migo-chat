@@ -227,6 +227,34 @@ const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 #pcdc .ac button#pcf:not(.cl):before{content:"";width:22px;height:22px;border-radius:50%;background:#ff4f93 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6v12M6 12h12' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center/16px no-repeat;flex:none}
 #pcdc .ac button#pcf:active{transform:scale(.96)}
 `;document.head.appendChild(st)})();
+function pcTabs(w,code,isMe){
+ const sec=w.querySelector('.sec');if(!sec)return;
+ const bar=document.createElement('div');bar.className='pct';const pan=document.createElement('div');pan.className='pcp';pan.style.display='none';
+ sec.before(bar);sec.after(pan);
+ const mkp=(t,cls)=>{const d=document.createElement('div');d.className=cls||'prw';d.textContent=t;return d};
+ const names={};try{Object.assign(names,window.GNAMES||{})}catch(e){}
+ const T=[['info','المعلومات'],['ach','الإنجازات'],['rel','العلاقات']];
+ const show=async k=>{bar.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));sec.style.display=k==='info'?'':'none';pan.style.display=k==='info'?'none':'';pan.textContent='';
+  if(k==='ach'){
+   if(!isMe){pan.append(mkp('إنجازات الهدايا بتظهر لصاحب الحساب بس'));return}
+   const r=await sb.rpc('received_gifts',{p_code:code});const L=(r&&r.data)||[];
+   if(!L.length){pan.append(mkp('لسه ماوصلكش هدايا'));return}
+   L.forEach(x=>{const d=document.createElement('div');d.className='prw';const a=document.createElement('span');a.style.cssText='display:flex;align-items:center;gap:8px';const ic=document.createElement('span');ic.style.cssText='width:30px;height:30px;display:inline-block';ic.innerHTML=(window.GART&&window.GART[x.gift])||'';const nm=document.createElement('span');nm.textContent=names[x.gift]||x.gift;a.append(ic,nm);const e=document.createElement('em');e.textContent='×'+x.n;d.append(a,e);pan.append(d)});
+   pan.append(mkp('الأرقام دي ظاهرة ليك انت بس','pcn'));return}
+  if(k==='rel'){
+   const pr=await sb.rpc('public_relationships',{p_code:code});const P=(pr&&pr.data)||[];
+   if(P.length)P.forEach(x=>{const d=document.createElement('div');d.className='prw';const a=document.createElement('span');a.textContent=x.name||x.code;a.dataset.c=x.code;const e=document.createElement('em');e.textContent='مستوى '+x.level;d.append(a,e);pan.append(d)});else pan.append(mkp('مفيش علاقات معلنة'));
+   const cons=(c,nm)=>{const wrap=document.createElement('div');wrap.className='prw';const s=document.createElement('span');const b=document.createElement('button');b.type='button';b.className='pcc';wrap.append(s,b);
+    const paint=st=>{s.textContent=nm+(st.mine&&st.theirs?' · العلاقة معلنة':st.mine?' · في انتظار موافقته':st.theirs?' · طلب إظهار العلاقة':' · العلاقة خاصة');b.textContent=st.mine?'سحب الموافقة':'موافقة على إظهار العلاقة'};
+    return {wrap,paint,btn:b,s}};
+   const wire=(c,nm,st)=>{const o=cons(c,nm);o.paint(st);o.btn.onclick=async()=>{o.btn.disabled=true;const r=await sb.rpc('set_relationship_consent',{p_code:c,p_on:!st.mine});o.btn.disabled=false;if(r.error)return;st.mine=r.data.mine;st.theirs=st.theirs;o.paint(st);if(isMe)show('rel')};return o.wrap};
+   if(isMe){const m=await sb.rpc('my_relationships');const M=(m&&m.data)||[];if(M.length){pan.append(mkp('علاقاتك الخاصة (ظاهرة ليك بس لحد الموافقة من الطرفين)','pcn'))}
+    for(const x of M){const st=(await sb.rpc('relationship_status',{p_code:x.code})).data;if(!st)continue;const row=document.createElement('div');const lv=document.createElement('div');lv.className='pcn';lv.textContent=(x.name||x.code)+' · مستوى '+x.level;pan.append(lv,wire(x.code,x.name||x.code,st))}}
+   else{const st=(await sb.rpc('relationship_status',{p_code:code})).data;if(st&&st.eligible)pan.append(wire(code,'علاقتك بيه',st))}
+   return}};
+ T.forEach(([k,t])=>{const b=document.createElement('button');b.type='button';b.dataset.k=k;b.textContent=t;if(k==='info')b.className='on';b.onclick=()=>show(k).catch(()=>{pan.textContent='حصل خطأ'});bar.append(b)});
+}
+(function(){const st=document.createElement('style');st.textContent=`#pcdc .pct{display:flex;margin:10px 12px 0;gap:6px}#pcdc .pct button{flex:1;padding:8px 4px;border-radius:12px;border:0;background:#f1ebfb;color:#6a4fa0;font-weight:700;font-size:13px}#pcdc .pct button.on{background:#6a4fa0;color:#fff}#pcdc .pcp{margin:8px 12px 0;padding:4px 12px;border-radius:14px;background:linear-gradient(180deg,#f3eefc,#e9e0fa);font-size:13px}#pcdc .pcn{font-size:11.5px;color:#6a4fa0;padding:4px 0}#pcdc .pcc{padding:6px 10px;border-radius:14px;border:2px solid #6a4fa0;background:#fff;color:#6a4fa0;font-weight:700;font-size:12px}`;document.head.appendChild(st)})();
 const PFN={f1:'إطار ذهبي',f2:'إطار سماوي',f3:'إطار ناري',f4:'إطار أخضر'},PEN={e1:'احتفال التاج',e2:'احتفال النجوم',e3:'احتفال الورق'};
 function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  let w=document.getElementById('pcwc');if(!w){w=document.createElement('div');w.id='pcwc';w.onclick=e=>{if(e.target===w)w.classList.remove('on')};document.body.append(w)}
@@ -244,7 +272,7 @@ function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  else{g.onclick=()=>{room.giftTo=code;w.classList.remove('on');window.openRoomGift&&window.openRoomGift(name)};
   f.onclick=async()=>{f.disabled=true;try{const p=await sb.rpc('find_profile',{c:code});const pr=p.data&&p.data[0];if(!pr){f.textContent='مش لاقيه';return}const r=await sb.rpc('follow_request',{p_to:pr.id});f.textContent=r.error?'المتابعة مش متاحة لحسابك':'تم إرسال الطلب'}catch(e){f.textContent='حصل خطأ'}};
   const m=q('#pcm');if(m)m.onclick=()=>{w.classList.remove('on');window.__pcBy=1;try{seatEl.click()}finally{window.__pcBy=0}}}
- w.classList.add('on')}
+ pcTabs(w,code,isMe);w.classList.add('on')}
 document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.closest&&e.target.closest('#rm.inroom #rmsg .rms.oc');if(!b)return;const sn=b.querySelector('.sn');if(!sn)return;const L=(typeof room!=='undefined'&&room&&room.mlist)||[];const nm=sn.textContent;let code,name=nm,role='member';const me=nm==='أنت';if(me){code=myCode;const m=L.find(x=>x.code===myCode);name=(m&&(m.name||m.code))||'أنت';role=m&&m.role}else{const m=L.find(x=>(x.name||x.code)===nm);if(!m)return;code=m.code;name=m.name||m.code;role=m.role}
  const pp=b.querySelector('.pp');const no=[...document.querySelectorAll('#rmsg .rms')].indexOf(b)+1;e.stopImmediatePropagation();e.preventDefault();pcOpen(name,code,pp?pp.textContent.replace(/[^0-9]/g,''):'',me,no,role,b)},true);
 })();
