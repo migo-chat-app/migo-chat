@@ -49,7 +49,7 @@ function pv(){const n=(rmn.value||'').trim();cr.querySelector('#rcpn').textConte
 rmn.oninput=pv;
 cr.querySelectorAll('#rcsz button').forEach(b=>b.onclick=()=>{rmsz.value=b.dataset.n;cr.querySelectorAll('#rcsz button').forEach(x=>x.classList.toggle('on',x===b));pv()});
 window.__pv=0;cr.querySelectorAll('#rcvis button').forEach(b=>b.onclick=()=>{window.__pv=b.dataset.p==='1'?1:0;cr.querySelectorAll('#rcvis button').forEach(x=>x.classList.toggle('on',x===b));pv()});
-const oldc=rmc.onclick;rmc.onclick=()=>{rmpub.checked=true;cr.querySelector('#rcerr').textContent='';return oldc()};
+const oldc=rmc.onclick;rmc.onclick=()=>{rmpub.checked=true;cr.querySelector('#rcerr').textContent='';return Promise.resolve(oldc()).then(()=>{try{if(room)cr.style.display='none'}catch(e){}})};
 new MutationObserver(()=>{cr.querySelector('#rcerr').textContent=$('rme').textContent}).observe($('rme'),{childList:true,characterData:true,subtree:true});
 const rmh=document.querySelector('.rmh');const nb=E('button',{id:'rmnew',type:'button'},'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="6"/><path d="M12 8v8M8 12h8"/></svg>إنشاء غرفة');rmh.append(nb);
 nb.onclick=()=>{cr.querySelector('#rcerr').textContent='';cr.style.display='flex';pv();setTimeout(()=>rmn.focus(),50)};cr.querySelector('#rcback').onclick=()=>{cr.style.display='none'};
@@ -78,6 +78,6 @@ let pa={};async function pact(){try{const r=await orig('room_member_activity',{p
 function pills(){const L=room.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const v=c&&pa[c]||0;let p=b.querySelector('.pp');if(!p){p=E('span',{className:'pp'});b.append(p)}const t='🔥'+v;if(p.textContent!==t)p.textContent=t;p.title='تفاعله في الغرفة: رسائل وهدايا آخر 30 دقيقة'})}
 new MutationObserver(()=>{try{pills()}catch(e){}}).observe($('rmsg'),{childList:true});
 function aud(){au.innerHTML='';const L=(room.mlist||[]);for(const m of L.slice(0,7)){const a=E('span',{className:'av'});setAv(a,m.name,m.code);au.append(a)}au.append(E('span',{id:'rmaun'},'الموجودين '+L.length))}
-setInterval(()=>{try{if(room){rm.classList.add('inroom');look();aud();$('rmtc').textContent=mm.classList.contains('cl')?'عرض ▾':'إخفاء ▴';nb.style.display='none'}else{rm.classList.remove('inroom');lookFor='';actAt=0;nb.style.display=''}}catch(e){}},1500);
+setInterval(()=>{try{if(room){cr.style.display='none';rm.classList.add('inroom');look();aud();$('rmtc').textContent=mm.classList.contains('cl')?'عرض ▾':'إخفاء ▴';nb.style.display='none'}else{rm.classList.remove('inroom');lookFor='';actAt=0;nb.style.display=''}}catch(e){}},1500);
 window.__roomColors=BG;window.__bgOf=bgOf;
 })();
