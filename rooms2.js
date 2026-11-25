@@ -243,13 +243,13 @@ function pcTabs(w,code,isMe){
    pan.append(mkp('الأرقام دي ظاهرة ليك انت بس','pcn'));return}
   if(k==='rel'){
    const pr=await sb.rpc('public_relationships',{p_code:code});const P=(pr&&pr.data)||[];
-   if(P.length)P.forEach(x=>{const d=document.createElement('div');d.className='prw';const a=document.createElement('span');a.textContent=x.name||x.code;a.dataset.c=x.code;const e=document.createElement('em');e.textContent='مستوى '+x.level;d.append(a,e);pan.append(d)});else pan.append(mkp('مفيش علاقات معلنة'));
+   if(!isMe){if(P.length)P.forEach(x=>{const d=document.createElement('div');d.className='prw';const a=document.createElement('span');a.textContent=x.name||x.code;a.dataset.c=x.code;const e=document.createElement('em');e.textContent='مستوى '+x.level;d.append(a,e);pan.append(d)});else pan.append(mkp('مفيش علاقات معلنة'))}
    const cons=(c,nm)=>{const wrap=document.createElement('div');wrap.className='prw';const s=document.createElement('span');const b=document.createElement('button');b.type='button';b.className='pcc';wrap.append(s,b);
-    const paint=st=>{s.textContent=nm+(st.mine&&st.theirs?' · العلاقة معلنة':st.mine?' · في انتظار موافقته':st.theirs?' · طلب إظهار العلاقة':' · العلاقة خاصة');b.textContent=st.mine?'سحب الموافقة':'موافقة على إظهار العلاقة'};
+    const paint=st=>{s.textContent=(nm?nm+' · ':'')+(st.mine&&st.theirs?'العلاقة معلنة للكل':st.mine?'في انتظار موافقته (لسه خاصة)':st.theirs?'طلب إظهار العلاقة (لسه خاصة)':'العلاقة خاصة');b.textContent=st.mine?'سحب الموافقة':'موافقة على إظهار العلاقة'};
     return {wrap,paint,btn:b,s}};
    const wire=(c,nm,st)=>{const o=cons(c,nm);o.paint(st);o.btn.onclick=async()=>{o.btn.disabled=true;const r=await sb.rpc('set_relationship_consent',{p_code:c,p_on:!st.mine});o.btn.disabled=false;if(r.error)return;st.mine=r.data.mine;st.theirs=st.theirs;o.paint(st);if(isMe)show('rel')};return o.wrap};
-   if(isMe){const m=await sb.rpc('my_relationships');const M=(m&&m.data)||[];if(M.length){pan.append(mkp('علاقاتك الخاصة (ظاهرة ليك بس لحد الموافقة من الطرفين)','pcn'))}
-    for(const x of M){const st=(await sb.rpc('relationship_status',{p_code:x.code})).data;if(!st)continue;const row=document.createElement('div');const lv=document.createElement('div');lv.className='pcn';lv.textContent=(x.name||x.code)+' · مستوى '+x.level;pan.append(lv,wire(x.code,x.name||x.code,st))}}
+   if(isMe){const m=await sb.rpc('my_relationships');const M=(m&&m.data)||[];if(!M.length)pan.append(mkp('مفيش علاقات لسه'));
+    for(const x of M){const st=(await sb.rpc('relationship_status',{p_code:x.code})).data;if(!st)continue;const row=document.createElement('div');const lv=document.createElement('div');lv.className='prw';lv.append((x.name||x.code)+' · مستوى '+x.level);pan.append(lv,wire(x.code,'',st))}}
    else{const st=(await sb.rpc('relationship_status',{p_code:code})).data;if(st&&st.eligible)pan.append(wire(code,'علاقتك بيه',st))}
    return}};
  T.forEach(([k,t])=>{const b=document.createElement('button');b.type='button';b.dataset.k=k;b.textContent=t;if(k==='info')b.className='on';b.onclick=()=>show(k).catch(()=>{pan.textContent='حصل خطأ'});bar.append(b)});
