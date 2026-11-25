@@ -268,15 +268,6 @@ document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.c
 /* entrance shows as an ordinary line inside the chat messages */
 (function(){const st=document.createElement('style');st.textContent=`#rm.inroom #rmch>div.entm{display:block!important;width:fit-content!important;max-width:100%;margin:0 0 4px!important;padding:3px 12px!important;border-radius:14px!important;font-size:14px!important;font-weight:700;color:#fff!important;text-shadow:0 1px 3px #000c;border:1.5px solid rgba(255,255,255,.5);background:linear-gradient(120deg,rgba(255,224,138,.38),rgba(246,166,35,.38))!important}#rm.inroom #rmch>div.entm.ent2{background:linear-gradient(120deg,rgba(217,179,255,.38),rgba(122,46,142,.38))!important}#rm.inroom #rmch>div.entm.ent3{background:linear-gradient(120deg,rgba(143,240,192,.38),rgba(31,111,92,.38))!important}`;document.head.appendChild(st)})();
 
-/* names in chat and in the entrance line carry the player's equipped frame (same frames as the mic seats) */
-(function(){const st=document.createElement('style');st.textContent=`#rm.inroom #rmch .cn[class*=nfr-],#rm.inroom #rmch>div.entm[class*=nfr-]{border-radius:10px;padding:0 8px;border:1.5px solid transparent}
-#rm.inroom #rmch .nfr-f1{border-color:#ffd54a!important;box-shadow:0 0 0 1px #b8860b,0 0 6px #ffd54a}
-#rm.inroom #rmch .nfr-f2{border-color:#4dd0e1!important;box-shadow:0 0 0 1px #7a2e8e,0 0 6px #4dd0e1}
-#rm.inroom #rmch .nfr-f3{border-color:#f08c00!important;box-shadow:0 0 0 1px #e8590c,0 0 8px #f08c00}
-#rm.inroom #rmch .nfr-f4{border-color:#b8f2c0!important;box-shadow:0 0 0 1px #3a7d44,0 0 6px #b8f2c0}`;document.head.appendChild(st);
-function nf(){try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const nm={};(r.mlist||[]).forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;const put=(e,c)=>{const CO=window.__cos||{};const f=c&&CO[c]&&CO[c].frame;['f1','f2','f3','f4'].forEach(k=>e.classList.toggle('nfr-'+k,f===k))};
-document.querySelectorAll('#rmch .cn').forEach(e=>put(e,nm[e.textContent.trim()]));document.querySelectorAll('#rmch>div.entm').forEach(e=>put(e,e.dataset.c))}catch(e){}}
-setInterval(nf,800)})();
 
 (function(){const st=document.createElement('style');st.textContent='#pcdc .ac button{white-space:nowrap!important;font-size:14px!important;padding-left:6px!important;padding-right:6px!important}';document.head.appendChild(st)})();
 
