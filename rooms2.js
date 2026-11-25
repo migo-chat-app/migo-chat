@@ -13,7 +13,7 @@ const css=`
 .rc-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rc-g button{padding:12px 6px;border:2px solid #d9cdb8;background:#fff;color:#2b2118;border-radius:14px;font-size:16px;font-weight:700;display:flex;flex-direction:column;gap:2px}.rc-g button small{font-size:11px;font-weight:400;color:#7a6a58}.rc-g button.on{border-color:#e8590c;background:#fff1e6;color:#c2410c}
 .rc-sw{display:flex;gap:8px;flex-wrap:wrap}.rc-sw button{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #d9cdb8;padding:0}.rc-sw button.on{box-shadow:0 0 0 3px #e8590c}
 #rcb #rmc{width:100%;padding:14px;border:0;border-radius:16px;background:linear-gradient(120deg,#e8590c,#f08c00);color:#fff;font-size:17px;font-weight:700;margin-top:14px}
-#rmi{padding-bottom:70px}
+#rmi{padding-bottom:150px}#rmsg{grid-template-columns:repeat(var(--c,6),minmax(0,1fr))!important}#rmsg .rms{min-width:0}#rmsg .rms .sn{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
 #rmhd{display:flex;align-items:center;gap:12px;padding:6px 2px;color:#fff;margin:0 0 8px}#rmhc{width:58px;height:58px;border-radius:16px;border:2px solid #ffffff99;background:#ffffff26;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;flex:none}#rmhn{flex:1;min-width:0}#rmhn b{display:block;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#rmhn small{font-size:12px;opacity:.92}#rmhn code{background:#ffffff26;padding:1px 6px;border-radius:6px;font-family:inherit}
 #rmhd #rmmore{background:#ffffff26;color:#fff;border-radius:12px;padding:8px 12px}
 #rmch{max-height:210px!important;min-height:90px;border:1px solid #eadfcb}
@@ -60,6 +60,7 @@ const rmt=$('rmt'),rmcnt=$('rmcnt'),rmcode=$('rmcode'),more=$('rmmore');
 const hn=hd.querySelector('#rmhn');const l2=E('small',{},'');l2.append('كود الدعوة: ',rmcode,' ',rmcnt);hn.append(rmt,l2);hd.append(more);
 const firstP=ri.querySelector('p');ri.insertBefore(hd,ri.firstChild);if(firstP&&firstP.contains(rmcode)===false&&!firstP.textContent.trim())firstP.remove();
 for(const p of [...ri.children]){if(p.tagName==='P'&&!p.querySelector('button')&&!p.querySelector('#rmcode')&&p.textContent.indexOf('اضغط «هدية»')>-1)p.style.fontSize='12px'}
+for(const p of [...ri.querySelectorAll('p')]){if(!hd.contains(p)&&p.textContent.indexOf('كود الدعوة')>-1&&!p.querySelector('button'))p.remove()}
 // remove now-empty original header paragraph
 for(const p of [...ri.querySelectorAll('p')]){if(!p.children.length&&!p.textContent.trim()&&p.id==='')p.remove()}
 // bottom bar
@@ -73,11 +74,11 @@ const ex=$('rml2');ex.parentElement.style.display='none';
 // cover + color in header (and host picker in menu)
 let lookFor='';const au=E('div',{id:'rmau'});ri.insertBefore(au,$('rmch'));const act=E('span',{id:'rmact'},'');hn.append(act);let actAt=0;
 async function look(){try{if(lookFor!==room.id+'|'+rmt.textContent){lookFor=room.id+'|'+rmt.textContent;const r=await orig('room_look',{p_room:room.id});const bg=r&&r.data&&r.data.bg||'';const b=bgOf(room.code,bg);rm.style.setProperty('--rb',b);$('rmhc').textContent=(rmt.textContent||'؟').trim().charAt(0).toUpperCase();$('rmhc').style.background=b}
-if(Date.now()-actAt>20000){actAt=Date.now();pact();const a=await orig('room_activity',{p_room:room.id});if(a&&a.data)act.textContent='🔥 نشاط '+a.data.score;act.title='رسائل وهدايا آخر 30 دقيقة: '+(a&&a.data?a.data.msgs+' رسالة و'+a.data.gifts+' هدية':'')}}catch(e){}}
+if(Date.now()-actAt>8000){actAt=Date.now();pact();const a=await orig('room_activity',{p_room:room.id});if(a&&a.data)act.textContent='🔥 نشاط '+a.data.score;act.title='رسائل وهدايا آخر 30 دقيقة: '+(a&&a.data?a.data.msgs+' رسالة و'+a.data.gifts+' هدية':'')}}catch(e){}}
 let pa={};async function pact(){try{const r=await orig('room_member_activity',{p_room:room.id});pa={};((r&&r.data)||[]).forEach(x=>pa[x.code]=x.score);pills()}catch(e){}}
 function pills(){const L=room.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const v=c&&pa[c]||0;let p=b.querySelector('.pp');if(!p){p=E('span',{className:'pp'});b.append(p)}const t='🔥'+v;if(p.textContent!==t)p.textContent=t;p.title='تفاعله في الغرفة: رسائل وهدايا آخر 30 دقيقة'})}
 new MutationObserver(()=>{try{pills()}catch(e){}}).observe($('rmsg'),{childList:true});
 function aud(){au.innerHTML='';const L=(room.mlist||[]);for(const m of L.slice(0,7)){const a=E('span',{className:'av'});setAv(a,m.name,m.code);au.append(a)}au.append(E('span',{id:'rmaun'},'الموجودين '+L.length))}
-setInterval(()=>{try{if(room){cr.style.display='none';rm.classList.add('inroom');look();aud();$('rmtc').textContent=mm.classList.contains('cl')?'عرض ▾':'إخفاء ▴';nb.style.display='none'}else{rm.classList.remove('inroom');lookFor='';actAt=0;nb.style.display=''}}catch(e){}},1500);
+setInterval(()=>{try{if(room){cr.style.display='none';const sg=$('rmsg');if(sg)sg.style.setProperty('--c',String(Math.max(1,Math.round(sg.children.length/3))));rm.classList.add('inroom');look();aud();$('rmtc').textContent=mm.classList.contains('cl')?'عرض ▾':'إخفاء ▴';nb.style.display='none'}else{rm.classList.remove('inroom');lookFor='';actAt=0;nb.style.display=''}}catch(e){}},1500);
 window.__roomColors=BG;window.__bgOf=bgOf;
 })();
