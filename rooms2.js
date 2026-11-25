@@ -213,3 +213,6 @@ const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 #rm.inroom #rmch{padding-bottom:6px!important}
 #rminf>div{max-height:78dvh!important;overflow:auto!important}
 `;document.head.appendChild(st)})();
+(function(){const st=document.createElement('style');st.textContent=`
+#rment .eb,#rment .e2b,#rment .e3b{background:transparent!important;box-shadow:none!important;color:#fff!important;text-shadow:0 1px 3px #000c,0 0 10px #000a;font-size:17px}
+`;document.head.appendChild(st)})();
