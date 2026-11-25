@@ -241,7 +241,7 @@ function pcOpen(name,code,pill,isMe){
   f.onclick=async()=>{f.disabled=true;try{const p=await sb.rpc('find_profile',{c:code});const pr=p.data&&p.data[0];if(!pr){f.textContent='مش لاقيه';return}const r=await sb.rpc('follow_request',{p_to:pr.id});f.textContent=r.error?'المتابعة مش متاحة لحسابك دلوقتي':'تم إرسال طلب المتابعة'}catch(e){f.textContent='حصل خطأ'}};}
  w.classList.add('on')}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#rm.inroom #rmsg .rms.oc');if(!b)return;const sn=b.querySelector('.sn');if(!sn)return;const L=(typeof room!=='undefined'&&room&&room.mlist)||[];const nm=sn.textContent;let code,name=nm;const me=nm==='أنت';if(me){code=myCode;const m=L.find(x=>x.code===myCode);name=(m&&(m.name||m.code))||'أنت'}else{const m=L.find(x=>(x.name||x.code)===nm);if(!m)return;code=m.code;name=m.name||m.code}
- const pp=b.querySelector('.pp');pcOpen(name,code,pp?pp.textContent.replace(/[^0-9]/g,''):'',me)});
+ const pp=b.querySelector('.pp');pcOpen(name,code,pp?pp.textContent.replace(/[^0-9]/g,''):'',me)},true);
 })();
 
 (function(){const st=document.createElement('style');st.textContent=`
