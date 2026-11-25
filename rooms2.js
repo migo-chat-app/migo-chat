@@ -182,17 +182,14 @@ document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest
 `;document.head.appendChild(st);
 const FR={'':'بدون',f1:'ذهبي',f2:'بنفسجي',f3:'ناري',f4:'أخضر'},EN={'':'بدون',e1:'لافتة ذهبية',e2:'لافتة بنفسجي',e3:'لافتة خضراء'};
 let cos={},seen=null,mine={frame:'',ent:''},lastRoom=null,t0=0;
-function play(name,ent){let h=document.getElementById('rment');if(!h){h=document.createElement('div');h.id='rment';document.body.append(h)}
-const b=document.createElement('div');b.className='eb '+(ent==='e2'?'e2b':ent==='e3'?'e3b':'');b.textContent=(ent==='e1'?'👑 ':ent==='e2'?'✨ ':'🌿 ')+name+' دخل الغرفة';h.append(b);
-for(let i=0;i<6;i++){const s=document.createElement('span');s.className='sp';s.textContent=ent==='e3'?'🌿':'✨';s.style.left=(15+Math.random()*70)+'%';s.style.top='40px';s.style.animationDelay=(i*0.2)+'s';h.append(s);setTimeout(()=>s.remove(),3200)}
-setTimeout(()=>b.remove(),3200)}
+function play(name,ent,code){const ch=document.getElementById('rmch');if(!ch)return;const near=ch.scrollHeight-ch.scrollTop-ch.clientHeight<80;const d=document.createElement('div');d.className='cm entm '+(ent==='e2'?'ent2':ent==='e3'?'ent3':'ent1');d.dataset.c=code||'';d.textContent=(ent==='e1'?'👑 ':ent==='e2'?'✨ ':'🌿 ')+name+' دخل الغرفة';ch.append(d);if(near)ch.scrollTop=ch.scrollHeight}
 async function poll(){try{const r=(typeof room!=='undefined'?room:null);if(!r||!r.id){lastRoom=null;seen=null;return}
 if(lastRoom!==r.id){lastRoom=r.id;seen=null;t0=Date.now()}
-const d=await sb.rpc('room_cosmetics',{p_room:r.id});if(!d||d.error)return;const L=d.data||[];cos={};L.forEach(x=>cos[x.code]=x);
+const d=await sb.rpc('room_cosmetics',{p_room:r.id});if(!d||d.error)return;const L=d.data||[];cos={};L.forEach(x=>cos[x.code]=x);window.__cos=cos;
 const names={};(r.mlist||[]).forEach(m=>names[m.code]=m.name||m.code);
 const codes=(r.mlist||[]).map(m=>m.code);
-if(seen===null){seen=new Set(codes);const me=cos[myCode];if(me&&me.ent)play('أنت',me.ent)}
-else codes.forEach(c=>{if(!seen.has(c)){seen.add(c);const x=cos[c];if(x&&x.ent)play(names[c]||c,x.ent)}})}catch(e){}}
+if(seen===null){seen=new Set(codes);const me=cos[myCode];if(me&&me.ent)play('أنت',me.ent,myCode)}
+else codes.forEach(c=>{if(!seen.has(c)){seen.add(c);const x=cos[c];if(x&&x.ent)play(names[c]||c,x.ent,c)}})}catch(e){}}
 setInterval(poll,4000);
 function applyFr(){try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const L=r.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const f=c&&cos[c]&&cos[c].frame;['f1','f2','f3','f4'].forEach(k=>b.classList.toggle('fr-'+k,f===k))})}catch(e){}}
 setInterval(applyFr,800);const _mo=new MutationObserver(applyFr);setInterval(()=>{const g=document.getElementById('rmsg');if(g&&!g.dataset.mo){g.dataset.mo=1;_mo.observe(g,{childList:true,subtree:true})}},500);
@@ -236,7 +233,7 @@ function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  w.innerHTML='<div id="pcdc"><div class="tp"><div class="av'+(fr?' fr-'+fr:'')+'" id="pcav"></div></div><div class="tx"><div class="nm"></div><div class="cd"></div></div>'+
  '<div class="tl"><div class="tile"><small>نشاط الغرفة</small><b></b></div><div class="tile g"><small>المقعد</small><b></b></div><div class="tile o"><small>الدور</small><b></b></div></div>'+
  '<div class="sec"><div class="prw"><span>الإطار</span><em></em></div><div class="prw"><span>احتفال الدخول</span><em></em></div></div>'+
- '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button>'+((host||isMe)?'<button id="pcm" class="m">'+(isMe?'مقعدي':'إدارة')+'</button>':'')+'</div></div>';
+ '<div class="ac"><button class="p" id="pcg">إرسال هدية</button><button id="pcf">متابعة</button>'+((host||isMe)?'<button id="pcm" class="m">'+(isMe?'مقعدي':'خيارات المقعد')+'</button>':'')+'</div></div>';
  const q=x=>w.querySelector(x);q('.nm').textContent=name;q('.cd').textContent='ID: '+code;
  const t=w.querySelectorAll('.tile b');t[0].textContent=pill||'0';t[1].textContent=seatNo||'-';t[2].textContent=role==='host'?'المضيف':'عضو';
  const em=w.querySelectorAll('.sec em');em[0].textContent=fr?PFN[fr]:'بدون';em[1].textContent=en?PEN[en]:'بدون';
@@ -268,8 +265,20 @@ document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.c
 /* entrance tint: light see-through color, outline kept */
 (function(){const st=document.createElement('style');st.textContent=`#rment .eb{background:linear-gradient(120deg,rgba(255,224,138,.38),rgba(246,166,35,.38))!important;backdrop-filter:none}#rment .e2b{background:linear-gradient(120deg,rgba(217,179,255,.38),rgba(122,46,142,.38))!important}#rment .e3b{background:linear-gradient(120deg,rgba(143,240,192,.38),rgba(31,111,92,.38))!important}`;document.head.appendChild(st)})();
 
-/* entrance banner sits at the bottom of the messages area */
-(function(){if(window.__entLow)return;window.__entLow=1;const st=document.createElement('style');st.textContent='#rment{top:auto!important;bottom:140px}';document.head.appendChild(st);setInterval(()=>{const h=document.getElementById('rment'),c=document.getElementById('rmch');if(!h||!c)return;const r=c.getBoundingClientRect();if(r.height<40)return;const ci=document.getElementById('rmci'),cr=ci?ci.getBoundingClientRect():null;const lim=cr&&cr.height>0?cr.top-8:window.innerHeight;const vb=Math.min(r.bottom,lim,window.innerHeight),vt=Math.max(r.top,0);if(vb-vt<52){h.style.setProperty('visibility','hidden','important');return}h.style.setProperty('visibility','visible','important');const t=Math.max(vb-44,vt);h.style.setProperty('top',t+'px','important');h.style.setProperty('bottom','auto','important')},250)})();
+/* entrance shows as an ordinary line inside the chat messages */
+(function(){const st=document.createElement('style');st.textContent=`#rm.inroom #rmch>div.entm{display:block!important;width:fit-content!important;max-width:100%;margin:0 0 4px!important;padding:3px 12px!important;border-radius:14px!important;font-size:14px!important;font-weight:700;color:#fff!important;text-shadow:0 1px 3px #000c;border:1.5px solid rgba(255,255,255,.5);background:linear-gradient(120deg,rgba(255,224,138,.38),rgba(246,166,35,.38))!important}#rm.inroom #rmch>div.entm.ent2{background:linear-gradient(120deg,rgba(217,179,255,.38),rgba(122,46,142,.38))!important}#rm.inroom #rmch>div.entm.ent3{background:linear-gradient(120deg,rgba(143,240,192,.38),rgba(31,111,92,.38))!important}`;document.head.appendChild(st)})();
+
+/* names in chat and in the entrance line carry the player's equipped frame (same frames as the mic seats) */
+(function(){const st=document.createElement('style');st.textContent=`#rm.inroom #rmch .cn[class*=nfr-],#rm.inroom #rmch>div.entm[class*=nfr-]{border-radius:10px;padding:0 8px;border:1.5px solid transparent}
+#rm.inroom #rmch .nfr-f1{border-color:#ffd54a!important;box-shadow:0 0 0 1px #b8860b,0 0 6px #ffd54a}
+#rm.inroom #rmch .nfr-f2{border-color:#4dd0e1!important;box-shadow:0 0 0 1px #7a2e8e,0 0 6px #4dd0e1}
+#rm.inroom #rmch .nfr-f3{border-color:#f08c00!important;box-shadow:0 0 0 1px #e8590c,0 0 8px #f08c00}
+#rm.inroom #rmch .nfr-f4{border-color:#b8f2c0!important;box-shadow:0 0 0 1px #3a7d44,0 0 6px #b8f2c0}`;document.head.appendChild(st);
+function nf(){try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const nm={};(r.mlist||[]).forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;const put=(e,c)=>{const CO=window.__cos||{};const f=c&&CO[c]&&CO[c].frame;['f1','f2','f3','f4'].forEach(k=>e.classList.toggle('nfr-'+k,f===k))};
+document.querySelectorAll('#rmch .cn').forEach(e=>put(e,nm[e.textContent.trim()]));document.querySelectorAll('#rmch>div.entm').forEach(e=>put(e,e.dataset.c))}catch(e){}}
+setInterval(nf,800)})();
+
+(function(){const st=document.createElement('style');st.textContent='#pcdc .ac button{white-space:nowrap!important;font-size:14px!important;padding-left:6px!important;padding-right:6px!important}';document.head.appendChild(st)})();
 
 /* available (empty, unlocked) seats show a small plus badge on the bottom rim of the circle */
 (function(){const st=document.createElement('style');st.textContent=`#rmsg .rms:not(.oc):not(.lk):after{content:"";position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#ff4f93 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6v12M6 12h12' stroke='white' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat;border:1.5px solid #fff;box-sizing:border-box;pointer-events:none;z-index:2}`;document.head.appendChild(st)})();
