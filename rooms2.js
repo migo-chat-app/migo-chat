@@ -225,6 +225,9 @@ const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 #pcdc .ac{display:flex;gap:8px;padding:12px;position:sticky;bottom:0;background:#fff;flex-direction:row-reverse}
 #pcdc .ac button{flex:1;padding:11px;border-radius:24px;font-size:15px;font-weight:700;border:2px solid #ff4f93;background:#fff;color:#ff4f93}
 #pcdc .ac button.p{flex:1.3;background:linear-gradient(90deg,#ffb03a,#ff4f93);color:#fff;border:0}#pcdc .ac button.m{flex:.6;border-color:#6a4fa0;color:#6a4fa0}
+#pcdc .ac button#pcf:not(.cl){display:flex;align-items:center;justify-content:center;gap:6px;border:2px solid #ffb3d1;background:linear-gradient(180deg,#fff,#ffe9f3);color:#e0407f;box-shadow:0 3px 8px #ff4f9340}
+#pcdc .ac button#pcf:not(.cl):before{content:"";width:22px;height:22px;border-radius:50%;background:#ff4f93 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6v12M6 12h12' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center/16px no-repeat;flex:none}
+#pcdc .ac button#pcf:active{transform:scale(.96)}
 `;document.head.appendChild(st)})();
 const PFN={f1:'إطار ذهبي',f2:'إطار سماوي',f3:'إطار ناري',f4:'إطار أخضر'},PEN={e1:'احتفال التاج',e2:'احتفال النجوم',e3:'احتفال الورق'};
 function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
@@ -239,7 +242,7 @@ function pcOpen(name,code,pill,isMe,seatNo,role,seatEl){
  const em=w.querySelectorAll('.sec em');em[0].textContent=fr?PFN[fr]:'بدون';em[1].textContent=en?PEN[en]:'بدون';
  setAv(q('#pcav'),name,code);
  const g=q('#pcg'),f=q('#pcf');
- if(isMe){g.style.display='none';f.textContent='إغلاق';f.onclick=()=>w.classList.remove('on');const m0=q('#pcm');if(m0)m0.onclick=()=>{w.classList.remove('on');window.__pcBy=1;try{seatEl.click()}finally{window.__pcBy=0}}}
+ if(isMe){g.style.display='none';f.textContent='إغلاق';f.classList.add('cl');f.onclick=()=>w.classList.remove('on');const m0=q('#pcm');if(m0)m0.onclick=()=>{w.classList.remove('on');window.__pcBy=1;try{seatEl.click()}finally{window.__pcBy=0}}}
  else{g.onclick=()=>{room.giftTo=code;w.classList.remove('on');window.openRoomGift&&window.openRoomGift(name)};
   f.onclick=async()=>{f.disabled=true;try{const p=await sb.rpc('find_profile',{c:code});const pr=p.data&&p.data[0];if(!pr){f.textContent='مش لاقيه';return}const r=await sb.rpc('follow_request',{p_to:pr.id});f.textContent=r.error?'المتابعة مش متاحة لحسابك':'تم إرسال الطلب'}catch(e){f.textContent='حصل خطأ'}};
   const m=q('#pcm');if(m)m.onclick=()=>{w.classList.remove('on');window.__pcBy=1;try{seatEl.click()}finally{window.__pcBy=0}}}
@@ -264,3 +267,9 @@ document.addEventListener('click',e=>{if(window.__pcBy)return;const b=e.target.c
 
 /* entrance tint: light see-through color, outline kept */
 (function(){const st=document.createElement('style');st.textContent=`#rment .eb{background:linear-gradient(120deg,rgba(255,224,138,.38),rgba(246,166,35,.38))!important;backdrop-filter:none}#rment .e2b{background:linear-gradient(120deg,rgba(217,179,255,.38),rgba(122,46,142,.38))!important}#rment .e3b{background:linear-gradient(120deg,rgba(143,240,192,.38),rgba(31,111,92,.38))!important}`;document.head.appendChild(st)})();
+
+/* entrance banner sits at the bottom of the messages area */
+(function(){if(window.__entLow)return;window.__entLow=1;const st=document.createElement('style');st.textContent='#rment{top:auto!important;bottom:140px}';document.head.appendChild(st);setInterval(()=>{const h=document.getElementById('rment'),c=document.getElementById('rmch');if(!h||!c)return;const r=c.getBoundingClientRect();if(r.height<40)return;const ci=document.getElementById('rmci'),cr=ci?ci.getBoundingClientRect():null;const lim=cr&&cr.height>0?cr.top-8:window.innerHeight;const vb=Math.min(r.bottom,lim,window.innerHeight),vt=Math.max(r.top,0);if(vb-vt<52){h.style.setProperty('visibility','hidden','important');return}h.style.setProperty('visibility','visible','important');const t=Math.max(vb-44,vt);h.style.setProperty('top',t+'px','important');h.style.setProperty('bottom','auto','important')},250)})();
+
+/* available (empty, unlocked) seats show a small plus badge on the bottom rim of the circle */
+(function(){const st=document.createElement('style');st.textContent=`#rmsg .rms:not(.oc):not(.lk):after{content:"";position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#ff4f93 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6v12M6 12h12' stroke='white' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat;border:1.5px solid #fff;box-sizing:border-box;pointer-events:none;z-index:2}`;document.head.appendChild(st)})();
