@@ -50,7 +50,7 @@ function pv(){const n=(rmn.value||'').trim();cr.querySelector('#rcpn').textConte
 rmn.oninput=pv;
 cr.querySelectorAll('#rcsz button').forEach(b=>b.onclick=()=>{rmsz.value=b.dataset.n;cr.querySelectorAll('#rcsz button').forEach(x=>x.classList.toggle('on',x===b));pv()});
 window.__pv=0;cr.querySelectorAll('#rcvis button').forEach(b=>b.onclick=()=>{window.__pv=b.dataset.p==='1'?1:0;cr.querySelectorAll('#rcvis button').forEach(x=>x.classList.toggle('on',x===b));pv()});
-const oldc=rmc.onclick;rmc.onclick=()=>{rmpub.checked=true;cr.querySelector('#rcerr').textContent='';return Promise.resolve(oldc()).then(()=>{try{if(room)cr.style.display='none'}catch(e){}})};
+const oldc=rmc.onclick;rmc.onclick=()=>{if(window.__rcBusy)return;window.__rcBusy=1;rmc.disabled=true;rmpub.checked=true;cr.querySelector('#rcerr').textContent='';return Promise.resolve(oldc()).then(()=>{try{if(room)cr.style.display='none'}catch(e){}}).finally(()=>{window.__rcBusy=0;rmc.disabled=false})};
 new MutationObserver(()=>{cr.querySelector('#rcerr').textContent=$('rme').textContent}).observe($('rme'),{childList:true,characterData:true,subtree:true});
 const rmh=document.querySelector('.rmh');const nb=E('button',{id:'rmnew',type:'button'},'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="6"/><path d="M12 8v8M8 12h8"/></svg>إنشاء غرفة');rmh.append(nb);
 nb.onclick=()=>{cr.querySelector('#rcerr').textContent='';cr.style.display='flex';pv();setTimeout(()=>rmn.focus(),50)};cr.querySelector('#rcback').onclick=()=>{cr.style.display='none'};
