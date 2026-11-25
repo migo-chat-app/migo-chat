@@ -142,14 +142,14 @@ const fb=o.querySelector('#iifav');fb.textContent=on?'★ في المفضلة (�
 #rm.inroom #rmact{display:inline-flex;margin:0 6px 0 0;padding:0 8px;font-size:11px;background:#0000004d}
 #rm.inroom #rmhd button{padding:5px 8px!important;font-size:15px!important;border-radius:10px!important;line-height:1!important;min-width:32px}
 #rm.inroom #rmsg{row-gap:2px!important;margin:4px 0 0!important}
-#rm.inroom #rmsg .rms{width:min(64px,100%)!important;height:auto!important;aspect-ratio:1/1;justify-self:center;margin-bottom:24px!important}
+#rm.inroom #rmsg .rms{width:min(60px,100%)!important;height:auto!important;aspect-ratio:1/1;justify-self:center;margin-bottom:21px!important}
 #rm.inroom #rmsg .pp{left:50%!important;bottom:-8px!important;transform:translateX(-50%)!important;background:#fff!important;color:#c2410c!important;border:0!important;font-size:10px;padding:0 7px;line-height:15px}
 #rm.inroom #rmsg .rms .sn{margin-top:8px!important;font-size:10.5px!important}
 #rm.inroom #rmsg .rms:not(.oc) svg{width:16px;height:16px}
 #rm.inroom #rmau{margin:2px 0 4px!important;padding:4px 6px!important}
 #rm.inroom #rmau .av{width:26px;height:26px}
 #rm.inroom #rmaun{height:26px;min-width:34px}
-#rm.inroom #rmch{background:transparent!important;border:0!important;max-height:none!important;height:40dvh;min-height:220px;padding:2px 2px!important;font-size:14px}
+#rm.inroom #rmch{background:transparent!important;border:0!important;max-height:none!important;height:33dvh;min-height:200px;padding:2px 2px!important;font-size:14px}
 #rm.inroom #rmch>div.cm{display:flex;gap:8px;align-items:flex-start;background:transparent!important;padding:0!important;margin:0 0 8px!important;width:auto!important;border-radius:0}
 #rm.inroom #rmch .cav{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;border:2px solid #ffffffaa}
 #rm.inroom #rmch .cc{min-width:0}
@@ -161,8 +161,44 @@ const fb=o.querySelector('#iifav');fb.textContent=on?'★ في المفضلة (�
 const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
 function fix(){const ch=document.getElementById('rmch');if(!ch)return;
 [...ch.children].forEach(d=>{if(d.tagName!=='DIV'||d.classList.contains('cm'))return;const b=d.querySelector(':scope>b');if(!b)return;const nm=b.textContent.replace(/[:：]\s*$/,'').trim();b.remove();const body=d.textContent.trim();d.classList.add('cm');d.innerHTML='';const a=document.createElement('div');a.className='cav';a.style.background='hsl('+hue(nm)+',45%,38%)';a.textContent=(nm==='أنت'?'أ':nm.charAt(0).toUpperCase());const c=document.createElement('div');c.className='cc';const n=document.createElement('div');n.className='cn';n.textContent=nm;const bb=document.createElement('div');bb.className='cb';bb.textContent=body;c.append(n,bb);d.append(a,c)});
-const mo=document.getElementById('rmmore');if(mo&&/القائمة/.test(mo.textContent))mo.textContent='⋯';const cz=document.getElementById('rmcz');if(cz&&/تخصيص/.test(cz.textContent))cz.textContent='🎨';
+const mo=document.getElementById('rmmore');if(mo&&/القائمة/.test(mo.textContent))mo.textContent='⋯';
 const au=document.getElementById('rmaun');if(au&&/الموجودين/.test(au.textContent))au.textContent='👥 '+(au.textContent.match(/\d+/)||[''])[0]}
 setInterval(fix,500);
 document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('#rmhc');if(!h)return;setTimeout(()=>{const t=document.querySelector('#rminf>div>div>div');const src=document.getElementById('rmhc');if(t&&src&&!src.style.background.includes('url')){t.textContent=src.textContent;t.style.cssText+=';display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:700'}},50)},true);
+})();
+(function(){const st=document.createElement('style');st.textContent=`
+@keyframes frp{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+#rm.inroom #rmsg .rms.fr-f1{border-color:#ffd54a!important;box-shadow:0 0 0 2px #b8860b,0 0 10px #ffd54a!important}
+#rm.inroom #rmsg .rms.fr-f2{border-color:#4dd0e1!important;box-shadow:0 0 0 3px #7a2e8e,0 0 12px #4dd0e1!important}
+#rm.inroom #rmsg .rms.fr-f3{border-color:#f08c00!important;box-shadow:0 0 0 3px #e8590c,0 0 14px #f08c00!important;animation:frp 1.6s infinite}
+#rm.inroom #rmsg .rms.fr-f4{border-color:#b8f2c0!important;box-shadow:0 0 0 3px #3a7d44,0 0 10px #b8f2c0!important}
+@keyframes entin{0%{transform:translateX(120%);opacity:0}15%{transform:translateX(0);opacity:1}85%{transform:translateX(0);opacity:1}100%{transform:translateX(-120%);opacity:0}}
+@keyframes spk{0%{transform:translateY(0) scale(.4);opacity:0}20%{opacity:1}100%{transform:translateY(-140px) scale(1.2);opacity:0}}
+#rment{position:fixed;left:0;right:0;top:34%;z-index:35;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+#rment .eb{padding:8px 20px;border-radius:24px;font-weight:700;font-size:15px;color:#2b2118;background:linear-gradient(120deg,#ffe08a,#f6a623);box-shadow:0 4px 18px #0006;animation:entin 3s ease both}
+#rment .e2b{background:linear-gradient(120deg,#d9b3ff,#7a2e8e);color:#fff}#rment .e3b{background:linear-gradient(120deg,#8ff0c0,#1f6f5c);color:#fff}
+#rment .sp{position:absolute;font-size:22px;animation:spk 2.4s ease-out both}
+.cpk{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}.cpk button{width:auto!important;margin:0!important;padding:8px 12px!important;border-radius:12px!important;font-size:13px!important;background:#f3ece0;color:#2b2118;border:2px solid transparent!important}.cpk button.on{border-color:#e8590c!important;background:#fff1e6}
+`;document.head.appendChild(st);
+const FR={'':'بدون',f1:'ذهبي',f2:'بنفسجي',f3:'ناري',f4:'أخضر'},EN={'':'بدون',e1:'لافتة ذهبية',e2:'لافتة بنفسجي',e3:'لافتة خضراء'};
+let cos={},seen=null,mine={frame:'',ent:''},lastRoom=null,t0=0;
+function play(name,ent){let h=document.getElementById('rment');if(!h){h=document.createElement('div');h.id='rment';document.body.append(h)}
+const b=document.createElement('div');b.className='eb '+(ent==='e2'?'e2b':ent==='e3'?'e3b':'');b.textContent=(ent==='e1'?'👑 ':ent==='e2'?'✨ ':'🌿 ')+name+' دخل الغرفة';h.append(b);
+for(let i=0;i<6;i++){const s=document.createElement('span');s.className='sp';s.textContent=ent==='e3'?'🌿':'✨';s.style.left=(15+Math.random()*70)+'%';s.style.top='40px';s.style.animationDelay=(i*0.2)+'s';h.append(s);setTimeout(()=>s.remove(),3200)}
+setTimeout(()=>b.remove(),3200)}
+async function poll(){try{const r=(typeof room!=='undefined'?room:null);if(!r||!r.id){lastRoom=null;seen=null;return}
+if(lastRoom!==r.id){lastRoom=r.id;seen=null;t0=Date.now()}
+const d=await sb.rpc('room_cosmetics',{p_room:r.id});const L=(d&&d.data)||[];cos={};L.forEach(x=>cos[x.code]=x);
+const names={};(r.mlist||[]).forEach(m=>names[m.code]=m.name||m.code);
+const codes=(r.mlist||[]).map(m=>m.code);
+if(seen===null){seen=new Set(codes);const me=cos[myCode];if(me&&me.ent)play('أنت',me.ent)}
+else codes.forEach(c=>{if(!seen.has(c)){seen.add(c);const x=cos[c];if(x&&x.ent)play(names[c]||c,x.ent)}})}catch(e){}}
+setInterval(poll,4000);
+setInterval(()=>{try{const r=(typeof room!=='undefined'?room:null);if(!r)return;const L=r.mlist||[];const nm={};L.forEach(m=>nm[m.name||m.code]=m.code);nm['أنت']=myCode;document.querySelectorAll('#rmsg .rms.oc').forEach(b=>{const sn=b.querySelector('.sn');if(!sn)return;const c=nm[sn.textContent];const f=c&&cos[c]&&cos[c].frame;['f1','f2','f3','f4'].forEach(k=>b.classList.toggle('fr-'+k,f===k))})}catch(e){}},800);
+document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('#rmhc');if(!h)return;setTimeout(async()=>{const o=document.querySelector('#rminf>div');if(!o||o.querySelector('.cpk'))return;
+try{const m=await sb.rpc('my_cosmetics');if(m&&m.data)mine={frame:m.data.frame||'',ent:m.data.ent||''}}catch(e){}
+const sec=document.createElement('div');sec.innerHTML='<div class="ir"><b>إطار صورتي</b><span></span></div><div class="cpk" id="cpf"></div><div class="ir"><b>احتفال دخولي</b><span></span></div><div class="cpk" id="cpe"></div>';
+const mk=(box,map,key)=>{Object.keys(map).forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=map[k];if(mine[key]===k)b.className='on';b.onclick=async()=>{mine[key]=k;box.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.className='on';await sb.rpc('set_cosmetics',{p_frame:mine.frame,p_ent:mine.ent});poll()};box.append(b)})};
+mk(sec.querySelector('#cpf'),FR,'frame');mk(sec.querySelector('#cpe'),EN,'ent');
+const x=o.querySelector('#iifav');o.insertBefore(sec,x)},120)},true);
 })();
