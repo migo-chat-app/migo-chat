@@ -189,12 +189,12 @@ pfMove();
 function pfHero(){try{const nm=($('dn')&&$('dn').value||'').trim();setAv($('pav'),nm||myCode,myCode);$('pnm').textContent=nm||'بدون اسم';$('pcd').textContent=myCode||'';const st=$('pst');if(FEAT.friends&&Array.isArray(FL)){st.style.display='flex';$('pfr').textContent=FL.filter(x=>x.rel==='friend').length;$('pin').textContent=FL.filter(x=>x.rel==='incoming'||x.rel==='friend').length;$('pou').textContent=FL.filter(x=>x.rel==='outgoing'||x.rel==='friend').length}else st.style.display='none'}catch(e){}}
 setInterval(pfHero,1500);
 async function loadFollows(){const r=await sb.rpc('follow_list');if(r.error)return;FL=r.data||[];const box=$('frl');box.innerHTML='';
-const mk=(t)=>{const d=document.createElement('div');d.style.cssText='display:flex;gap:6px;align-items:center;margin:3px 0;flex-wrap:wrap';const sp=document.createElement('span');sp.style.flex='1';sp.textContent=t;d.appendChild(sp);box.appendChild(d);return d};
+const mk=(t,nm,cd)=>{const d=document.createElement('div');d.style.cssText='display:flex;gap:6px;align-items:center;margin:3px 0;flex-wrap:wrap';const sp=document.createElement('span');sp.style.flex='1';if(nm&&cd&&t.includes(nm)){const k=t.indexOf(nm);sp.append(t.slice(0,k));const s2=document.createElement('span');s2.textContent=nm;s2.dataset.sn=cd;sp.append(s2,t.slice(k+nm.length))}else sp.textContent=t;d.appendChild(sp);box.appendChild(d);return d};
 const btn=(d,l,fn)=>{const b=document.createElement('button');b.type='button';b.className='alt';b.style.padding='4px 8px';b.textContent=l;b.onclick=async()=>{await fn();loadFollows()};d.appendChild(b)};
 for(const x of FL){const nm=(x.display_name||x.code);
-if(x.rel==='incoming'){const d=mk('طلب متابعة من '+nm);btn(d,'قبول',()=>sb.rpc('follow_respond',{p_from:x.other,p_accept:true}));btn(d,'رفض',()=>sb.rpc('follow_respond',{p_from:x.other,p_accept:false}))}
-else if(x.rel==='outgoing'){const d=mk('طلبك لـ '+nm+' مستني القبول');btn(d,'إلغاء',()=>sb.rpc('unfollow',{p_other:x.other}))}
-else{const d=mk('صديق: '+nm);btn(d,'إزالة',()=>sb.rpc('unfollow',{p_other:x.other}))}}
+if(x.rel==='incoming'){const d=mk('طلب متابعة من '+nm,nm,x.code);btn(d,'قبول',()=>sb.rpc('follow_respond',{p_from:x.other,p_accept:true}));btn(d,'رفض',()=>sb.rpc('follow_respond',{p_from:x.other,p_accept:false}))}
+else if(x.rel==='outgoing'){const d=mk('طلبك لـ '+nm+' مستني القبول',nm,x.code);btn(d,'إلغاء',()=>sb.rpc('unfollow',{p_other:x.other}))}
+else{const d=mk('صديق: '+nm,nm,x.code);btn(d,'إزالة',()=>sb.rpc('unfollow',{p_other:x.other}))}}
 if(!FL.length)box.textContent='لسه مفيش أصدقاء. من قايمة الشات (النقط التلاتة) تقدر تبعت طلب متابعة.'}
 $('rns').onchange=async()=>{await sb.rpc('set_room_notice',{p_mode:$('rns').value})};
 async function pollNotices(){const r=await sb.rpc('room_notice_list');if(r.error||!r.data)return;for(const n of r.data.slice().reverse()){if(noticeSeen.has(n.id))continue;noticeSeen.add(n.id);huShow(n)}}
@@ -562,8 +562,9 @@ t.onclick=()=>{sel=k;draw();const m=q('gmsg');m.textContent=have===0?('بتتك�
 const have=sel&&!BASIC.includes(sel)?(bag[sel]||0):99;q('gn').textContent=n;q('gsend').disabled=!sel||have<n}
 async function loadBag(){try{const r=await sb.rpc('my_bag');bag=(r.data)||{}}catch(e){bag={}}draw()}
 function open(c,who){ctx=c;sel=null;n=1;cat='basic';q('gwho').textContent=who;q('gmsg').textContent='هدايا مجانية من غير قيمة مالية، وبتتبعت لما تضغط «إرسال» بس.';draw();sh.style.display='flex';loadBag()}
-window.openRoomGift=nm=>open('room','إلى: '+nm+' (في الغرفة)');
-q('gf').onclick=()=>open('chat','إلى: '+((friend&&(friend.name||friend.code))||''));
+function gwhoMark(nm,cd){try{if(!cd)return;const g=q('gwho');g.textContent='';g.append('إلى: ');const s=document.createElement('span');s.textContent=nm;s.dataset.sn=cd;g.append(s,g.dataset.suf||'')}catch(e){}}
+window.openRoomGift=nm=>{open('room','إلى: '+nm+' (في الغرفة)');try{q('gwho').dataset.suf=' (في الغرفة)';gwhoMark(nm,room.giftTo)}catch(e){}};
+q('gf').onclick=()=>{open('chat','إلى: '+((friend&&(friend.name||friend.code))||''));try{q('gwho').dataset.suf='';friend&&gwhoMark(friend.name||friend.code,friend.code)}catch(e){}};
 q('gclose').onclick=()=>sh.style.display='none';sh.onclick=e=>{if(e.target===sh)sh.style.display='none'};
 q('gminus').onclick=()=>{if(n>1)n--;draw()};q('gplus').onclick=()=>{if(n<5)n++;draw()};
 q('gsend').onclick=async()=>{if(!sel)return;const b=q('gsend');b.disabled=true;let ok=0;const em=x=>{const m=(x.error.message||'');return m.includes('age_required')?'لازم تكمّل بيانات السن الأول.':m.includes('no_gift')?'مفيش منها في حقيبتك':m.includes('limit')||m.includes('rate')?'استنى شوية وجرب تاني':'مقدرتش أبعت الهدية'};
