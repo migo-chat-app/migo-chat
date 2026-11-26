@@ -77,7 +77,13 @@ const mb=$('rmmore');if(mb)mb.addEventListener('click',()=>{setTimeout(()=>{try{
 /* room chat: server-authoritative redraw so blocks hide/restore lines live */
 (function(){if(window.__r3c)return;window.__r3c=1;
 const $=id=>document.getElementById(id);let last='',lastRid=null,run=0;
-const orig=sb.rpc.bind(sb);const chatAdd=m=>{const d=document.createElement('div');const b=document.createElement('b');b.textContent=(m.code===myCode?'أنت':(m.name||m.code))+': ';d.append(b,document.createTextNode(m.body));$('rmch').append(d)};
+const orig=sb.rpc.bind(sb);const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+const chatAdd=m=>{const me=m.code===myCode,nm=me?'أنت':(m.name||m.code);const d=document.createElement('div');d.className='cm';
+const a=document.createElement('div');a.className='cav';try{if(typeof setAv==='function')setAv(a,me?'':nm,m.code);else throw 0}catch(e){a.style.background='hsl('+hue(nm)+',45%,38%)';a.textContent=nm.charAt(0).toUpperCase()}
+const c=document.createElement('div');c.className='cc';const n=document.createElement('div');n.className='cn';n.textContent=nm;const bb=document.createElement('div');bb.className='cb';bb.append(document.createTextNode(m.body));
+if(!me&&m.id){const f=document.createElement('button');f.type='button';f.textContent='⚑';f.title='إبلاغ';f.setAttribute('aria-label','إبلاغ عن الرسالة');f.style.cssText='margin-inline-start:8px;background:none;border:0;color:#fff;opacity:.6;font-size:14px;padding:2px 6px;cursor:pointer';
+f.onclick=async()=>{const why=prompt('إبلاغ عن الرسالة دي؟ اكتب السبب. الرسالة دي وكودك وسببك بس هيوصلوا للإدارة، من غير وعد برد.');if(!why||why.trim().length<3)return;const r=await sb.rpc('room_report_msg',{p_room:room.id,p_msg:m.id,p_reason:why.trim()});const say=document.createElement('div');say.style.cssText='font-size:12px;opacity:.85;margin:2px 0 6px;color:#fff';say.textContent=r.error?(/rate/.test(r.error.message)?'بلاغات كتير النهارده':'البلاغ ماتبعتش'):'البلاغ اتبعت للإدارة.';c.append(say);setTimeout(()=>say.remove(),5000)};bb.append(f)}
+c.append(n,bb);d.append(a,c);$('rmch').append(d)};
 async function sync(){if(run||!room)return;run=1;try{const id=room.id;const m=await orig('room_msgs_list',{p_room:id,p_after:0});if(m.error||!room||room.id!==id||!Array.isArray(m.data))return;
 const arr=m.data,ids=arr.map(x=>x.id),sig=ids.join(','),box=$('rmch');if(!box)return;
 const atEnd=box.scrollTop+box.clientHeight>=box.scrollHeight-20;
