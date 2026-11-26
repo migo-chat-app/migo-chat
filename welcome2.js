@@ -1,0 +1,11 @@
+(function(){var e=document.getElementById('entry');if(!e||document.getElementById('hwl'))return;
+var tag=[].slice.call(e.querySelectorAll('div')).filter(function(d){return d.textContent.indexOf('رسائل ومكالمات صوتية')===0&&!d.children.length})[0];if(!tag)return;
+var a=document.createElement('button');a.id='hwl';a.type='button';a.textContent='إزاي أبدأ؟';a.style.cssText='position:relative;margin-top:10px;background:#ffffff26;color:#fff;border:1px solid #ffffff66;border-radius:20px;padding:6px 16px;font-size:14px;font-family:inherit';
+tag.parentNode.insertBefore(a,tag.nextSibling);
+var m=document.createElement('div');m.id='hwm';m.setAttribute('role','dialog');m.style.cssText='display:none;position:fixed;inset:0;z-index:120;background:#0a1f1acc;align-items:flex-end;justify-content:center;direction:rtl';
+var steps=[['١','ادخل','بجوجل أو كضيف. الضيف حساب مؤقت على المتصفح ده.'],['٢','اعرف كودك','كل واحد ليه كود في «ملفي». ابعته لصاحبك، أو اكتب كود صاحبك وافتح المحادثة.'],['٣','اتكلم','رسايل وهدايا ومكالمات صوتية مع صحابك.'],['٤','الغرف والمنشورات','افتح أو ادخل غرفة صوت، وشوف منشورات الناس.']];
+var h='<div style="background:#fff;color:#1d2b27;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));max-height:100%;overflow:auto"><div style="font-size:20px;font-weight:700;margin-bottom:10px">ميجو شات في 30 ثانية</div>';
+steps.forEach(function(s){h+='<div style="display:flex;gap:12px;align-items:flex-start;margin:10px 0"><div style="flex:none;width:30px;height:30px;border-radius:50%;background:#e6f3ee;color:#1f6f5c;font-weight:700;display:flex;align-items:center;justify-content:center">'+s[0]+'</div><div style="font-size:14px;line-height:1.6"><b>'+s[1]+'</b><br><span style="color:#556560">'+s[2]+'</span></div></div>'});
+h+='<button id="hwx" type="button" style="width:100%;margin-top:10px;background:#1f6f5c;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-family:inherit">تمام، يلا نبدأ</button></div>';
+m.innerHTML=h;document.body.appendChild(m);
+a.onclick=function(){m.style.display='flex'};document.getElementById('hwx').onclick=function(){m.style.display='none'};m.onclick=function(ev){if(ev.target===m)m.style.display='none'}})();
