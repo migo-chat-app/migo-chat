@@ -19,4 +19,5 @@ if(sc!==f.code||Date.now()-st>20000){if(sc!==f.code)sl=[];sc=f.code;st=Date.now(
 let e=$('mgstrip');if(!sl.length||sc!==f.code){if(e)e.remove();return}
 if(e&&e.parentNode===L&&L.firstChild===e)return;if(e)e.remove();e=document.createElement('div');e.id='mgstrip';e.dataset.n=sl.length+':'+(sl[0]&&sl[0].id);e.className='mgs';const h=document.createElement('b');h.textContent='صور '+(f.name||f.display_name||'');e.appendChild(h);sl.forEach((p,i)=>{const b=document.createElement('button');b.type='button';const im=document.createElement('img');im.alt='صورة';im.src=p.t;b.appendChild(im);b.onclick=()=>open(p.id,sl,i);e.appendChild(b)});L.insertBefore(e,L.firstChild)}
 setInterval(()=>{try{strip()}catch(_){}},900);
+const av=$('pkav');if(av){av.style.cursor='pointer';av.setAttribute('role','button');av.setAttribute('aria-label','الملف الشخصي');av.addEventListener('click',()=>{const m=$('mmp');if(m)m.click()})}
 })();
