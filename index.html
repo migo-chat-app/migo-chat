@@ -141,6 +141,7 @@ try{
 let oauthErr='';
 if(OAUTH_RET){const q=new URLSearchParams(location.search);try{localStorage.removeItem('migo_oauth')}catch(e){}history.replaceState(null,'',location.pathname);if(q.get('code')){const x=await sb.auth.exchangeCodeForSession(q.get('code'));if(x.error)oauthErr=x.error.message||'error'}else oauthErr=q.get('error_description')||q.get('error')||'error'}
 let {data:{session}}=await sb.auth.getSession();
+if(!session&&oauthErr&&!ENTRY_DONE){alert('الدخول بجوجل ما اكتملش. جرّب تاني أو ادخل كضيف.');showEntry();return}
 if(!session){const r=await sb.auth.signInAnonymously();if(r.error){if(r.error.status===429){E('في ضغط على التسجيل من نفس الشبكة دلوقتي، جرب بعد شوية.');return}throw r.error}session=r.data.session}
 me=session.user.id;
 let p=await sb.from('profiles').select('code,display_name,avatar').eq('id',me).maybeSingle();
@@ -161,7 +162,7 @@ if(!gShown()&&!mode)return;
 const box=$('gbox');box.style.display='block';
 const u=(await sb.auth.getUser()).data.user;const ids=(u&&u.identities)||[];const gi=ids.find(i=>i.provider==='google');
 const st=$('gst');
-if(err)st.textContent='مقدرتش أكمّل ربط جوجل: '+(/already|exist|linked/i.test(err)?'حساب جوجل ده مربوط بحساب تاني.':'حصلت مشكلة، جرب تاني.');
+if(err)st.textContent=(mode==='login'?'الدخول بجوجل ما اكتملش: ':'مقدرتش أكمّل ربط جوجل: ')+(/already|exist|linked/i.test(err)?'حساب جوجل ده مربوط بحساب تاني.':'حصلت مشكلة، جرب تاني.');
 else if(gi)st.textContent='حسابك مربوط بجوجل: '+((gi.identity_data&&gi.identity_data.email)||'');
 else st.textContent='حسابك دلوقتي محفوظ في المتصفح ده بس.';
 $('glink').style.display=(!gi)?'inline-block':'none';
