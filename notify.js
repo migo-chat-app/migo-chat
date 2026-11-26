@@ -14,7 +14,7 @@ async function upd(){
  if(busy)return;
  try{if(typeof me==='undefined'||!me||typeof sb==='undefined')return}catch(e){return}
  busy=true;
- try{var r=await sb.from('messages').select('id',{count:'exact',head:true}).eq('recipient',me).is('read_at',null);
+ try{var q=sb.from('messages').select('id',{count:'exact',head:true}).eq('recipient',me).is('read_at',null);try{var mr=await sb.rpc('my_mutes');var ids=((mr&&mr.data)||[]).filter(function(x){return x.kind==='p'}).map(function(x){return x.target});if(ids.length)q=q.not('sender','in','('+ids.join(',')+')')}catch(e){}var r=await q;
   if(r.error)return;var n=r.count||0;if(n===last)return;var up=n>last;last=n;apply(n);try{if(typeof friend!=='undefined'&&!friend&&typeof loadRecent==='function')loadRecent()}catch(e){}}catch(e){}finally{busy=false}
 }
 setInterval(upd,15000);
