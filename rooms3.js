@@ -73,4 +73,19 @@ function editor(){if($('rpinov'))return;const o=document.createElement('div');o.
  const save=async(a,c)=>{if(!room)return;const x=await sb.rpc('set_room_pin',{p_room:room.id,p_welcome:a,p_rules:c});if(x.error){$('rpe').textContent=/not_host/.test(x.error.message)?'التثبيت للمضيف بس':'مقدرتش أحفظ، جرّب تاني';return}cur={welcome:a.trim()||null,rules:c.trim()||null};lastKey='';render(cur);close()};
  $('rps').onclick=()=>save(w.value,r.value);$('rpd').onclick=()=>save('','')}
 const mb=$('rmmore');if(mb)mb.addEventListener('click',()=>{setTimeout(()=>{try{if(!room||room.host!==myCode)return;const g=document.querySelector('#rmovb>div');if(!g||g.querySelector('[data-pin]'))return;const b=document.createElement('button');b.type='button';b.className='alt';b.dataset.pin=1;b.style.cssText='padding:12px 4px;font-size:13px;grid-column:1/-1';b.textContent='📌 رسالة الترحيب والقواعد';b.onclick=()=>{const ov=$('rmov');if(ov)ov.style.display='none';editor()};g.append(b)}catch(e){}},30)});
+
+/* room chat: server-authoritative redraw so blocks hide/restore lines live */
+(function(){if(window.__r3c)return;window.__r3c=1;
+const $=id=>document.getElementById(id);let last='',lastRid=null,run=0;
+const orig=sb.rpc.bind(sb);const chatAdd=m=>{const d=document.createElement('div');const b=document.createElement('b');b.textContent=(m.code===myCode?'أنت':(m.name||m.code))+': ';d.append(b,document.createTextNode(m.body));$('rmch').append(d)};
+async function sync(){if(run||!room)return;run=1;try{const id=room.id;const m=await orig('room_msgs_list',{p_room:id,p_after:0});if(m.error||!room||room.id!==id||!Array.isArray(m.data))return;
+const arr=m.data,ids=arr.map(x=>x.id),sig=ids.join(','),box=$('rmch');if(!box)return;
+const atEnd=box.scrollTop+box.clientHeight>=box.scrollHeight-20;
+if(lastRid===id&&sig===last&&box.children.length===arr.length)return;
+const prev=last?last.split(','):[];
+const append=lastRid===id&&prev.length&&box.children.length===prev.length&&prev.every((v,i)=>String(ids[i])===v);
+if(append){for(const x of arr.slice(prev.length))chatAdd(x)}else{box.innerHTML='';for(const x of arr)chatAdd(x)}
+last=sig;lastRid=id;if(ids.length)room.lastMsg=ids[ids.length-1];if(atEnd||!append)box.scrollTop=box.scrollHeight}catch(e){}finally{run=0}}
+sb.rpc=function(n,a){if(n==='room_msgs_list'){sync();return Promise.resolve({data:[],error:null})}return orig(n,a)};
+})();
 })();
