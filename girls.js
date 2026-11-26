@@ -34,3 +34,9 @@ async function poll(){try{if(window.__tab!=='p'||typeof sb==='undefined')return;
 setInterval(poll,6000);setTimeout(poll,1500);
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#tabs button'))setTimeout(poll,1200)},true);
 })();
+// photo thumbnails: auto-load chat photos when they scroll into view (tap still enlarges)
+(function(){try{const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);if(e.target.isConnected&&!e.target.disabled)e.target.click()}})},{rootMargin:'200px'});
+function scan(){document.querySelectorAll('button.alt').forEach(b=>{if(!b.__mgi&&b.textContent==='صورة (اضغط للعرض)'){b.__mgi=1;b.style.cssText+=';min-width:120px;min-height:90px;border-radius:12px;opacity:.6';io.observe(b)}})}
+new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});scan()}catch(e){}})();
+// photo viewer: tap a chat photo to see it full screen, tap again to close
+document.addEventListener('click',e=>{try{const im=e.target;if(!im||im.tagName!=='IMG'||im.alt!=='صورة'||im.closest('#mgph'))return;e.stopImmediatePropagation();e.preventDefault();const o=document.createElement('div');o.id='mgph';o.style.cssText='position:fixed;inset:0;z-index:99999;background:#000e;display:flex;align-items:center;justify-content:center;padding:12px';const f=document.createElement('img');f.alt='';f.src=im.src;f.style.cssText='max-width:100%;max-height:100%;object-fit:contain;border-radius:8px';const x=document.createElement('button');x.type='button';x.textContent='✕';x.setAttribute('aria-label','إغلاق');x.style.cssText='position:absolute;top:14px;left:14px;width:42px;height:42px;border-radius:50%;border:0;background:#fff3;color:#fff;font-size:20px';o.append(f,x);o.onclick=()=>o.remove();document.body.appendChild(o)}catch(_){}},true);
